@@ -11,7 +11,7 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+#*.jar #disabling this line because we want to include jar files
 *.war
 *.nar
 *.ear
