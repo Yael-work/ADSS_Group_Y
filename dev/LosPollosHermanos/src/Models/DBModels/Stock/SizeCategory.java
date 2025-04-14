@@ -1,13 +1,13 @@
 package Models.DBModels.Stock;
 
 public class SizeCategory {
-    private int sizeCategoryID;
+    private int sizeCategoryID=0;
     private String name;
     private ProductSubCategory parentCategory;
 
 
     public SizeCategory(int sizeCategoryID, String name, ProductSubCategory parentCategory) {
-        this.sizeCategoryID = sizeCategoryID;
+        this.sizeCategoryID ++;
         this.name = name;
         this.parentCategory = parentCategory;
     }
@@ -16,9 +16,7 @@ public class SizeCategory {
     public int getSizeCategoryID() {
         return sizeCategoryID;
     }
-    public void setSizeCategoryID(int sizeCategoryID) {
-        this.sizeCategoryID = sizeCategoryID;
-    }
+
 
 
     public String getName() {

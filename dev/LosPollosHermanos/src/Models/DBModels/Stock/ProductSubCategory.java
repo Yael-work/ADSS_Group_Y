@@ -1,12 +1,12 @@
 package Models.DBModels.Stock;
 
 public class ProductSubCategory {
-    private int subCategoryID;
+    private static int subCategoryID = 0;
     private String name;
     private ProductCategory perentCategory;
 
     public ProductSubCategory(int subCategoryID, String name, ProductCategory perentCategory) {
-        this.subCategoryID = subCategoryID;
+        this.subCategoryID++;
         this.name = name;
         this.perentCategory = perentCategory;
     }
@@ -14,9 +14,7 @@ public class ProductSubCategory {
     public int getSubCategoryID() {
         return subCategoryID;
     }
-    public void setSubCategoryID(int subCategoryID) {
-        this.subCategoryID = subCategoryID;
-    }
+
     public String getName() {
         return name;
     }

@@ -4,7 +4,7 @@ public class Validate {
 
 
     public static boolean isDateValide(String date) {
-        // Check if the date is in the format YYYY-MM-DD
+        // Check if the date is in the format DD/MM/YYYY
         String regex = "\\d{2}/\\d{2}/\\d{4}";
         return date.matches(regex);
     }
