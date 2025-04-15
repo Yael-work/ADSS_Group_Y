@@ -10,6 +10,7 @@ public class DBManager {
     private final ITruckController truckController;
     private final IDeliveryFileItemController deliveryFileItemController;
     private final ITransportAreaController transportAreaController;
+    private final IDriverController driverController;
 
     private DBManager() {
         // Private constructor to prevent instantiation
@@ -18,6 +19,7 @@ public class DBManager {
         this.truckController = MockTruckController.getInstance();
         this.deliveryFileItemController = MockDeliveryFileItemController.getInstance();
         this.transportAreaController = MockTransportAreaController.getInstance();
+        this.driverController = MockDriverController.getInstance();
     }
 
     /**
@@ -75,5 +77,14 @@ public class DBManager {
      */
     public final ITransportAreaController getTransportAreaController() {
         return transportAreaController;
+    }
+
+    /**
+     * Returns the driver controller.
+     *
+     * @return The driver controller.
+     */
+    public final IDriverController getDriverController() {
+        return driverController;
     }
 }
