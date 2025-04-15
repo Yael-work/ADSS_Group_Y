@@ -31,7 +31,7 @@ public class TransportPresentation {
                 // Call method to manage transports
                 break;
             case 3:
-                // Call method to manage trucks
+                TrucksHandler.HandleTrucks();
                 break;
             case 4:
                 DriversHandler.handleDrivers();

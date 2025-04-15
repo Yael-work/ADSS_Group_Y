@@ -42,7 +42,7 @@ public class DriversHandler {
         }
         boolean f = DriversManager.addDriver(firstName, lastName, personalId, phoneNumber, licenseType);
         if (!f) {
-            Helper.println("Driver with this personal ID or phone number already exists");
+            Helper.showError("Error creating new driver.");
             return false;
         }
         return true;
@@ -96,12 +96,12 @@ public class DriversHandler {
                 }
             } while (choice == Helper.UndefinedUserInput);
         } catch (Exception e) {
-            Helper.println("Error: " + e.getMessage());
+            Helper.showError("Error: " + e.getMessage());
             return false;
         }
         boolean f = DriversManager.updateDriver(someString, id, choice);
         if (!f) {
-            Helper.println("Driver with this personal ID or phone number already exists");
+            Helper.showError("Error updating driver.");
             return false;
         }
         return true;
@@ -115,7 +115,7 @@ public class DriversHandler {
         } while (id == Helper.UndefinedUserInput);
         boolean f = DriversManager.deleteDriver(id);
         if (!f) {
-            Helper.println("Driver with this ID does not exist");
+            Helper.showError("Driver with this ID does not exist");
             return false;
         }
         return true;
@@ -129,7 +129,7 @@ public class DriversHandler {
         } while (id == Helper.UndefinedUserInput);
         Driver d = DriversManager.getDriverById(id);
         if (d == null) {
-            Helper.println("No driver found with ID: " + id);
+            Helper.showError("No driver found with ID: " + id);
             return;
         }
         Helper.println(d.toString());
