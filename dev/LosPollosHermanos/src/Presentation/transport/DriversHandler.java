@@ -1,42 +1,158 @@
 package Presentation.transport;
 
+import Domain.transport.DriversManager;
+import Models.DBModels.transport.Driver;
 import auxiliary.Helper;
 
 public class DriversHandler {
-    public boolean addDriver() {
-         String firstName = null;
-         String lastName = null;
-         String personalId = null;
-         String phoneNumber = null;
-         String licenseType = null;
+    public static boolean addDriver() {
+        String firstName = null;
+        String lastName = null;
+        String personalId = null;
+        String phoneNumber = null;
+        String licenseType = null;
 
         try {
-            System.out.println("Driver creation:");
+            Helper.println("Driver creation:");
             do {
-                System.out.print("Enter Driver first name: ");
+                Helper.println("Enter Driver first name: ");
                 firstName = Helper.getUserInputString();
             } while (firstName == null || firstName.isEmpty());
             do {
-                System.out.print("Enter Driver last name: ");
+                Helper.println("Enter Driver last name: ");
                 lastName = Helper.getUserInputString();
             } while (lastName == null || lastName.isEmpty());
             do {
-                System.out.print("Enter Driver personal ID: ");
+                Helper.println("Enter Driver personal ID: ");
                 personalId = Helper.getUserInputString();
             } while (personalId == null || personalId.isEmpty());
             do {
-                System.out.print("Enter Driver phone number: ");
+                Helper.println("Enter Driver phone number: ");
                 phoneNumber = Helper.getUserInputString();
             } while (phoneNumber == null || phoneNumber.isEmpty());
             do {
-                System.out.print("Enter Driver license type: ");
+                Helper.println("Enter Driver license type: ");
                 licenseType = Helper.getUserInputString();
             } while (licenseType == null || licenseType.isEmpty());
+        } catch (Exception e) {
+            Helper.println("Error: " + e.getMessage());
+            return false;
         }
-        catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        boolean f = DriversManager.addDriver(firstName, lastName, personalId, phoneNumber, licenseType);
+        if (!f) {
+            Helper.println("Driver with this personal ID or phone number already exists");
             return false;
         }
         return true;
+    }
+
+    public static boolean updateDriver() {
+        String someString;
+        int id = Helper.UndefinedUserInput;
+        do {
+            Helper.println("Enter Driver ID to update: ");
+            id = Helper.getUserInputInteger();
+        } while (id == Helper.UndefinedUserInput);
+        int choice;
+        try {
+            Helper.println("Choose attribute to update:");
+            Helper.println("1. First Name");
+            Helper.println("2. Last Name");
+            Helper.println("3. Personal ID");
+            Helper.println("4. Phone Number");
+            Helper.println("5. License Type");
+            Helper.println("6. Back to Main Menu");
+            someString = null;
+            do {
+                choice = Helper.getUserInputInteger();
+                switch (choice) {
+                    case 1:
+                        Helper.println("Enter new first name: ");
+                        someString = Helper.getUserInputString();
+                        break;
+                    case 2:
+                        Helper.println("Enter new last name: ");
+                        someString = Helper.getUserInputString();
+                        break;
+                    case 3:
+                        Helper.println("Enter new personal ID: ");
+                        someString = Helper.getUserInputString();
+                        break;
+                    case 4:
+                        Helper.println("Enter new phone number: ");
+                        someString = Helper.getUserInputString();
+                        break;
+                    case 5:
+                        Helper.println("Enter new license type: ");
+                        someString = Helper.getUserInputString();
+                        break;
+                    case 6:
+                        return false;
+                    default:
+                        Helper.println("Invalid choice, please try again.");
+                        break;
+                }
+            } while (choice == Helper.UndefinedUserInput);
+        } catch (Exception e) {
+            Helper.println("Error: " + e.getMessage());
+            return false;
+        }
+        boolean f = DriversManager.updateDriver(someString, id, choice);
+        if (!f) {
+            Helper.println("Driver with this personal ID or phone number already exists");
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean deleteDriver() {
+        int id = Helper.UndefinedUserInput;
+        do {
+            Helper.println("Enter Driver ID to delete: ");
+            id = Helper.getUserInputInteger();
+        } while (id == Helper.UndefinedUserInput);
+
+    }
+
+    public static void handleDrivers() {
+        boolean exit = false;
+        while (!exit) {
+            int choice;
+            Helper.println("Manage Drivers:");
+            Helper.println("1. Add Driver");
+            Helper.println("2. Update Driver");
+            Helper.println("3. Delete Driver");
+            Helper.println("4. View Driver by ID");
+            Helper.println("5. View Existing Drivers IDs");
+            Helper.println("6. Back to Main Menu");
+
+            do {
+                Helper.print("Please choose an option: ");
+                choice = Helper.getUserInputInteger();
+            } while (choice == Helper.UndefinedUserInput);
+
+            switch (choice) {
+                case 1:
+                    addDriver();
+                    break;
+                case 2:
+                    updateDriver();
+                    break;
+                case 3:
+                    // Call method to delete driver
+                    break;
+                case 4:
+                    // Call method to view driver by ID
+                    break;
+                case 5:
+                    // Call method to view existing drivers IDs
+                    break;
+                case 6:
+                    exit = true;
+                    break;
+                default:
+                    Helper.println("Invalid choice, please try again.");
+            }
+        }
     }
 }

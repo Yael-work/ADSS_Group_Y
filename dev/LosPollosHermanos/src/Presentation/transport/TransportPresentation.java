@@ -34,7 +34,7 @@ public class TransportPresentation {
                 // Call method to manage trucks
                 break;
             case 4:
-                // Call method to manage drivers
+                DriversHandler.handleDrivers();
                 break;
             case 5:
                 BranchesHandler.handleBranches();
