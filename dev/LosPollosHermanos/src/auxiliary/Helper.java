@@ -74,6 +74,15 @@ public class Helper {
     /**
      * This method is used to show an error message to the user.
      *
+     * @param message The error message to be displayed.
+     */
+    public static void showError(String message) {
+        showError(message, null, true);
+    }
+
+    /**
+     * This method is used to show an error message to the user.
+     *
      * @param message   - The error message to be displayed.
      * @param logToFile - Whether to log the error message to a file or not.
      */
@@ -113,6 +122,20 @@ public class Helper {
      */
     public static void println(String message) {
         println(message, true);
+    }
+
+    /**
+     * This method is used to get the stack trace of an exception as a string.
+     *
+     * @param e - The exception to get the stack trace from.
+     * @return - The stack trace of the exception as a string.
+     */
+    public static String getStringTraceOfException(Exception e) {
+        StringBuilder sb = new StringBuilder();
+        for (StackTraceElement element : e.getStackTrace()) {
+            sb.append(element.toString()).append("\n");
+        }
+        return sb.toString();
     }
 
 }
