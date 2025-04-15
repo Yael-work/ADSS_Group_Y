@@ -7,6 +7,10 @@ import Auxiliary.Helper;
 
 import java.util.ArrayList;
 
+/**
+ * TrucksManager is a class that manages the trucks in the system.
+ * It provides methods to add, update, delete, and retrieve trucks.
+ */
 public class TrucksManager {
     private static final ITruckController truckController = DBManager.getInstance().getTruckController();
 
@@ -20,6 +24,14 @@ public class TrucksManager {
         return truckController.addTruck(t);
     }
 
+    /**
+     * Updates a truck's information based on user input.
+     *
+     * @param some  - a string that is not used in the method
+     * @param id    - the ID of the truck to be updated
+     * @param value - the field to be updated (1: plate, 2: net weight, 3: max weight, 4: required license type, 5: model)
+     * @return true if the update was successful, false otherwise
+     */
     public static boolean updateTruck(String some , int id, int value) {
         Truck t = truckController.getTruckById(id);
         if (t == null) {
@@ -49,6 +61,12 @@ public class TrucksManager {
         return truckController.updateTruck(t, id);
     }
 
+    /**
+     * Deletes a truck from the system.
+     *
+     * @param id - the ID of the truck to be deleted
+     * @return true if the truck was deleted successfully, false otherwise
+     */
     public static boolean deleteTruck(int id) {
         Truck t = truckController.getTruckById(id);
         if (t == null) {
@@ -58,10 +76,21 @@ public class TrucksManager {
         return truckController.deleteTruck(id);
     }
 
+    /**
+     * Retrieves the entire list of trucks from the database.
+     *
+     * @return - an ArrayList of Truck objects representing all trucks in the system
+     */
     public static ArrayList<Truck> getAllTrucks() {
         return truckController.getAllRecords();
     }
 
+    /**
+     * Retrieves a truck by its ID.
+     *
+     * @param id - the ID of the truck to be retrieved
+     * @return - the Truck object with the specified ID, or null if not found
+     */
     public static Truck getTruckById(int id) {
         Truck t = truckController.getTruckById(id);
         if (t == null) {
