@@ -79,6 +79,45 @@ public class MockDriverController implements IDriverController {
     }
 
     @Override
+    public Driver getDriverByFullName(String firstName, String lastName) {
+        if (firstName == null || lastName == null || firstName.isEmpty() || lastName.isEmpty()) {
+            return null;
+        }
+        for (Driver driver : drivers) {
+            if (driver.getFirstName().equalsIgnoreCase(firstName) && driver.getLastName().equalsIgnoreCase(lastName)) {
+                return driver;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Driver getDriveByPersonalId(String personalId) {
+        if (personalId == null || personalId.isEmpty()) {
+            return null;
+        }
+        for (Driver driver : drivers) {
+            if (driver.getPersonalId().equalsIgnoreCase(personalId)) {
+                return driver;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Driver getDriverByPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            return null;
+        }
+        for (Driver driver : drivers) {
+            if (driver.getPhoneNumber().equalsIgnoreCase(phoneNumber)) {
+                return driver;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public final ArrayList<Driver> getAllRecords() {
         return drivers;
     }

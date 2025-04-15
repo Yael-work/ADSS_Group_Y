@@ -79,6 +79,45 @@ public class MockSiteController implements ISiteController {
     }
 
     @Override
+    public Site getSiteBySiteAddress(String siteAddress) {
+        if (siteAddress == null || siteAddress.isEmpty()) {
+            return null;
+        }
+        for (Site site : sites) {
+            if (site.getSiteAddress().equalsIgnoreCase(siteAddress)) {
+                return site;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Site getSiteByContactPhone(String contactPhone) {
+        if (contactPhone == null || contactPhone.isEmpty()) {
+            return null;
+        }
+        for (Site site : sites) {
+            if (site.getContactPhone().equalsIgnoreCase(contactPhone)) {
+                return site;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Site getSiteByContactName(String contactName) {
+        if (contactName == null || contactName.isEmpty()) {
+            return null;
+        }
+        for (Site site : sites) {
+            if (site.getContactName().equalsIgnoreCase(contactName)) {
+                return site;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public final ArrayList<Site> getAllRecords() {
         return sites;
     }

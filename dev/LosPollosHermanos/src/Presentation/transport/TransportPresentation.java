@@ -1,10 +1,8 @@
 package Presentation.transport;
 
-import DB.DBManager;
 import auxiliary.Helper;
 
 public class TransportPresentation {
-    private static final DBManager dbManager = DBManager.getInstance();
 
 
     private static void printInstructions() {

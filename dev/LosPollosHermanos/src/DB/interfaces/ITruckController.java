@@ -35,5 +35,11 @@ public interface ITruckController extends IController<Truck> {
      */
     Truck getTruckById(int id);
 
-
+    /**
+     * Retrieves a truck from the database by its plate number.
+     *
+     * @param plate The plate number of the truck to be retrieved.
+     * @return The truck with the specified plate number, or null if not found.
+     */
+    Truck getTruckByPlate(String plate);
 }

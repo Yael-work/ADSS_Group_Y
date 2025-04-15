@@ -79,6 +79,45 @@ public class MockBranchController implements IBranchController {
     }
 
     @Override
+    public Branch getBranchByName(String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+        for (Branch branch : branches) {
+            if (branch.getName().equalsIgnoreCase(name)) {
+                return branch;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Branch getBranchByAddress(String address) {
+        if (address == null || address.isEmpty()) {
+            return null;
+        }
+        for (Branch branch : branches) {
+            if (branch.getAddress().equalsIgnoreCase(address)) {
+                return branch;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Branch getBranchByPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            return null;
+        }
+        for (Branch branch : branches) {
+            if (branch.getPhone().equalsIgnoreCase(phoneNumber)) {
+                return branch;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public final ArrayList<Branch> getAllRecords() {
         return branches;
     }

@@ -34,4 +34,29 @@ public interface IBranchController extends IController<Branch> {
      * @return The branch with the specified ID, or null if not found.
      */
     Branch getBranchById(int id);
+
+    /**
+     * Retrieves a branch from the database by its name.
+     *
+     * @param name The name of the branch to be retrieved.
+     * @return The branch with the specified name, or null if not found.
+     */
+    Branch getBranchByName(String name);
+
+    /**
+     * Retrieves a branch from the database by its address.
+     *
+     * @param address The address of the branch to be retrieved.
+     * @return The branch with the specified address, or null if not found.
+     */
+    Branch getBranchByAddress(String address);
+
+    /**
+     * Retrieves a branch from the database by its phone number.
+     *
+     * @param phoneNumber The phone number of the branch to be retrieved.
+     * @return The branch with the specified phone number, or null if not found.
+     */
+    Branch getBranchByPhoneNumber(String phoneNumber);
+
 }

@@ -1,8 +1,10 @@
 package Presentation.transport;
 
+import Domain.transport.BranchesManager;
 import auxiliary.Helper;
 
 public class BranchesHandler {
+
     private static boolean addBranch() {
         String name = null;
         String address = null;
@@ -25,9 +27,7 @@ public class BranchesHandler {
             System.out.println("Error: " + e.getMessage());
             return false;
         }
-
-
-        return true;
+        return BranchesManager.addBranch(name, address, phone);
     }
 
 

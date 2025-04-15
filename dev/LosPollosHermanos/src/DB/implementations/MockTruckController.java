@@ -79,6 +79,19 @@ public class MockTruckController implements ITruckController {
     }
 
     @Override
+    public Truck getTruckByPlate(String plate) {
+        if (plate == null || plate.isEmpty()) {
+            return null;
+        }
+        for (Truck truck : trucks) {
+            if (truck.getPlate().equalsIgnoreCase(plate)) {
+                return truck;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public final ArrayList<Truck> getAllRecords() {
         return trucks;
     }

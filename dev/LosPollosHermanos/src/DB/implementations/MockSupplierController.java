@@ -79,6 +79,19 @@ public class MockSupplierController implements ISupplierController {
     }
 
     @Override
+    public Supplier getSupplierByName(String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+        for (Supplier supplier : suppliers) {
+            if (supplier.getSiteName().equalsIgnoreCase(name)) {
+                return supplier;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public final ArrayList<Supplier> getAllRecords() {
         return suppliers;
     }

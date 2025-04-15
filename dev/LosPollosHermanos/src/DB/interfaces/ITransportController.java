@@ -1,6 +1,8 @@
 package DB.interfaces;
 import Models.DBModels.transport.Transport;
 
+import java.util.ArrayList;
+
 public interface ITransportController extends IController<Transport>{
     /**
      * Adds new transport to the database.
@@ -31,4 +33,20 @@ public interface ITransportController extends IController<Transport>{
      * @return The transport with the specified ID, or null if not found.
      */
     Transport getTransportById(int id);
+
+    /**
+     * Retrieves transport by its truck ID.
+     *
+     * @param id The ID of the truck to retrieve transports for.
+     * @return A list of transports associated with the specified truck ID.
+     */
+    ArrayList<Transport> getTransportsByTruckId(int id);
+
+    /**
+     * Retrieves transport by its driver ID.
+     *
+     * @param id The ID of the driver to retrieve transports for.
+     * @return A list of transports associated with the specified driver ID.
+     */
+    ArrayList<Transport> getTransportsByDriverId(int id);
 }

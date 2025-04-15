@@ -30,4 +30,30 @@ public class Helper {
             return null;
         }
     }
+
+    /**
+     * This method is used to show an error message to the user.
+     *
+     * @param message   The error message to be displayed.
+     * @param trace     The stack trace of the error.
+     * @param logToFile Whether to log the error message to a file or not.
+     */
+    public static void showError(String message, String trace, boolean logToFile) {
+        String err = String.format("--------- System Error message: {%s} ---------\n" + "%s" + "\n" + "--------- END TRACE ---------",
+                message, trace != null ? trace : "");
+        System.out.println(err);
+        if (logToFile) {
+            //todo implement logging to file
+        }
+    }
+
+    /**
+     * This method is used to show an error message to the user.
+     *
+     * @param message The error message to be displayed.
+     * @param trace   The stack trace of the error.
+     */
+    public static void showError(String message, String trace) {
+        showError(message, trace, true);
+    }
 }

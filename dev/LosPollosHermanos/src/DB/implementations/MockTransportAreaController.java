@@ -52,7 +52,7 @@ public class MockTransportAreaController implements ITransportAreaController {
 
     @Override
     public boolean updateTransportArea(TransportArea transportArea, int id) {
-        if(transportArea == null || id <= 0) {
+        if (transportArea == null || id <= 0) {
             return false;
         }
         for (int i = 0; i < transportAreas.size(); i++) {
@@ -73,6 +73,19 @@ public class MockTransportAreaController implements ITransportAreaController {
             }
         }
         return false; // Not found
+    }
+
+    @Override
+    public TransportArea getTransportAreaByAreaName(String areaName) {
+        if (areaName == null || areaName.isEmpty()) {
+            return null; // Invalid area name
+        }
+        for (TransportArea area : transportAreas) {
+            if (area.getAreaName().equalsIgnoreCase(areaName)) {
+                return area; // Found the transport area
+            }
+        }
+        return null; // Not found
     }
 
     @Override

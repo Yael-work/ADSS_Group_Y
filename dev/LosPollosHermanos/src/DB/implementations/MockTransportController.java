@@ -10,10 +10,12 @@ public class MockTransportController implements ITransportController {
     private static MockTransportController instance = null;
     private final ArrayList<Transport> transports;
     private int currentId = 1;
+
     private MockTransportController() {
         // Private constructor to prevent instantiation
         transports = new ArrayList<>();
     }
+
     /**
      * Returns the singleton instance of MockTransportController.
      *
@@ -25,6 +27,7 @@ public class MockTransportController implements ITransportController {
         }
         return instance;
     }
+
     @Override
     public boolean addTransport(Transport transport) {
         if (transport == null) {
@@ -34,6 +37,7 @@ public class MockTransportController implements ITransportController {
         transports.add(transport);
         return true;
     }
+
     @Override
     public boolean updateTransport(Transport transport, int id) {
         if (transport == null || id <= 0) {
@@ -47,6 +51,7 @@ public class MockTransportController implements ITransportController {
         }
         return false;
     }
+
     @Override
     public boolean deleteTransport(int id) {
         if (id <= 0) {
@@ -60,6 +65,7 @@ public class MockTransportController implements ITransportController {
         }
         return false;
     }
+
     @Override
     public Transport getTransportById(int id) {
         if (id <= 0) {
@@ -71,6 +77,34 @@ public class MockTransportController implements ITransportController {
             }
         }
         return null;
+    }
+
+    @Override
+    public ArrayList<Transport> getTransportsByTruckId(int id) {
+        if (id <= 0) {
+            return null;
+        }
+        ArrayList<Transport> result = new ArrayList<>();
+        for (Transport transport : transports) {
+            if (transport.getTruckId() == id) {
+                result.add(transport);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public ArrayList<Transport> getTransportsByDriverId(int id) {
+        if (id <= 0) {
+            return null;
+        }
+        ArrayList<Transport> result = new ArrayList<>();
+        for (Transport transport : transports) {
+            if (transport.getDriverId() == id) {
+                result.add(transport);
+            }
+        }
+        return result;
     }
 
     @Override

@@ -34,4 +34,29 @@ public interface IDriverController extends IController<Driver> {
      * @return The driver with the specified ID, or null if not found.
      */
     Driver getDriverById(int id);
+
+    /**
+     * Retrieves a driver from the database by its full name.
+     *
+     * @param firstName The first name of the driver to be retrieved.
+     * @param lastName  The last name of the driver to be retrieved.
+     * @return The driver with the specified full name, or null if not found.
+     */
+    Driver getDriverByFullName(String firstName, String lastName);
+
+    /**
+     * Retrieves a driver from the database by its personal ID.
+     *
+     * @param personalId The personal ID of the driver to be retrieved.
+     * @return The driver with the specified personal ID, or null if not found.
+     */
+    Driver getDriveByPersonalId(String personalId);
+
+    /**
+     * Retrieves a driver from the database by its phone number.
+     *
+     * @param phoneNumber The phone number of the driver to be retrieved.
+     * @return The driver with the specified phone number, or null if not found.
+     */
+    Driver getDriverByPhoneNumber(String phoneNumber);
 }

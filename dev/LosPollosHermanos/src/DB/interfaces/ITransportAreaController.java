@@ -34,4 +34,12 @@ public interface ITransportAreaController extends IController<TransportArea> {
      * @return True if the transport area was deleted successfully, false otherwise.
      */
     boolean deleteTransportArea(int id);
+
+    /**
+     * Retrieves a transport area from the database by its name.
+     *
+     * @param areaName The name of the transport area to retrieve.
+     * @return The transport area with the specified name, or null if not found.
+     */
+    TransportArea getTransportAreaByAreaName(String areaName);
 }

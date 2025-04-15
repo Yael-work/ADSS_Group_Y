@@ -34,4 +34,12 @@ public interface ISupplierController extends IController<Supplier>{
      * @return The supplier with the specified ID, or null if not found.
      */
     Supplier getSupplierById(int id);
+
+    /**
+     * Retrieves a supplier from the database by name.
+     *
+     * @param name The name of the supplier to retrieve.
+     * @return The supplier with the specified name, or null if not found.
+     */
+    Supplier getSupplierByName(String name);
 }
