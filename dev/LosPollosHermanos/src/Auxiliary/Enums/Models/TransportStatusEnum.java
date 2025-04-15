@@ -1,4 +1,4 @@
-package Auxiliary.Enums;
+package Auxiliary.Enums.Models;
 
 /**
  * TransportStatusEnum is an enumeration that represents the status of a transport operation.

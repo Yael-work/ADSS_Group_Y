@@ -1,4 +1,4 @@
-package Auxiliary.Enums;
+package Auxiliary.Enums.Models;
 
 /**
  * Enum representing different types of sites.

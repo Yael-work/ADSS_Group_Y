@@ -2,7 +2,7 @@ package Models.DBModels.transport;
 
 
 import Models.DBModels.BaseModel;
-import Auxiliary.Enums.SiteTypeEnum;
+import Auxiliary.Enums.Models.SiteTypeEnum;
 
 public class Site extends BaseModel {
     private SiteTypeEnum siteType;
