@@ -1,15 +1,19 @@
 package DB;
 
+import DB.implementations.MockDeliveryFileController;
 import DB.implementations.MockSiteController;
+import DB.interfaces.IDeliveryFileController;
 import DB.interfaces.ISiteController;
 
 public class DBManager {
     static DBManager instance = null;
     private final ISiteController siteController;
+    private final IDeliveryFileController deliveryFileController;
 
     private DBManager() {
         // Private constructor to prevent instantiation
         this.siteController = MockSiteController.getInstance();
+        this.deliveryFileController = MockDeliveryFileController.getInstance();
     }
 
     /**
@@ -31,5 +35,14 @@ public class DBManager {
      */
     public final ISiteController getSiteController() {
         return siteController;
+    }
+
+    /**
+     * Returns the delivery file controller.
+     *
+     * @return The delivery file controller.
+     */
+    public final IDeliveryFileController getDeliveryFileController() {
+        return deliveryFileController;
     }
 }
