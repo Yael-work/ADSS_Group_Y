@@ -1,6 +1,6 @@
 package DB;
 
-import DB.implementations.MockSiteManager;
+import DB.implementations.MockSiteController;
 import DB.interfaces.ISiteController;
 
 public class DBManager {
@@ -9,7 +9,7 @@ public class DBManager {
 
     private DBManager() {
         // Private constructor to prevent instantiation
-        this.siteController = MockSiteManager.getInstance();
+        this.siteController = MockSiteController.getInstance();
     }
 
     /**

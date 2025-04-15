@@ -5,12 +5,12 @@ import Models.DBModels.Site;
 
 import java.util.ArrayList;
 
-public class MockSiteManager implements ISiteController {
+public class MockSiteController implements ISiteController {
     private final ArrayList<Site> sites;
     private int currentId = 1;
-    private static MockSiteManager instance = null;
+    private static MockSiteController instance = null;
 
-    private MockSiteManager() {
+    private MockSiteController() {
         // Private constructor to prevent instantiation
         sites = new ArrayList<>();
     }
@@ -20,9 +20,9 @@ public class MockSiteManager implements ISiteController {
      *
      * @return The singleton instance of MockSiteManager.
      */
-    public static MockSiteManager getInstance() {
+    public static MockSiteController getInstance() {
         if (instance == null) {
-            instance = new MockSiteManager();
+            instance = new MockSiteController();
         }
         return instance;
     }
