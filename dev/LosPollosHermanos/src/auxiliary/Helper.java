@@ -30,4 +30,13 @@ public class Helper {
             return null;
         }
     }
+
+    public static double getUserInputDouble() {
+        try {
+            return new java.util.Scanner(System.in).nextDouble();
+        } catch (java.util.InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a number.");
+            return -1;
+        }
+    }
 }
