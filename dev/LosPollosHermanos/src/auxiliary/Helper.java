@@ -56,4 +56,13 @@ public class Helper {
     public static void showError(String message, String trace) {
         showError(message, trace, true);
     }
+
+    public static double getUserInputDouble() {
+        try {
+            return new java.util.Scanner(System.in).nextDouble();
+        } catch (java.util.InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a number.");
+            return -1;
+        }
+    }
 }
