@@ -1,6 +1,7 @@
 package Models.DBModels.transport;
 
 import Models.DBModels.BaseModel;
+import Auxiliary.Enums.TransportStatusEnum;
 
 import java.util.Date;
 import java.util.List;

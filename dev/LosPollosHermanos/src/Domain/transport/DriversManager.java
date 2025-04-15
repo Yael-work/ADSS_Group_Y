@@ -3,7 +3,7 @@ package Domain.transport;
 import DB.DBManager;
 import DB.interfaces.IDriverController;
 import Models.DBModels.transport.Driver;
-import auxiliary.Helper;
+import Auxiliary.Helper;
 
 public class DriversManager {
     private static final IDriverController driverController = DBManager.getInstance().getDriverController();

@@ -1,7 +1,8 @@
-package auxiliary;
+package Auxiliary;
 
 public class Helper {
     public final static int UndefinedUserInput = -1;
+    public final static int UndefinedId = -1;
 
     /**
      * This method is used to get user input from the console.
