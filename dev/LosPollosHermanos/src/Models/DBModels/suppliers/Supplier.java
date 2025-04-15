@@ -1,7 +1,9 @@
-package Models.DBModels;
+package Models.DBModels.suppliers;
+
+import Models.DBModels.transport.APhysicalSite;
 
 //@mohamed TODO complete the class
-public class Supplier extends BaseModel {
+public class Supplier extends APhysicalSite {
     private String supplierName;
 
     public Supplier(int id, String supplierName) {
@@ -9,11 +11,13 @@ public class Supplier extends BaseModel {
         this.supplierName = supplierName;
     }
 
-    public String getSupplierName() {
+    @Override
+    public String getSiteName() {
         return supplierName;
     }
 
-    public void setSupplierName(String supplierName) {
+    @Override
+    public void setSiteName(String supplierName) {
         this.supplierName = supplierName;
     }
 

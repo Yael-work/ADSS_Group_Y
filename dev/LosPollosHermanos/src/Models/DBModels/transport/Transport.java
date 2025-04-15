@@ -1,4 +1,6 @@
-package Models.DBModels;
+package Models.DBModels.transport;
+
+import Models.DBModels.BaseModel;
 
 import java.util.Date;
 import java.util.List;

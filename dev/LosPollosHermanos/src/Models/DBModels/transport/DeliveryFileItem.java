@@ -1,4 +1,6 @@
-package Models.DBModels;
+package Models.DBModels.transport;
+
+import Models.DBModels.BaseModel;
 
 public class DeliveryFileItem extends BaseModel {
     private int itemId; // FK

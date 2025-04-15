@@ -1,4 +1,6 @@
-package Models.DBModels;
+package Models.DBModels.transport;
+
+import Models.DBModels.BaseModel;
 
 public class TransportIssueLog extends BaseModel {
     private int currentTruckId;
