@@ -12,6 +12,7 @@ public class DBManager {
     private final ITransportAreaController transportAreaController;
     private final IDriverController driverController;
     private final ISupplierController supplierController;
+    private final ITransportController transportController;
 
     private DBManager() {
         this.siteController = MockSiteController.getInstance();
@@ -21,6 +22,7 @@ public class DBManager {
         this.transportAreaController = MockTransportAreaController.getInstance();
         this.driverController = MockDriverController.getInstance();
         this.supplierController = MockSupplierController.getInstance();
+        this.transportController = MockTransportController.getInstance();
     }
 
     /**
@@ -96,5 +98,14 @@ public class DBManager {
      */
     public final ISupplierController getSupplierController() {
         return supplierController;
+    }
+
+    /**
+     * Returns the transport controller.
+     *
+     * @return The transport controller.
+     */
+    public final ITransportController getTransportController() {
+        return transportController;
     }
 }

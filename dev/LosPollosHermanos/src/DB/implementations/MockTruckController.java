@@ -25,7 +25,7 @@ public class MockTruckController implements ITruckController {
         return instance;
     }
     @Override
-    public boolean addTruck(Models.DBModels.Truck truck) {
+    public boolean addTruck(Truck truck) {
         if (truck == null) {
             return false;
         }
@@ -34,7 +34,7 @@ public class MockTruckController implements ITruckController {
         return true;
     }
     @Override
-    public boolean updateTruck(Models.DBModels.Truck truck, int id) {
+    public boolean updateTruck(Truck truck, int id) {
         if (truck == null || id <= 0) {
             return false;
         }
@@ -60,7 +60,7 @@ public class MockTruckController implements ITruckController {
         return false;
     }
     @Override
-    public Models.DBModels.Truck getTruckById(int id) {
+    public Truck getTruckById(int id) {
         if (id <= 0) {
             return null;
         }
