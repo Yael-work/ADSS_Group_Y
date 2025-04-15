@@ -7,9 +7,23 @@ import Auxiliary.Helper;
 
 import java.util.ArrayList;
 
+/**
+ * The DriversManager class is responsible for managing driver-related operations.
+ * It provides methods to add, update, delete, and retrieve drivers from the database.
+ */
 public class DriversManager {
     private static final IDriverController driverController = DBManager.getInstance().getDriverController();
 
+    /**
+     * Adds a new driver to the system.
+     *
+     * @param firstName   - the first name of the driver
+     * @param lastName    - the last name of the driver
+     * @param personalId  - the personal ID of the driver
+     * @param phoneNumber - the phone number of the driver
+     * @param licenseType - the license type of the driver
+     * @return true if the driver was added successfully, false otherwise
+     */
     public static boolean addDriver(String firstName, String lastName, String personalId, String phoneNumber, String licenseType) {
         Driver d = driverController.getDriveByPersonalId(personalId);
         if (d != null) {
@@ -30,7 +44,15 @@ public class DriversManager {
         return driverController.addDriver(d);
     }
 
-    public static boolean updateDriver(String some , int id, int value) {
+    /**
+     * Updates a driver's information based on user input.
+     *
+     * @param some  - a string that is not used in the method
+     * @param id    - the ID of the driver to be updated
+     * @param value - the field to be updated (1: first name, 2: last name, 3: personal ID, 4: phone number, 5: license type)
+     * @return true if the update was successful, false otherwise
+     */
+    public static boolean updateDriver(String some, int id, int value) {
         Driver d = driverController.getDriverById(id);
         if (d == null) {
             Helper.showError("Driver with this ID does not exist", null);
@@ -59,6 +81,12 @@ public class DriversManager {
         return driverController.updateDriver(d, id);
     }
 
+    /**
+     * Deletes a driver from the system.
+     *
+     * @param id - the ID of the driver to be deleted
+     * @return true if the driver was deleted successfully, false otherwise
+     */
     public static boolean deleteDriver(int id) {
         Driver d = driverController.getDriverById(id);
         if (d == null) {
@@ -68,6 +96,12 @@ public class DriversManager {
         return driverController.deleteDriver(id);
     }
 
+    /**
+     * Retrieves a driver by their ID.
+     *
+     * @param id - the ID of the driver to be retrieved
+     * @return - the Driver object with the specified ID, or null if not found
+     */
     public static Driver getDriverById(int id) {
         Driver d = driverController.getDriverById(id);
         if (d == null) {
@@ -77,6 +111,11 @@ public class DriversManager {
         return d;
     }
 
+    /**
+     * Retrieves all drivers from the system.
+     *
+     * @return - an ArrayList of Driver objects representing all drivers in the system
+     */
     public static ArrayList<Driver> getAllDrivers() {
         ArrayList<Driver> drivers = driverController.getAllRecords();
         if (drivers == null || drivers.isEmpty()) {

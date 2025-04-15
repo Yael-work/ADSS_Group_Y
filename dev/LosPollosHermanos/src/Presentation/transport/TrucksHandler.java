@@ -8,6 +8,10 @@ import Models.DBModels.transport.Truck;
 
 import java.util.ArrayList;
 
+/**
+ * TrucksHandler class is responsible for handling truck-related operations.
+ * It provides methods to add, update, delete, and print truck information.
+ */
 public class TrucksHandler {
     public static boolean addTruck() {
         String plate;
@@ -49,6 +53,11 @@ public class TrucksHandler {
         return true;
     }
 
+    /**
+     * Updates a truck's information based on user input.
+     *
+     * @return true if the update was successful, false otherwise
+     */
     public static boolean updateTruck() {
         String someString;
         int id = Helper.UndefinedUserInput;
@@ -108,6 +117,11 @@ public class TrucksHandler {
         return true;
     }
 
+    /**
+     * Deletes a truck based on user input.
+     *
+     * @return true if the deletion was successful, false otherwise
+     */
     public static boolean deleteTruck() {
         int id = Helper.UndefinedUserInput;
         do {
@@ -122,6 +136,9 @@ public class TrucksHandler {
         return true;
     }
 
+    /**
+     * Prints the details of a truck based on user input.
+     */
     public static void printTruckById() {
         int id = Helper.UndefinedUserInput;
         do {
@@ -136,6 +153,9 @@ public class TrucksHandler {
         Helper.println(t.toString());
     }
 
+    /**
+     * Prints the details of all trucks.
+     */
     public static void printAllTrucks() {
         ArrayList<Truck> trucks = TrucksManager.getAllTrucks();
         if (trucks == null || trucks.isEmpty()) {
@@ -147,6 +167,9 @@ public class TrucksHandler {
         }
     }
 
+    /**
+     * Handles the truck management menu and user interactions.
+     */
     public static void HandleTrucks(){
         int choice;
         boolean exit = false;
@@ -182,6 +205,6 @@ public class TrucksHandler {
                     Helper.showError("Invalid choice, please try again.");
                     break;
             }
-        };
+        }
     }
 }
