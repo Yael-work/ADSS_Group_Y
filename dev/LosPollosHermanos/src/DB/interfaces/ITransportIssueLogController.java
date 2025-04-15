@@ -1,6 +1,6 @@
 package DB.interfaces;
 
-import Models.DBModels.TransportIssueLog;
+import Models.DBModels.transport.TransportIssueLog;
 
 public interface ITransportIssueLogController {
     /**

@@ -4,7 +4,7 @@ import DB.interfaces.ITransportController;
 
 import java.util.ArrayList;
 
-import Models.DBModels.Transport;
+import Models.DBModels.transport.Transport;
 
 public class MockTransportController implements ITransportController {
     private static MockTransportController instance = null;

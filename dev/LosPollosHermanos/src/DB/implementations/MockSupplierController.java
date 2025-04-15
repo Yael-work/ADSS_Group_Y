@@ -1,7 +1,7 @@
 package DB.implementations;
 
 import DB.interfaces.ISupplierController;
-import Models.DBModels.Supplier;
+import Models.DBModels.suppliers.Supplier;
 
 import java.util.ArrayList;
 

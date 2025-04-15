@@ -1,6 +1,6 @@
 package DB.interfaces;
 
-import Models.DBModels.Branch;
+import Models.DBModels.transport.Branch;
 
 public interface IBranchController {
     /**

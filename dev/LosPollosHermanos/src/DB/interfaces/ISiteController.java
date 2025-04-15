@@ -1,6 +1,6 @@
 package DB.interfaces;
 
-import Models.DBModels.Site;
+import Models.DBModels.transport.Site;
 
 public interface ISiteController {
     /**

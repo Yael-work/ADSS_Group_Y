@@ -1,7 +1,7 @@
 package DB.implementations;
 
 import DB.interfaces.IDriverController;
-import Models.DBModels.Driver;
+import Models.DBModels.transport.Driver;
 
 import java.util.ArrayList;
 

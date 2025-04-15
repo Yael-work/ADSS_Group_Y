@@ -1,4 +1,6 @@
-package Models.DBModels;
+package Models.DBModels.transport;
+
+import Models.DBModels.BaseModel;
 
 public class Truck extends BaseModel {
     private String plate;

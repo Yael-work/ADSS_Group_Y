@@ -1,6 +1,6 @@
 package DB.interfaces;
 
-import Models.DBModels.Supplier;
+import Models.DBModels.suppliers.Supplier;
 
 public interface ISupplierController {
     /**

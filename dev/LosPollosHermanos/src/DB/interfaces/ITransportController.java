@@ -1,5 +1,5 @@
 package DB.interfaces;
-import Models.DBModels.Transport;
+import Models.DBModels.transport.Transport;
 
 public interface ITransportController {
     /**

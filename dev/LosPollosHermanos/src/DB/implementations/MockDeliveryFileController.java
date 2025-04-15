@@ -1,7 +1,7 @@
 package DB.implementations;
 
 import DB.interfaces.IDeliveryFileController;
-import Models.DBModels.DeliveryFile;
+import Models.DBModels.transport.DeliveryFile;
 
 import java.util.ArrayList;
 

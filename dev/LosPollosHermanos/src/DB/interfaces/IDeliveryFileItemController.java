@@ -1,6 +1,6 @@
 package DB.interfaces;
 
-import Models.DBModels.DeliveryFileItem;
+import Models.DBModels.transport.DeliveryFileItem;
 
 public interface IDeliveryFileItemController {
     /**

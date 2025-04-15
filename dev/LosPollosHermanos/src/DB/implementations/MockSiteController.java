@@ -1,7 +1,7 @@
 package DB.implementations;
 
 import DB.interfaces.ISiteController;
-import Models.DBModels.Site;
+import Models.DBModels.transport.Site;
 
 import java.util.ArrayList;
 

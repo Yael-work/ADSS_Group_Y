@@ -1,7 +1,7 @@
 package DB.implementations;
 
 import DB.interfaces.ITransportAreaController;
-import Models.DBModels.TransportArea;
+import Models.DBModels.transport.TransportArea;
 
 import java.util.ArrayList;
 

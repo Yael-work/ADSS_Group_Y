@@ -1,6 +1,6 @@
 package DB.interfaces;
 
-import Models.DBModels.TransportArea;
+import Models.DBModels.transport.TransportArea;
 
 public interface ITransportAreaController {
     /**

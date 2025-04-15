@@ -1,7 +1,7 @@
 package DB.implementations;
 
 import DB.interfaces.ITruckController;
-import Models.DBModels.Truck;
+import Models.DBModels.transport.Truck;
 
 import java.util.ArrayList;
 

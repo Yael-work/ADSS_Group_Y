@@ -1,4 +1,6 @@
-package Models.DBModels;
+package Models.DBModels.transport;
+
+import Models.DBModels.BaseModel;
 
 public class APhysicalSite extends BaseModel {
     public APhysicalSite(int id, String name) {

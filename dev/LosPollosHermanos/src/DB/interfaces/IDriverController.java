@@ -1,5 +1,5 @@
 package DB.interfaces;
-import Models.DBModels.Driver;
+import Models.DBModels.transport.Driver;
 
 public interface IDriverController   {
     /**

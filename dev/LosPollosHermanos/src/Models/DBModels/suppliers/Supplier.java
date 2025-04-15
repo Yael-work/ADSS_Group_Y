@@ -1,4 +1,6 @@
-package Models.DBModels;
+package Models.DBModels.suppliers;
+
+import Models.DBModels.transport.APhysicalSite;
 
 //@mohamed TODO complete the class
 public class Supplier extends APhysicalSite {

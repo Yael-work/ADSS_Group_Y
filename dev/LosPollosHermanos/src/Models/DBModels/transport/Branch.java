@@ -1,4 +1,4 @@
-package Models.DBModels;
+package Models.DBModels.transport;
 
 public class Branch extends APhysicalSite {
     private String branchName;

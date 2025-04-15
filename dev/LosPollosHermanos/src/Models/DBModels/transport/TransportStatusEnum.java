@@ -1,4 +1,4 @@
-package Models.DBModels;
+package Models.DBModels.transport;
 
 /**
  * TransportStatusEnum is an enumeration that represents the status of a transport operation.
