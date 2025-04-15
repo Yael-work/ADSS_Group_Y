@@ -1,8 +1,10 @@
 package DB;
 
 import DB.implementations.MockDeliveryFileController;
+import DB.implementations.MockDeliveryFileItemController;
 import DB.implementations.MockSiteController;
 import DB.interfaces.IDeliveryFileController;
+import DB.interfaces.IDeliveryFileItemController;
 import DB.interfaces.ISiteController;
 import DB.interfaces.ITruckController;
 import DB.implementations.MockTruckController;
@@ -12,12 +14,14 @@ public class DBManager {
     private final ISiteController siteController;
     private final IDeliveryFileController deliveryFileController;
     private final ITruckController truckController;
+    private final IDeliveryFileItemController deliveryFileItemController;
 
     private DBManager() {
         // Private constructor to prevent instantiation
         this.siteController = MockSiteController.getInstance();
         this.deliveryFileController = MockDeliveryFileController.getInstance();
         this.truckController = MockTruckController.getInstance();
+        this.deliveryFileItemController = MockDeliveryFileItemController.getInstance();
     }
 
     /**
@@ -49,6 +53,7 @@ public class DBManager {
     public final IDeliveryFileController getDeliveryFileController() {
         return deliveryFileController;
     }
+
     /**
      * Returns the truck controller.
      *
@@ -56,5 +61,14 @@ public class DBManager {
      */
     public final ITruckController getTruckController() {
         return truckController;
+    }
+
+    /**
+     * Returns the delivery file item controller.
+     *
+     * @return The delivery file item controller.
+     */
+    public final IDeliveryFileItemController getDeliveryFileItemController() {
+        return deliveryFileItemController;
     }
 }
