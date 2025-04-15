@@ -84,7 +84,7 @@ public class MockBranchController implements IBranchController {
             return null;
         }
         for (Branch branch : branches) {
-            if (branch.getName().equalsIgnoreCase(name)) {
+            if (branch.getSiteName().equalsIgnoreCase(name)) {
                 return branch;
             }
         }

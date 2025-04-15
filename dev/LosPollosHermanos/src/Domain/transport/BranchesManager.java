@@ -110,4 +110,19 @@ public class BranchesManager {
         b.setPhone(phone);
         return branchController.updateBranch(b);
     }
+
+    /**
+     * Deletes a branch from the system.
+     *
+     * @param id - the ID of the branch to be deleted
+     * @return - true if the branch was deleted successfully, false otherwise
+     */
+    public static boolean deleteBranch(int id) {
+        Branch b = branchController.getBranchById(id);
+        if (b == null) {
+            Helper.showError("Branch with this ID does not exist", null);
+            return false;
+        }
+        return branchController.deleteBranch(id);
+    }
 }
