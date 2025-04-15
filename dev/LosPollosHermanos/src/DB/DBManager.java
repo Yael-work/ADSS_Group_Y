@@ -14,6 +14,7 @@ public class DBManager {
     private final ISupplierController supplierController;
     private final ITransportController transportController;
     private final IBranchController branchController;
+    private final ITransportIssueLogController transportIssueLogController;
 
     private DBManager() {
         this.siteController = MockSiteController.getInstance();
@@ -25,6 +26,7 @@ public class DBManager {
         this.supplierController = MockSupplierController.getInstance();
         this.transportController = MockTransportController.getInstance();
         this.branchController = MockBranchController.getInstance();
+        this.transportIssueLogController = MockTransportIssueLogController.getInstance();
     }
 
     /**
@@ -118,6 +120,15 @@ public class DBManager {
      */
     public final IBranchController getBranchController() {
         return branchController;
+    }
+
+    /**
+     * Returns the transport issue log controller.
+     *
+     * @return The transport issue log controller.
+     */
+    public final ITransportIssueLogController getTransportIssueLogController() {
+        return transportIssueLogController;
     }
 
 }
