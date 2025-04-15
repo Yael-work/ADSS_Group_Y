@@ -10,21 +10,21 @@ public class BranchesHandler {
         String address = null;
         String phone = null;
         try {
-            System.out.println("Branch creation:");
+            Helper.println("Branch creation:");
             do {
-                System.out.print("Enter Branch name: ");
+                Helper.print("Enter Branch name: ");
                 name = Helper.getUserInputString();
             } while (name == null || name.isEmpty());
             do {
-                System.out.print("Enter Branch address: ");
+                Helper.print("Enter Branch address: ");
                 address = Helper.getUserInputString();
             } while (address == null || address.isEmpty());
             do {
-                System.out.print("Enter Branch phone: ");
+                Helper.print("Enter Branch phone: ");
                 phone = Helper.getUserInputString();
             } while (phone == null || phone.isEmpty());
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            Helper.println("Error: " + e.getMessage());
             return false;
         }
         return BranchesManager.addBranch(name, address, phone);
@@ -35,16 +35,16 @@ public class BranchesHandler {
         boolean exit = false;
         while (!exit) {
             int choice;
-            System.out.println("Manage Branches:");
-            System.out.println("1. Add Branch");
-            System.out.println("2. Update Branch");
-            System.out.println("3. Delete Branch");
-            System.out.println("4. View Branch by ID");
-            System.out.println("5. View Existing Branches IDs");
-            System.out.println("6. Back to Main Menu");
+            Helper.println("Manage Branches:");
+            Helper.println("1. Add Branch");
+            Helper.println("2. Update Branch");
+            Helper.println("3. Delete Branch");
+            Helper.println("4. View Branch by ID");
+            Helper.println("5. View Existing Branches IDs");
+            Helper.println("6. Back to Main Menu");
 
             do {
-                System.out.print("Please choose an option: ");
+                Helper.print("Please choose an option: ");
                 choice = Helper.getUserInputInteger();
             } while (choice == Helper.UndefinedUserInput);
 
@@ -68,7 +68,7 @@ public class BranchesHandler {
                     exit = true;
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    Helper.println("Invalid choice. Please try again.");
             }
         }
     }
