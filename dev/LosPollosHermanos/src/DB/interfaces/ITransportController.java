@@ -1,7 +1,7 @@
 package DB.interfaces;
 import Models.DBModels.transport.Transport;
 
-public interface ITransportController {
+public interface ITransportController extends IController<Transport>{
     /**
      * Adds new transport to the database.
      *

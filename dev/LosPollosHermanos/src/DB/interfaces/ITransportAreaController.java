@@ -2,7 +2,7 @@ package DB.interfaces;
 
 import Models.DBModels.transport.TransportArea;
 
-public interface ITransportAreaController {
+public interface ITransportAreaController extends IController<TransportArea> {
     /**
      * Adds a transport area to the database.
      *

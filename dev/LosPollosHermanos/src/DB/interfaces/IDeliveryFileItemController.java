@@ -2,7 +2,7 @@ package DB.interfaces;
 
 import Models.DBModels.transport.DeliveryFileItem;
 
-public interface IDeliveryFileItemController {
+public interface IDeliveryFileItemController extends IController<DeliveryFileItem> {
     /**
      * Adds a new delivery file item to the database.
      *

@@ -2,7 +2,7 @@ package DB.interfaces;
 
 import Models.DBModels.transport.Truck;
 
-public interface ITruckController {
+public interface ITruckController extends IController<Truck> {
     /**
      * Adds a new truck to the database.
      *
@@ -34,4 +34,6 @@ public interface ITruckController {
      * @return The truck with the specified ID, or null if not found.
      */
     Truck getTruckById(int id);
+
+
 }

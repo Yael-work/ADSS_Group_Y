@@ -74,4 +74,9 @@ public class MockTransportIssueLogController implements ITransportIssueLogContro
         }
         return null;
     }
+
+    @Override
+    public final ArrayList<TransportIssueLog> getAllRecords() {
+        return transportIssueLogs;
+    }
 }

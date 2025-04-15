@@ -2,7 +2,7 @@ package DB.interfaces;
 
 import Models.DBModels.suppliers.Supplier;
 
-public interface ISupplierController {
+public interface ISupplierController extends IController<Supplier>{
     /**
      * Adds a supplier to the database.
      *

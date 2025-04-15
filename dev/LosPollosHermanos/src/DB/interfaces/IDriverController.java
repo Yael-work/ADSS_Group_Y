@@ -1,7 +1,8 @@
 package DB.interfaces;
+
 import Models.DBModels.transport.Driver;
 
-public interface IDriverController   {
+public interface IDriverController extends IController<Driver> {
     /**
      * Adds a new driver to the database.
      *

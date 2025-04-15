@@ -74,4 +74,9 @@ public class MockTransportAreaController implements ITransportAreaController {
         }
         return false; // Not found
     }
+
+    @Override
+    public final ArrayList<TransportArea> getAllRecords() {
+        return transportAreas; // Return all transport areas
+    }
 }

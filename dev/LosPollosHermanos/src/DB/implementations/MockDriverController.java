@@ -77,4 +77,9 @@ public class MockDriverController implements IDriverController {
         }
         return null;
     }
+
+    @Override
+    public final ArrayList<Driver> getAllRecords() {
+        return drivers;
+    }
 }

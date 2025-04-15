@@ -66,4 +66,9 @@ public class MockDeliveryFileController implements IDeliveryFileController {
         }
         return null;
     }
+
+    @Override
+    public ArrayList<DeliveryFile> getAllRecords() {
+        return sites;
+    }
 }

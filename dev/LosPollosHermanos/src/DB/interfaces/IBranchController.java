@@ -2,7 +2,7 @@ package DB.interfaces;
 
 import Models.DBModels.transport.Branch;
 
-public interface IBranchController {
+public interface IBranchController extends IController<Branch> {
     /**
      * Adds a new branch to the database.
      *

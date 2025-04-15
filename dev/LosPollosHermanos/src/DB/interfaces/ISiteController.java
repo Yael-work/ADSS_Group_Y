@@ -2,7 +2,7 @@ package DB.interfaces;
 
 import Models.DBModels.transport.Site;
 
-public interface ISiteController {
+public interface ISiteController extends IController<Site> {
     /**
      * Adds a new site to the database.
      *

@@ -77,4 +77,9 @@ public class MockSupplierController implements ISupplierController {
         }
         return null;
     }
+
+    @Override
+    public final ArrayList<Supplier> getAllRecords() {
+        return suppliers;
+    }
 }

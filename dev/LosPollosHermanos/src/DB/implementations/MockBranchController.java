@@ -9,10 +9,12 @@ public class MockBranchController implements IBranchController {
     private static MockBranchController instance = null;
     private final ArrayList<Branch> branches;
     private int currentId = 1;
+
     private MockBranchController() {
         // Private constructor to prevent instantiation
         branches = new ArrayList<>();
     }
+
     /**
      * Returns the singleton instance of MockBranchController.
      *
@@ -24,6 +26,7 @@ public class MockBranchController implements IBranchController {
         }
         return instance;
     }
+
     @Override
     public boolean addBranch(Branch branch) {
         if (branch == null) {
@@ -33,6 +36,7 @@ public class MockBranchController implements IBranchController {
         branches.add(branch);
         return true;
     }
+
     @Override
     public boolean updateBranch(Branch branch) {
         if (branch == null || branch.getId() <= 0) {
@@ -46,6 +50,7 @@ public class MockBranchController implements IBranchController {
         }
         return false;
     }
+
     @Override
     public boolean deleteBranch(int id) {
         if (id <= 0) {
@@ -59,6 +64,7 @@ public class MockBranchController implements IBranchController {
         }
         return false;
     }
+
     @Override
     public Branch getBranchById(int id) {
         if (id <= 0) {
@@ -70,5 +76,10 @@ public class MockBranchController implements IBranchController {
             }
         }
         return null;
+    }
+
+    @Override
+    public final ArrayList<Branch> getAllRecords() {
+        return branches;
     }
 }

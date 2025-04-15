@@ -9,10 +9,12 @@ public class MockTruckController implements ITruckController {
     private static MockTruckController instance = null;
     private final ArrayList<Truck> trucks;
     private int currentId = 1;
+
     private MockTruckController() {
         // Private constructor to prevent instantiation
         trucks = new ArrayList<>();
     }
+
     /**
      * Returns the singleton instance of MockTruckController.
      *
@@ -24,6 +26,7 @@ public class MockTruckController implements ITruckController {
         }
         return instance;
     }
+
     @Override
     public boolean addTruck(Truck truck) {
         if (truck == null) {
@@ -33,6 +36,7 @@ public class MockTruckController implements ITruckController {
         trucks.add(truck);
         return true;
     }
+
     @Override
     public boolean updateTruck(Truck truck, int id) {
         if (truck == null || id <= 0) {
@@ -46,6 +50,7 @@ public class MockTruckController implements ITruckController {
         }
         return false;
     }
+
     @Override
     public boolean deleteTruck(int id) {
         if (id <= 0) {
@@ -59,6 +64,7 @@ public class MockTruckController implements ITruckController {
         }
         return false;
     }
+
     @Override
     public Truck getTruckById(int id) {
         if (id <= 0) {
@@ -70,5 +76,10 @@ public class MockTruckController implements ITruckController {
             }
         }
         return null;
+    }
+
+    @Override
+    public final ArrayList<Truck> getAllRecords() {
+        return trucks;
     }
 }

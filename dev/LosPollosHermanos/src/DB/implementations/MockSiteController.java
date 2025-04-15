@@ -77,4 +77,9 @@ public class MockSiteController implements ISiteController {
         }
         return null;
     }
+
+    @Override
+    public final ArrayList<Site> getAllRecords() {
+        return sites;
+    }
 }
