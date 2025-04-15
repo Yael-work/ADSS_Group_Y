@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class MockTruckController implements ITruckController {
     private static MockTruckController instance = null;
-    private ArrayList<Truck> trucks;
+    private final ArrayList<Truck> trucks;
     private int currentId = 1;
     private MockTruckController() {
         // Private constructor to prevent instantiation

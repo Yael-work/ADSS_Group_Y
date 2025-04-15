@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class MockDriverController implements IDriverController {
     private static MockDriverController instance = null;
-    private ArrayList<Driver> drivers;
+    private final ArrayList<Driver> drivers;
     private int currentId = 1;
 
     private MockDriverController() {

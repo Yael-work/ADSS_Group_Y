@@ -8,7 +8,7 @@ import Models.DBModels.Transport;
 
 public class MockTransportController implements ITransportController {
     private static MockTransportController instance = null;
-    private ArrayList<Transport> transports;
+    private final ArrayList<Transport> transports;
     private int currentId = 1;
     private MockTransportController() {
         // Private constructor to prevent instantiation
