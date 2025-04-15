@@ -1,4 +1,4 @@
-package Models.DBModels.transport;
+package Auxiliary.Enums;
 
 /**
  * Enum representing different types of sites.
