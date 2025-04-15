@@ -8,6 +8,8 @@ import DB.interfaces.IDeliveryFileItemController;
 import DB.interfaces.ISiteController;
 import DB.interfaces.ITruckController;
 import DB.implementations.MockTruckController;
+import DB.interfaces.IDriverController;
+import DB.implementations.MockDriverController;
 
 public class DBManager {
     static DBManager instance = null;
@@ -15,6 +17,7 @@ public class DBManager {
     private final IDeliveryFileController deliveryFileController;
     private final ITruckController truckController;
     private final IDeliveryFileItemController deliveryFileItemController;
+    private final IDriverController driverController;
 
     private DBManager() {
         // Private constructor to prevent instantiation
@@ -22,6 +25,7 @@ public class DBManager {
         this.deliveryFileController = MockDeliveryFileController.getInstance();
         this.truckController = MockTruckController.getInstance();
         this.deliveryFileItemController = MockDeliveryFileItemController.getInstance();
+        this.driverController = MockDriverController.getInstance();
     }
 
     /**
@@ -70,5 +74,14 @@ public class DBManager {
      */
     public final IDeliveryFileItemController getDeliveryFileItemController() {
         return deliveryFileItemController;
+    }
+
+    /**
+     * Returns the driver controller.
+     *
+     * @return The driver controller.
+     */
+    public final IDriverController getDriverController() {
+        return driverController;
     }
 }
