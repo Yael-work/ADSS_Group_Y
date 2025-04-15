@@ -4,7 +4,6 @@ import Auxiliary.Helper;
 
 public class TransportPresentation {
 
-
     private static void printInstructions() {
         Helper.println("Welcome to the Transport Management System!");
         Helper.println("Please choose an option:");
@@ -49,6 +48,10 @@ public class TransportPresentation {
         return true;
     }
 
+    /**
+     * Main method to handle the transport presentation layer.
+     * This method runs in a loop until the user chooses to exit.
+     */
     public static void TransportPresentationHandler() {
         boolean exit = false;
         while (!exit) {
