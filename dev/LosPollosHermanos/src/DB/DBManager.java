@@ -3,6 +3,12 @@ package DB;
 import DB.implementations.*;
 import DB.interfaces.*;
 
+/**
+ * DBManager is a singleton class that manages the database controllers for various entities.
+ * It provides access to the controllers for site, delivery file, truck, delivery file item,
+ * transport area, driver, supplier, transport, branch, and transport issue log.
+ *
+ */
 public class DBManager {
     static DBManager instance = null;
     private final ISiteController siteController;
