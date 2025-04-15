@@ -1,13 +1,7 @@
 package DB;
 
-import DB.implementations.MockDeliveryFileController;
-import DB.implementations.MockDeliveryFileItemController;
-import DB.implementations.MockSiteController;
-import DB.interfaces.IDeliveryFileController;
-import DB.interfaces.IDeliveryFileItemController;
-import DB.interfaces.ISiteController;
-import DB.interfaces.ITruckController;
-import DB.implementations.MockTruckController;
+import DB.implementations.*;
+import DB.interfaces.*;
 
 public class DBManager {
     static DBManager instance = null;
@@ -15,6 +9,7 @@ public class DBManager {
     private final IDeliveryFileController deliveryFileController;
     private final ITruckController truckController;
     private final IDeliveryFileItemController deliveryFileItemController;
+    private final ITransportAreaController transportAreaController;
 
     private DBManager() {
         // Private constructor to prevent instantiation
@@ -22,6 +17,7 @@ public class DBManager {
         this.deliveryFileController = MockDeliveryFileController.getInstance();
         this.truckController = MockTruckController.getInstance();
         this.deliveryFileItemController = MockDeliveryFileItemController.getInstance();
+        this.transportAreaController = MockTransportAreaController.getInstance();
     }
 
     /**
@@ -70,5 +66,14 @@ public class DBManager {
      */
     public final IDeliveryFileItemController getDeliveryFileItemController() {
         return deliveryFileItemController;
+    }
+
+    /**
+     * Returns the transport area controller.
+     *
+     * @return The transport area controller.
+     */
+    public final ITransportAreaController getTransportAreaController() {
+        return transportAreaController;
     }
 }
