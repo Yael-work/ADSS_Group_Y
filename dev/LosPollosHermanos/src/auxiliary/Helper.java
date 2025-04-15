@@ -32,6 +32,20 @@ public class Helper {
     }
 
     /**
+     * This method is used to get user double from the console.
+     *
+     * @return -1 if the input is invalid, otherwise returns the user input as a double.
+     */
+    public static double getUserInputDouble() {
+        try {
+            return new java.util.Scanner(System.in).nextDouble();
+        } catch (java.util.InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a number.");
+            return UndefinedUserInput;
+        }
+    }
+
+    /**
      * This method is used to show an error message to the user.
      *
      * @param message   The error message to be displayed.
@@ -57,12 +71,48 @@ public class Helper {
         showError(message, trace, true);
     }
 
-    public static double getUserInputDouble() {
-        try {
-            return new java.util.Scanner(System.in).nextDouble();
-        } catch (java.util.InputMismatchException e) {
-            System.out.println("Invalid input. Please enter a number.");
-            return -1;
+    /**
+     * This method is used to show an error message to the user.
+     *
+     * @param message   - The error message to be displayed.
+     * @param logToFile - Whether to log the error message to a file or not.
+     */
+    public static void print(String message, boolean logToFile) {
+        System.out.print(message);
+        if (logToFile) {
+            //todo implement logging to file
         }
     }
+
+    /**
+     * This method is used to show an error message to the user.
+     *
+     * @param message - The error message to be displayed.
+     */
+    public static void print(String message) {
+        print(message, true);
+    }
+
+    /**
+     * This method is used to show an error message to the user.
+     *
+     * @param message   - The error message to be displayed.
+     * @param logToFile - Whether to log the error message to a file or not.
+     */
+    public static void println(String message, boolean logToFile) {
+        System.out.println(message);
+        if (logToFile) {
+            //todo implement logging to file
+        }
+    }
+
+    /**
+     * This method is used to show an error message to the user.
+     *
+     * @param message - The error message to be displayed.
+     */
+    public static void println(String message) {
+        println(message, true);
+    }
+
 }
