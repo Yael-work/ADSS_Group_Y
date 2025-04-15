@@ -1,6 +1,6 @@
 package Models.DBModels;
 
-public class Branch extends BaseModel {
+public class Branch extends APhysicalSite {
     private String branchName;
     private String address;
     private String phone;
@@ -20,11 +20,13 @@ public class Branch extends BaseModel {
         this.address = address;
     }
 
-    public String getBranchName() {
+    @Override
+    public String getSiteName() {
         return branchName;
     }
 
-    public void setBranchName(String branchName) {
+    @Override
+    public void setSiteName(String branchName) {
         this.branchName = branchName;
     }
 
