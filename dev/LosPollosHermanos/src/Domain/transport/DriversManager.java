@@ -5,6 +5,8 @@ import DB.interfaces.IDriverController;
 import Models.DBModels.transport.Driver;
 import Auxiliary.Helper;
 
+import java.util.ArrayList;
+
 public class DriversManager {
     private static final IDriverController driverController = DBManager.getInstance().getDriverController();
 
@@ -64,5 +66,23 @@ public class DriversManager {
             return false;
         }
         return driverController.deleteDriver(id);
+    }
+
+    public static Driver getDriverById(int id) {
+        Driver d = driverController.getDriverById(id);
+        if (d == null) {
+            Helper.showError("Driver with this ID does not exist", null);
+            return null;
+        }
+        return d;
+    }
+
+    public static ArrayList<Driver> getAllDrivers() {
+        ArrayList<Driver> drivers = driverController.getAllRecords();
+        if (drivers == null || drivers.isEmpty()) {
+            Helper.showError("No drivers found", null);
+            return null;
+        }
+        return drivers;
     }
 }

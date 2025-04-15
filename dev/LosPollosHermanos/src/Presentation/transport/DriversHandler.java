@@ -4,6 +4,8 @@ import Domain.transport.DriversManager;
 import Models.DBModels.transport.Driver;
 import Auxiliary.Helper;
 
+import java.util.ArrayList;
+
 public class DriversHandler {
     public static boolean addDriver() {
         String firstName = null;
@@ -111,7 +113,41 @@ public class DriversHandler {
             Helper.println("Enter Driver ID to delete: ");
             id = Helper.getUserInputInteger();
         } while (id == Helper.UndefinedUserInput);
-        return false;
+        boolean f = DriversManager.deleteDriver(id);
+        if (!f) {
+            Helper.println("Driver with this ID does not exist");
+            return false;
+        }
+        return true;
+    }
+
+    public static void printDriverById() {
+        int id = Helper.UndefinedUserInput;
+        do {
+            Helper.println("Enter Driver ID to view: ");
+            id = Helper.getUserInputInteger();
+        } while (id == Helper.UndefinedUserInput);
+        Driver d = DriversManager.getDriverById(id);
+        if (d == null) {
+            Helper.println("No driver found with ID: " + id);
+            return;
+        }
+        Helper.println(d.toString());
+    }
+
+    public static void viewAllDrivers() {
+        // Implement method to view all drivers
+        // This could be a simple print of all drivers in the system
+        Helper.println("List of all drivers:");
+        // Assuming DriversManager has a method to get all drivers
+        ArrayList<Driver> drivers = DriversManager.getAllDrivers();
+        if (drivers == null || drivers.isEmpty()) {
+            Helper.println("No drivers found.");
+            return;
+        }
+        for (Driver driver : DriversManager.getAllDrivers())  {
+            Helper.println(driver.toString());
+        }
     }
 
     public static void handleDrivers() {
@@ -139,13 +175,13 @@ public class DriversHandler {
                     updateDriver();
                     break;
                 case 3:
-                    // Call method to delete driver
+                    deleteDriver();
                     break;
                 case 4:
-                    // Call method to view driver by ID
+                    printDriverById();
                     break;
                 case 5:
-                    // Call method to view existing drivers IDs
+                    viewAllDrivers();
                     break;
                 case 6:
                     exit = true;
