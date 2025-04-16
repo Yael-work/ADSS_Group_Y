@@ -40,21 +40,26 @@ public class BranchesHandler {
 
     /**
      * This method is used to view all existing branches.
+     * It retrieves the list of branches from the BranchesManager and prints their details.
+     *
+     * @return the list of branches if found and printed, otherwise null
      */
-    private static void viewAllBranches() {
+    public static ArrayList<Branch> viewAllBranches() {
         try {
-            ArrayList<Branch> lst = BranchesManager.viewExistingBranchesIDs();
+            ArrayList<Branch> lst = BranchesManager.getExistingBranches();
             if (lst == null || lst.isEmpty()) {
                 Helper.println("No branches found.");
-                return;
+                return null;
             }
             Helper.println("Existing Branches:");
-            for (int i = 0; i < BranchesManager.viewExistingBranchesIDs().size(); i++) {
-                Helper.println("Branch ID: " + lst.get(i).getId() + ", Name: " + lst.get(i).getSiteName());
+            for (Branch branch : lst) {
+                Helper.println("Branch ID: " + branch.getId() + ", Name: " + branch.getSiteName());
             }
+            return lst;
         } catch (Exception e) {
             Helper.showError(e.getMessage(), Helper.getStringTraceOfException(e));
         }
+        return null;
     }
 
     /**

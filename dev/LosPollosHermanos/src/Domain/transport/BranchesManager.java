@@ -72,7 +72,7 @@ public class BranchesManager {
      *
      * @return - an ArrayList of Branch objects representing all branches in the system
      */
-    public static ArrayList<Branch> viewExistingBranchesIDs() {
+    public static ArrayList<Branch> getExistingBranches() {
         return branchController.getAllRecords();
     }
 
