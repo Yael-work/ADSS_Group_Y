@@ -14,11 +14,10 @@ public class TransportAreaHandler {
         ArrayList<Integer> branchesIds = new ArrayList<>();
         try {
             Helper.println("Transport Area creation:");
-            String name;
             do {
                 Helper.println("Enter Transport Area name: ");
-                name = Helper.getUserInputString();
-            } while (name == null || name.isEmpty());
+                areaName = Helper.getUserInputString();
+            } while (areaName == null || areaName.isEmpty());
             ArrayList<Branch> b = BranchesHandler.viewAllBranches();
             if (b == null || b.isEmpty()) {
                 return false;
@@ -35,6 +34,7 @@ public class TransportAreaHandler {
                     for (Branch branch : b) {
                         if (branch.getId() == id) {
                             branchesIds.add(branch.getId());
+                            b.remove(branch);
                             f = true;
                             break;
                         }
@@ -43,16 +43,22 @@ public class TransportAreaHandler {
                         Helper.println("Invalid id. try again.");
                     } else {
                         int choice = 0;
-                        do {
-                            Helper.println("You want to add more? press 1 for yes or 2 for no.");
-                            choice = Helper.getUserInputInteger();
-                            if (choice == 1 || choice == 2) {
+                        if (!b.isEmpty()) {
+                            do {
+                                Helper.println("You want to add more? press 1 for yes or 2 for no.");
+                                choice = Helper.getUserInputInteger();
+                                if (choice == 1 || choice == 2) {
+                                    break;
+                                } else {
+                                    Helper.println("Error, please try again. ");
+                                }
+                            } while (true);
+                            if (choice == 2) {
                                 break;
-                            } else {
-                                Helper.println("Error, please try again. ");
                             }
-                        } while (true);
-                        if (choice == 1) {
+                        }
+                        else{
+                            Helper.println("No more branches available.");
                             break;
                         }
                     }
@@ -162,10 +168,9 @@ public class TransportAreaHandler {
             Helper.println("4. Update Transport Area");
             Helper.println("5. Remove Transport Area");
             Helper.println("6. Return to Main Menu");
-            Helper.print("Please choose an option: ");
 
             do {
-                Helper.print("Please choose an option: ");
+                Helper.println("Please choose an option: ");
                 choice = Helper.getUserInputInteger();
             } while (choice == Helper.UndefinedUserInput);
 
