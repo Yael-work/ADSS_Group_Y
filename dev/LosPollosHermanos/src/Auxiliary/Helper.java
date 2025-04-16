@@ -1,5 +1,8 @@
 package Auxiliary;
 
+import Models.DBModels.BaseModel;
+import java.util.List;
+
 public class Helper {
     public final static int UndefinedUserInput = -1;
     public final static int UndefinedId = -1;
@@ -149,4 +152,14 @@ public class Helper {
         return sb.toString();
     }
 
+    /**
+     * This method is used to check if a given ID is valid.
+     *
+     * @param areas   - The list of areas to check against.
+     * @param checkId - The ID to check.
+     * @return - true if the ID is valid, false otherwise.
+     */
+    public static boolean isValidId(List<? extends BaseModel> areas, int checkId) {
+        return checkId > 0 && areas.stream().anyMatch(a -> a.getId() == checkId);
+    }
 }
