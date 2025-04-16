@@ -1,5 +1,6 @@
 package Domain.transport;
 
+import Auxiliary.Enums.Domain.UpdateTransportAreaEnum;
 import Auxiliary.Helper;
 import DB.DBManager;
 import DB.interfaces.ITransportAreaController;
@@ -73,4 +74,84 @@ public class TransportAreasManager {
     }
 
 
+    /**
+     * This method is used to update a transport area.
+     *
+     * @param updateType   - the type of update to perform
+     * @param id           - the ID of the transport area to update
+     * @param AreaName     - must not be null or empty if updateType is Update_Name
+     * @param suppliersIDs - must not be null or empty if updateType is Add_Suppliers or Remove_Suppliers
+     * @param branchesIDs  - must not be null or empty if updateType is Add_Branches or Remove_Branches
+     * @return - true if the transport area was updated successfully, false otherwise
+     */
+    public static boolean updateTransportArea(UpdateTransportAreaEnum updateType, int id, String AreaName,
+                                              ArrayList<Integer> suppliersIDs, ArrayList<Integer> branchesIDs) {
+        if (id <= 0) {
+            Helper.showError("Cant update transport area with id <= 0");
+            return false;
+        }
+        if ((AreaName == null || AreaName.isEmpty()) && updateType == UpdateTransportAreaEnum.Update_Name) {
+            Helper.showError("Cant update transport area with empty name when updating name");
+            return false;
+        }
+        if ((suppliersIDs == null || suppliersIDs.isEmpty()) && (updateType == UpdateTransportAreaEnum.Add_Suppliers
+                || updateType == UpdateTransportAreaEnum.Remove_Suppliers)) {
+            Helper.showError("Cant update transport area with empty suppliers IDs when updating suppliers");
+            return false;
+        }
+        if (branchesIDs == null || branchesIDs.isEmpty() && (updateType == UpdateTransportAreaEnum.Add_Branches
+                || updateType == UpdateTransportAreaEnum.Remove_Branches)) {
+            Helper.showError("Cant update transport area with empty branches IDs when updating branches");
+            return false;
+        }
+        TransportArea area = transportAreaController.getTransportAreaById(id);
+        if (area == null) {
+            Helper.showError(String.format("Cant update transport area with id=%d, it does not exist", id));
+            return false;
+        }
+        switch (updateType) {
+            case Update_Name -> area.setAreaName(AreaName);
+            case Add_Suppliers -> {
+                ArrayList<Integer> addLst = new ArrayList<>(area.getSuppliersIds());
+                for (int supplierID : suppliersIDs) {
+                    if (!area.getSuppliersIds().contains(supplierID)) {
+                        addLst.add(supplierID);
+                    }
+                }
+                area.setSuppliersIds(addLst);
+            }
+            case Remove_Suppliers -> {
+                ArrayList<Integer> removeLst = new ArrayList<>(area.getSuppliersIds());
+                for (int supplierID : suppliersIDs) {
+                    if (area.getSuppliersIds().contains(supplierID)) {
+                        removeLst.remove(supplierID);
+                    }
+                }
+                area.setSuppliersIds(removeLst);
+            }
+            case Add_Branches -> {
+                ArrayList<Integer> addLst = new ArrayList<>(area.getBranchesIds());
+                for (int branchID : branchesIDs) {
+                    if (!area.getBranchesIds().contains(branchID)) {
+                        addLst.add(branchID);
+                    }
+                }
+                area.setBranchesIds(addLst);
+            }
+            case Remove_Branches -> {
+                ArrayList<Integer> removeLst = new ArrayList<>(area.getBranchesIds());
+                for (int branchID : branchesIDs) {
+                    if (area.getBranchesIds().contains(branchID)) {
+                        removeLst.remove(branchID);
+                    }
+                }
+                area.setBranchesIds(removeLst);
+            }
+            default -> {
+                Helper.showError("Cant update transport area with undefined update type");
+                return false;
+            }
+        }
+        return transportAreaController.updateTransportArea(area, id);
+    }
 }
