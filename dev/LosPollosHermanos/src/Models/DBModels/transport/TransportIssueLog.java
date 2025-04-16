@@ -5,14 +5,14 @@ import Models.DBModels.BaseModel;
 public class TransportIssueLog extends BaseModel {
     private int currentTruckId;
     private int newTruckId;
-    private int unloadedAtSiteId;
+    private int transportRouteId;
     private int unloadedItemsDeliveryFileId;
 
-    public TransportIssueLog(int id, int currentTruckId, int newTruckId, int unloadedAtSiteId, int unloadedItemsDeliveryFileId) {
+    public TransportIssueLog(int id, int currentTruckId, int newTruckId, int transportRouteId, int unloadedItemsDeliveryFileId) {
         super(id, TransportIssueLog.class.getName());
         this.currentTruckId = currentTruckId;
         this.newTruckId = newTruckId;
-        this.unloadedAtSiteId = unloadedAtSiteId;
+        this.transportRouteId = transportRouteId;
         this.unloadedItemsDeliveryFileId = unloadedItemsDeliveryFileId;
     }
 
@@ -32,12 +32,12 @@ public class TransportIssueLog extends BaseModel {
         this.newTruckId = newTruckId;
     }
 
-    public int getUnloadedAtSiteId() {
-        return unloadedAtSiteId;
+    public int getTransportRouteId() {
+        return transportRouteId;
     }
 
-    public void setUnloadedAtSiteId(int unloadedAtSiteId) {
-        this.unloadedAtSiteId = unloadedAtSiteId;
+    public void setTransportRouteId(int transportRouteId) {
+        this.transportRouteId = transportRouteId;
     }
 
     public int getUnloadedItemsDeliveryFileId() {
@@ -53,7 +53,7 @@ public class TransportIssueLog extends BaseModel {
         return "TransportIssueLog{" +
                 "currentTruckId=" + currentTruckId +
                 ", newTruckId=" + newTruckId +
-                ", unloadedAtSiteId=" + unloadedAtSiteId +
+                ", transportRouteId=" + transportRouteId +
                 ", unloadedItemsDeliveryFileId=" + unloadedItemsDeliveryFileId +
                 "} " + super.toString();
     }

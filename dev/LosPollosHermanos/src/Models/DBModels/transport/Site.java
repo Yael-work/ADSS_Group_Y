@@ -1,6 +1,5 @@
 package Models.DBModels.transport;
 
-
 import Models.DBModels.BaseModel;
 import Auxiliary.Enums.Models.SiteTypeEnum;
 
@@ -11,10 +10,9 @@ public class Site extends BaseModel {
     private String contactPhone;
     private String contactName;
     private double recordedWeightAtSite; //optional
-    private int DeliveryFileId; // optional
 
     public Site(int id, SiteTypeEnum siteType, int siteObjectId, String siteAddress,
-                String contactPhone, String contactName, double recordedWeightAtSite, int deliveryFileId) {
+                String contactPhone, String contactName, double recordedWeightAtSite) {
         super(id, Site.class.getName());
         if (siteObjectId <= 0) {
             throw new IllegalArgumentException(String.format("%s::SiteObjectId cannot be less than or equal to 0",
@@ -26,7 +24,6 @@ public class Site extends BaseModel {
         this.contactName = contactName;
         this.contactPhone = contactPhone;
         this.recordedWeightAtSite = recordedWeightAtSite;
-        this.DeliveryFileId = deliveryFileId;
     }
 
     public SiteTypeEnum getSiteType() {
@@ -81,14 +78,6 @@ public class Site extends BaseModel {
         this.recordedWeightAtSite = recordedWeightAtSite;
     }
 
-    public int getDeliveryFileId() {
-        return DeliveryFileId;
-    }
-
-    public void setDeliveryFileId(int deliveryFileId) {
-        DeliveryFileId = deliveryFileId;
-    }
-
     @Override
     public String toString() {
         return "Site{" +
@@ -98,9 +87,7 @@ public class Site extends BaseModel {
                 ", contactPhone='" + contactPhone + '\'' +
                 ", contactName='" + contactName + '\'' +
                 ", recordedWeightAtSite=" + recordedWeightAtSite +
-                ", DeliveryFileId=" + DeliveryFileId +
                 "} " + super.toString();
     }
-
 
 }
