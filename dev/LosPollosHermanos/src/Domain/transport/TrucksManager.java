@@ -17,7 +17,7 @@ public class TrucksManager {
     public static boolean addTruck(String plate, double netWeight, double maxWeight, String requiredLicenseType, String model) {
         Truck t = truckController.getTruckByPlate(plate);
         if (t != null) {
-            Helper.showError("Truck with this plate already exists", null);
+            Helper.showError("Truck with this plate already exists");
             return false;
         }
         t = new Truck(0, plate, netWeight, maxWeight, requiredLicenseType, model);
@@ -35,7 +35,7 @@ public class TrucksManager {
     public static boolean updateTruck(String some , int id, int value) {
         Truck t = truckController.getTruckById(id);
         if (t == null) {
-            Helper.showError("Truck with this ID does not exist", null);
+            Helper.showError("Truck with this ID does not exist");
             return false;
         }
         switch (value) {
@@ -55,7 +55,7 @@ public class TrucksManager {
                 t.setModel(some);
                 break;
             default:
-                Helper.showError("Invalid choice", null);
+                Helper.showError("Invalid choice");
                 return false;
         }
         return truckController.updateTruck(t, id);
@@ -70,7 +70,7 @@ public class TrucksManager {
     public static boolean deleteTruck(int id) {
         Truck t = truckController.getTruckById(id);
         if (t == null) {
-            Helper.showError("Truck with this ID does not exist", null);
+            Helper.showError("Truck with this ID does not exist");
             return false;
         }
         return truckController.deleteTruck(id);
@@ -94,7 +94,7 @@ public class TrucksManager {
     public static Truck getTruckById(int id) {
         Truck t = truckController.getTruckById(id);
         if (t == null) {
-            Helper.showError("Truck with this ID does not exist", null);
+            Helper.showError("Truck with this ID does not exist");
             return null;
         }
         return t;

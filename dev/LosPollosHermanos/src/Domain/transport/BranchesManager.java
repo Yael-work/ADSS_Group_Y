@@ -22,17 +22,17 @@ public class BranchesManager {
     private static int doesBranchExist(String name, String address, String phone, int providedId) {
         Branch b = branchController.getBranchByAddress(address);
         if (b != null && (providedId == Helper.UndefinedId || b.getId() != providedId)) {
-            Helper.showError("Branch with this address already exists", null);
+            Helper.showError("Branch with this address already exists");
             return b.getId();
         }
         b = branchController.getBranchByPhoneNumber(phone);
         if (b != null && (providedId == Helper.UndefinedId || b.getId() != providedId)) {
-            Helper.showError("Branch with this phone number already exists", null);
+            Helper.showError("Branch with this phone number already exists");
             return b.getId();
         }
         b = branchController.getBranchByName(name);
         if (b != null && (providedId == Helper.UndefinedId || b.getId() != providedId)) {
-            Helper.showError("Branch with this name already exists", null);
+            Helper.showError("Branch with this name already exists");
             return b.getId();
         }
         return Helper.UndefinedId;
@@ -98,7 +98,7 @@ public class BranchesManager {
     public static boolean updateBranch(int id, String name, String address, String phone) {
         Branch b = branchController.getBranchById(id);
         if (b == null) {
-            Helper.showError("Branch with this ID does not exist", null);
+            Helper.showError("Branch with this ID does not exist");
             return false;
         }
         if (doesBranchExist(name, address, phone, id) != Helper.UndefinedId) {
@@ -120,7 +120,7 @@ public class BranchesManager {
     public static boolean deleteBranch(int id) {
         Branch b = branchController.getBranchById(id);
         if (b == null) {
-            Helper.showError("Branch with this ID does not exist", null);
+            Helper.showError("Branch with this ID does not exist");
             return false;
         }
         return branchController.deleteBranch(id);

@@ -76,6 +76,16 @@ public class Helper {
      * This method is used to show an error message to the user.
      *
      * @param message The error message to be displayed.
+     * @param e       The exception that caused the error.
+     */
+    public static void showError(String message, Exception e) {
+        showError(message, getStringTraceOfException(e), true);
+    }
+
+    /**
+     * This method is used to show an error message to the user.
+     *
+     * @param message The error message to be displayed.
      */
     public static void showError(String message) {
         showError(message, null, true);

@@ -27,17 +27,17 @@ public class DriversManager {
     public static boolean addDriver(String firstName, String lastName, String personalId, String phoneNumber, String licenseType) {
         Driver d = driverController.getDriveByPersonalId(personalId);
         if (d != null) {
-            Helper.showError("Driver with this personal ID already exists", null);
+            Helper.showError("Driver with this personal ID already exists");
             return false;
         }
         d = driverController.getDriverByPhoneNumber(phoneNumber);
         if (d != null) {
-            Helper.showError("Driver with this phone number already exists", null);
+            Helper.showError("Driver with this phone number already exists");
             return false;
         }
         d = driverController.getDriverByFullName(firstName, lastName);
         if (d != null) {
-            Helper.showError("Driver with this name already exists", null);
+            Helper.showError("Driver with this name already exists");
             return false;
         }
         d = new Driver(0, firstName, lastName, personalId, phoneNumber, licenseType);
@@ -55,7 +55,7 @@ public class DriversManager {
     public static boolean updateDriver(String some, int id, int value) {
         Driver d = driverController.getDriverById(id);
         if (d == null) {
-            Helper.showError("Driver with this ID does not exist", null);
+            Helper.showError("Driver with this ID does not exist");
             return false;
         }
         switch (value) {
@@ -75,7 +75,7 @@ public class DriversManager {
                 d.setLicenseType(some);
                 break;
             default:
-                Helper.showError("Invalid choice", null);
+                Helper.showError("Invalid choice");
                 return false;
         }
         return driverController.updateDriver(d, id);
@@ -90,7 +90,7 @@ public class DriversManager {
     public static boolean deleteDriver(int id) {
         Driver d = driverController.getDriverById(id);
         if (d == null) {
-            Helper.showError("Driver with this ID does not exist", null);
+            Helper.showError("Driver with this ID does not exist");
             return false;
         }
         return driverController.deleteDriver(id);
@@ -105,7 +105,7 @@ public class DriversManager {
     public static Driver getDriverById(int id) {
         Driver d = driverController.getDriverById(id);
         if (d == null) {
-            Helper.showError("Driver with this ID does not exist", null);
+            Helper.showError("Driver with this ID does not exist");
             return null;
         }
         return d;
@@ -119,7 +119,7 @@ public class DriversManager {
     public static ArrayList<Driver> getAllDrivers() {
         ArrayList<Driver> drivers = driverController.getAllRecords();
         if (drivers == null || drivers.isEmpty()) {
-            Helper.showError("No drivers found", null);
+            Helper.showError("No drivers found");
             return null;
         }
         return drivers;
