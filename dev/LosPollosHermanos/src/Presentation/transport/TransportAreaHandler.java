@@ -243,7 +243,7 @@ public class TransportAreaHandler {
      */
     private static boolean deleteTransportArea() {
         try {
-            Helper.print("Enter the transport area you want to delete:");
+            Helper.print("Enter the ID of the transport area you want to delete: ");
             int id = Helper.getUserInputInteger();
             boolean result = TransportAreasManager.removeTransportArea(id);
             if (result) {
