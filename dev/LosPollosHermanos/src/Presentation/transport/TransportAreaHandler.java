@@ -25,38 +25,22 @@ public class TransportAreaHandler {
             if (b == null || b.isEmpty()) {
                 return false;
             } else {
-                int id = 0;
                 do {
-                    Helper.print("Enter Id: ");
-                    id = Helper.getUserInputInteger();
-                    boolean f = false;
-                    for (Branch branch : b) {
-                        if (branch.getId() == id) {
-                            branchesIds.add(branch.getId());
-                            b.remove(branch);
-                            f = true;
-                            break;
-                        }
-                    }
-                    if (!f) {
-                        Helper.println("Invalid id. try again.");
+                    branchesIds = Helper.retrieveIdsListFromInput(b);
+                    if (branchesIds.isEmpty()) {
+                        return false;
                     } else {
                         int choice = 0;
-                        if (!b.isEmpty()) {
-                            do {
-                                Helper.print("You want to add more? press 1 for yes or 2 for no: ");
-                                choice = Helper.getUserInputInteger();
-                                if (choice == 1 || choice == 2) {
-                                    break;
-                                } else {
-                                    Helper.println("Error, please try again. ");
-                                }
-                            } while (true);
-                            if (choice == 2) {
+                        do {
+                            Helper.print("You want to add more? press 1 for yes or 2 for no: ");
+                            choice = Helper.getUserInputInteger();
+                            if (choice == 1 || choice == 2) {
                                 break;
+                            } else {
+                                Helper.println("Error, please try again. ");
                             }
-                        } else {
-                            Helper.println("No more branches available.");
+                        } while (true);
+                        if (choice == 2) {
                             break;
                         }
                     }
