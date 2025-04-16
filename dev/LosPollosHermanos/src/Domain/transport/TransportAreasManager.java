@@ -151,8 +151,12 @@ public class TransportAreasManager {
                 ArrayList<Integer> removeLst = new ArrayList<>(area.getBranchesIds());
                 for (int branchID : branchesIDs) {
                     if (area.getBranchesIds().contains(branchID)) {
-                        removeLst.remove(branchID);
+                        removeLst.remove((Integer) branchID);
                     }
+                }
+                if (removeLst.isEmpty()) {
+                    Helper.showError("Cant remove all branches from transport area, there must be at least one branch.");
+                    return false;
                 }
                 area.setBranchesIds(removeLst);
             }

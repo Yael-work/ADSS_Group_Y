@@ -201,9 +201,11 @@ public class TransportAreaHandler {
                         ArrayList<Branch> branches = BranchesHandler.viewAllBranches();
                         if (branches != null && !branches.isEmpty()) {
                             ArrayList<Integer> lst = retrieveIdsListFromInput(branches);
-                            if (!lst.isEmpty()) {
-                                TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Add_Branches, id,
-                                        null, null, lst);
+                            if (!lst.isEmpty() && TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Add_Branches, id,
+                                    null, null, lst)) {
+                                Helper.println("Branches added successfully.");
+                            } else {
+                                Helper.println("Failed to add branches.");
                             }
                         } else {
                             Helper.showError("No branches available to add.");
@@ -214,9 +216,11 @@ public class TransportAreaHandler {
                         ArrayList<Branch> branches = BranchesHandler.viewAllBranches();
                         if (branches != null && !branches.isEmpty()) {
                             ArrayList<Integer> lst = retrieveIdsListFromInput(branches);
-                            if (!lst.isEmpty()) {
-                                TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Remove_Branches, id,
-                                        null, null, lst);
+                            if (!lst.isEmpty() && TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Remove_Branches, id,
+                                    null, null, lst)) {
+                                Helper.println("Branches removed successfully.");
+                            } else {
+                                Helper.println("Failed to remove branches.");
                             }
                         } else {
                             Helper.showError("No branches available to remove.");

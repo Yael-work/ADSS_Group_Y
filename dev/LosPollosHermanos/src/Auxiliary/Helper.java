@@ -1,6 +1,7 @@
 package Auxiliary;
 
 import Models.DBModels.BaseModel;
+
 import java.util.List;
 
 public class Helper {
@@ -57,8 +58,8 @@ public class Helper {
      * @param logToFile Whether to log the error message to a file or not.
      */
     public static void showError(String message, String trace, boolean logToFile) {
-        String err = String.format("--------- System Error message: {%s} ---------\n" + "%s" + "\n" + "--------- END TRACE ---------",
-                message, trace != null ? trace : "");
+        String err = String.format("--------- System Error message: {%s} --------- \n %s --------- END TRACE ---------",
+                message, trace != null ? trace + "\n" : "");
         System.out.println(err);
         if (logToFile) {
             //todo implement logging to file
