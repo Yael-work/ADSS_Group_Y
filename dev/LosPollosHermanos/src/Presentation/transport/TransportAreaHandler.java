@@ -10,10 +10,10 @@ import Presentation.transport.BranchesHandler;
 import java.util.ArrayList;
 
 public class TransportAreaHandler {
-    public static boolean addTransportArea() {
-        String areaName;
-        ArrayList<Integer> suppliersIds; // Need to be initialized
-        ArrayList<Branch> branchesIds = new ArrayList<>();
+    private static boolean addTransportArea() {
+        String areaName = "";
+        ArrayList<Integer> suppliersIds = null; // Need to be initialized
+        ArrayList<Integer> branchesIds = new ArrayList<>();
         try {
             Helper.println("Transport Area creation:");
             String name;
@@ -30,39 +30,50 @@ public class TransportAreaHandler {
                 for (Branch branch : b) {
                     Helper.println("Branch ID: " + branch.getId() + ", Name: " + branch.getSiteName());
                 }
-                int id;
+                int id = 0;
                 do {
                     Helper.println("Enter Id: ");
                     id = Helper.getUserInputInteger();
                     boolean f = false;
                     for (Branch branch : b) {
-                        if(branch.getId() == id){
-                            branchesIds.add(branch);
+                        if (branch.getId() == id) {
+                            branchesIds.add(branch.getId());
                             f = true;
                             break;
                         }
                     }
-                    if(!f){
+                    if (!f) {
                         Helper.println("Invalid id. try again.");
+                    } else {
+                        int choice = 0;
+                        do {
+                            Helper.println("You want to add more? press 1 for yes or 2 for no.");
+                            choice = Helper.getUserInputInteger();
+                            if (choice == 1 || choice == 2) {
+                                break;
+                            } else {
+                                Helper.println("Error, please try again. ");
+                            }
+                        } while (true);
+                        if (choice == 1){
+                            break;
+                        }
                     }
-                    else {
-                        Helper.println("You want to add more?");
-
-                    }
-                    while ()
-                }
+                } while (true);
             }
         } catch (Exception e) {
             Helper.showError("Error: " + e.getMessage());
             return false;
         }
-        boolean f = ITransportAreaController.addTransportArea(name, location, capacity);
+        boolean f = TransportAreasManager.addNewTransportArea(areaName, branchesIds, suppliersIds);
         if (!f) {
-            Helper.showError("Transport Area with this name already exists");
+            Helper.showError("Transport area with this name already exists");
             return false;
         }
         return true;
     }
+
+
 
     private static ArrayList<TransportArea> printAllTransportAreas() {
         ArrayList<TransportArea> allAreas = TransportAreasManager.getAllTransportAreas();
