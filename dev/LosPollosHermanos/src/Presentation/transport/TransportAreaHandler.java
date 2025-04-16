@@ -18,7 +18,7 @@ public class TransportAreaHandler {
         try {
             Helper.println("Transport Area creation:");
             do {
-                Helper.println("Enter Transport Area name: ");
+                Helper.print("Enter Transport Area name: ");
                 areaName = Helper.getUserInputString();
             } while (areaName == null || areaName.isEmpty());
             ArrayList<Branch> b = BranchesHandler.viewAllBranches();
@@ -27,7 +27,7 @@ public class TransportAreaHandler {
             } else {
                 int id = 0;
                 do {
-                    Helper.println("Enter Id: ");
+                    Helper.print("Enter Id: ");
                     id = Helper.getUserInputInteger();
                     boolean f = false;
                     for (Branch branch : b) {
@@ -44,7 +44,7 @@ public class TransportAreaHandler {
                         int choice = 0;
                         if (!b.isEmpty()) {
                             do {
-                                Helper.println("You want to add more? press 1 for yes or 2 for no.");
+                                Helper.print("You want to add more? press 1 for yes or 2 for no: ");
                                 choice = Helper.getUserInputInteger();
                                 if (choice == 1 || choice == 2) {
                                     break;
@@ -236,7 +236,7 @@ public class TransportAreaHandler {
      */
     private static boolean deleteTransportArea() {
         try {
-            Helper.println("Enter the transport area you want to delete:");
+            Helper.print("Enter the transport area you want to delete:");
             int id = Helper.getUserInputInteger();
             boolean result = TransportAreasManager.removeTransportArea(id);
             if (result) {
@@ -269,7 +269,7 @@ public class TransportAreaHandler {
             Helper.println("6. Back to Main Menu");
 
             do {
-                Helper.println("Please choose an option: ");
+                Helper.print("Please choose an option: ");
                 choice = Helper.getUserInputInteger();
             } while (choice == Helper.UndefinedUserInput);
 

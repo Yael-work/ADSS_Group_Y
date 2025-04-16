@@ -21,23 +21,23 @@ public class TrucksHandler {
         try {
             Helper.println("Truck creation:");
             do {
-                Helper.println("Enter Truck plate: ");
+                Helper.print("Enter Truck plate: ");
                 plate = Helper.getUserInputString();
             } while (plate == null || plate.isEmpty());
             do {
-                Helper.println("Enter Truck net weight: ");
+                Helper.print("Enter Truck net weight: ");
                 netWeight = Helper.getUserInputDouble();
             } while (netWeight <= 0);
             do {
-                Helper.println("Enter Truck max weight: ");
+                Helper.print("Enter Truck max weight: ");
                 maxWeight = Helper.getUserInputDouble();
             } while (maxWeight <= 0);
             do {
-                Helper.println("Enter Truck required license type: ");
+                Helper.print("Enter Truck required license type: ");
                 requiredLicenseType = Helper.getUserInputString();
             } while (requiredLicenseType == null || requiredLicenseType.isEmpty());
             do {
-                Helper.println("Enter Truck model: ");
+                Helper.print("Enter Truck model: ");
                 model = Helper.getUserInputString();
             } while (model == null || model.isEmpty());
         } catch (Exception e) {
@@ -78,23 +78,23 @@ public class TrucksHandler {
                 choice = Helper.getUserInputInteger();
                 switch (choice) {
                     case 1:
-                        Helper.println("Enter new plate: ");
+                        Helper.print("Enter new plate: ");
                         someString = Helper.getUserInputString();
                         break;
                     case 2:
-                        Helper.println("Enter new net weight: ");
+                        Helper.print("Enter new net weight: ");
                         someString = Helper.getUserInputString();
                         break;
                     case 3:
-                        Helper.println("Enter new max weight: ");
+                        Helper.print("Enter new max weight: ");
                         someString = Helper.getUserInputString();
                         break;
                     case 4:
-                        Helper.println("Enter new required license type: ");
+                        Helper.print("Enter new required license type: ");
                         someString = Helper.getUserInputString();
                         break;
                     case 5:
-                        Helper.println("Enter new model: ");
+                        Helper.print("Enter new model: ");
                         someString = Helper.getUserInputString();
                         break;
                     case 6:
@@ -124,7 +124,7 @@ public class TrucksHandler {
     private static boolean deleteTruck() {
         int id = Helper.UndefinedUserInput;
         do {
-            Helper.println("Enter Truck ID to delete: ");
+            Helper.print("Enter Truck ID to delete: ");
             id = Helper.getUserInputInteger();
         } while (id == Helper.UndefinedUserInput);
         boolean f = TrucksManager.deleteTruck(id);

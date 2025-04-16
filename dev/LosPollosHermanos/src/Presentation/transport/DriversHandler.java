@@ -17,23 +17,23 @@ public class DriversHandler {
         try {
             Helper.println("Driver creation:");
             do {
-                Helper.println("Enter Driver first name: ");
+                Helper.print("Enter Driver first name: ");
                 firstName = Helper.getUserInputString();
             } while (firstName == null || firstName.isEmpty());
             do {
-                Helper.println("Enter Driver last name: ");
+                Helper.print("Enter Driver last name: ");
                 lastName = Helper.getUserInputString();
             } while (lastName == null || lastName.isEmpty());
             do {
-                Helper.println("Enter Driver personal ID: ");
+                Helper.print("Enter Driver personal ID: ");
                 personalId = Helper.getUserInputString();
             } while (personalId == null || personalId.isEmpty());
             do {
-                Helper.println("Enter Driver phone number: ");
+                Helper.print("Enter Driver phone number: ");
                 phoneNumber = Helper.getUserInputString();
             } while (phoneNumber == null || phoneNumber.isEmpty());
             do {
-                Helper.println("Enter Driver license type: ");
+                Helper.print("Enter Driver license type: ");
                 licenseType = Helper.getUserInputString();
             } while (licenseType == null || licenseType.isEmpty());
         } catch (Exception e) {
@@ -69,23 +69,23 @@ public class DriversHandler {
                 choice = Helper.getUserInputInteger();
                 switch (choice) {
                     case 1:
-                        Helper.println("Enter new first name: ");
+                        Helper.print("Enter new first name: ");
                         someString = Helper.getUserInputString();
                         break;
                     case 2:
-                        Helper.println("Enter new last name: ");
+                        Helper.print("Enter new last name: ");
                         someString = Helper.getUserInputString();
                         break;
                     case 3:
-                        Helper.println("Enter new personal ID: ");
+                        Helper.print("Enter new personal ID: ");
                         someString = Helper.getUserInputString();
                         break;
                     case 4:
-                        Helper.println("Enter new phone number: ");
+                        Helper.print("Enter new phone number: ");
                         someString = Helper.getUserInputString();
                         break;
                     case 5:
-                        Helper.println("Enter new license type: ");
+                        Helper.print("Enter new license type: ");
                         someString = Helper.getUserInputString();
                         break;
                     case 6:
@@ -110,7 +110,7 @@ public class DriversHandler {
     private static boolean deleteDriver() {
         int id = Helper.UndefinedUserInput;
         do {
-            Helper.println("Enter Driver ID to delete: ");
+            Helper.print("Enter Driver ID to delete: ");
             id = Helper.getUserInputInteger();
         } while (id == Helper.UndefinedUserInput);
         boolean f = DriversManager.deleteDriver(id);
@@ -124,7 +124,7 @@ public class DriversHandler {
     private static void printDriverById() {
         int id = Helper.UndefinedUserInput;
         do {
-            Helper.println("Enter Driver ID to view: ");
+            Helper.print("Enter Driver ID to view: ");
             id = Helper.getUserInputInteger();
         } while (id == Helper.UndefinedUserInput);
         Driver d = DriversManager.getDriverById(id);
