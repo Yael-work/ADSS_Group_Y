@@ -118,6 +118,21 @@ public class MockBranchController implements IBranchController {
     }
 
     @Override
+    public ArrayList<Branch> getBranchesByIds(ArrayList<Integer> ids) {
+        ArrayList<Branch> result = new ArrayList<>();
+        if (ids == null || ids.isEmpty()) {
+            return result;
+        }
+        for (Integer id : ids) {
+            Branch branch = getBranchById(id);
+            if (branch != null) {
+                result.add(branch);
+            }
+        }
+        return result;
+    }
+
+    @Override
     public final ArrayList<Branch> getAllRecords() {
         return branches;
     }

@@ -73,6 +73,18 @@ public class MockDeliveryFileItemController implements IDeliveryFileItemControll
     }
 
     @Override
+    public ArrayList<DeliveryFileItem> getDeliveryFileItemsByIds(ArrayList<Integer> ids) {
+        ArrayList<DeliveryFileItem> result = new ArrayList<>();
+        for (int id : ids) {
+            DeliveryFileItem deliveryFileItem = getDeliveryFileItemById(id);
+            if (deliveryFileItem != null) {
+                result.add(deliveryFileItem);
+            }
+        }
+        return result;
+    }
+
+    @Override
     public final ArrayList<DeliveryFileItem> getAllRecords() {
         return sites;
     }

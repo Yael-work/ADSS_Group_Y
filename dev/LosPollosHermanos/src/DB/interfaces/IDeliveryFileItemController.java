@@ -2,6 +2,8 @@ package DB.interfaces;
 
 import Models.DBModels.transport.DeliveryFileItem;
 
+import java.util.ArrayList;
+
 public interface IDeliveryFileItemController extends IController<DeliveryFileItem> {
     /**
      * Adds a new delivery file item to the database.
@@ -35,4 +37,12 @@ public interface IDeliveryFileItemController extends IController<DeliveryFileIte
      * @return The delivery file item with the specified ID, or null if not found.
      */
     DeliveryFileItem getDeliveryFileItemById(int id);
+
+    /**
+     * Retrieves delivery file items from the database by their IDs.
+     *
+     * @param ids The list of IDs of the delivery file items to be retrieved.
+     * @return A list of delivery file items with the specified IDs, or an empty list if none found.
+     */
+    ArrayList<DeliveryFileItem> getDeliveryFileItemsByIds(ArrayList<Integer> ids);
 }

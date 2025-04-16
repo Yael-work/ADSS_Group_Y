@@ -2,6 +2,8 @@ package DB.interfaces;
 
 import Models.DBModels.transport.Branch;
 
+import java.util.ArrayList;
+
 public interface IBranchController extends IController<Branch> {
     /**
      * Adds a new branch to the database.
@@ -58,5 +60,13 @@ public interface IBranchController extends IController<Branch> {
      * @return The branch with the specified phone number, or null if not found.
      */
     Branch getBranchByPhoneNumber(String phoneNumber);
+
+    /**
+     * Retrieves branches from the database by their IDs.
+     *
+     * @param ids The list of IDs of the branches to be retrieved.
+     * @return A list of branches with the specified IDs, or an empty list if none found.
+     */
+    ArrayList<Branch> getBranchesByIds(ArrayList<Integer> ids);
 
 }

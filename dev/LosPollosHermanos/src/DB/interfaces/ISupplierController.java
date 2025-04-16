@@ -2,6 +2,8 @@ package DB.interfaces;
 
 import Models.DBModels.suppliers.Supplier;
 
+import java.util.ArrayList;
+
 public interface ISupplierController extends IController<Supplier>{
     /**
      * Adds a supplier to the database.
@@ -42,4 +44,12 @@ public interface ISupplierController extends IController<Supplier>{
      * @return The supplier with the specified name, or null if not found.
      */
     Supplier getSupplierByName(String name);
+
+    /**
+     * Retrieves suppliers from the database by their IDs.
+     *
+     * @param ids The list of IDs of the suppliers to retrieve.
+     * @return A list of suppliers with the specified IDs, or an empty list if none found.
+     */
+    ArrayList<Supplier> getSuppliersByIds(ArrayList<Integer> ids);
 }

@@ -92,6 +92,21 @@ public class MockSupplierController implements ISupplierController {
     }
 
     @Override
+    public ArrayList<Supplier> getSuppliersByIds(ArrayList<Integer> ids) {
+        ArrayList<Supplier> result = new ArrayList<>();
+        if (ids == null || ids.isEmpty()) {
+            return result;
+        }
+        for (Integer id : ids) {
+            Supplier supplier = getSupplierById(id);
+            if (supplier != null) {
+                result.add(supplier);
+            }
+        }
+        return result;
+    }
+
+    @Override
     public final ArrayList<Supplier> getAllRecords() {
         return suppliers;
     }
