@@ -13,7 +13,7 @@ import java.util.List;
 public class TransportAreaHandler {
     private static boolean addTransportArea() {
         String areaName = "";
-        ArrayList<Integer> suppliersIds = null; // Need to be initialized
+        ArrayList<Integer> suppliersIds = null; //TODO: Need to be initialized
         ArrayList<Integer> branchesIds = new ArrayList<>();
         try {
             Helper.println("Transport Area creation:");
@@ -264,13 +264,13 @@ public class TransportAreaHandler {
         boolean exit = false;
         while (!exit) {
             int choice;
-            Helper.println("Transport Area Menu:");
+            Helper.println("Truck Management Menu:");
             Helper.println("1. Add Transport Area");
-            Helper.println("2. View All Transport Areas");
-            Helper.println("3. View Transport Area by ID");
-            Helper.println("4. Update Transport Area");
-            Helper.println("5. Remove Transport Area");
-            Helper.println("6. Return to Main Menu");
+            Helper.println("2. Update Transport Area");
+            Helper.println("3. Delete Transport Area");
+            Helper.println("4. Print Transport area by ID");
+            Helper.println("5. Print All Transport Areas");
+            Helper.println("6. Back to Main Menu");
 
             do {
                 Helper.println("Please choose an option: ");
@@ -282,16 +282,16 @@ public class TransportAreaHandler {
                     addTransportArea();
                     break;
                 case 2:
-                    printAllTransportAreas();
-                    break;
-                case 3:
-                    printTransportAreaById();
-                    break;
-                case 4:
                     updateTransportArea();
                     break;
+                case 3:
+                    deleteTransportArea();
+                    break;
+                case 4:
+                    printTransportAreaById();
+                    break;
                 case 5:
-                    // Implement remove transport area logic
+                    printAllTransportAreas();
                     break;
                 case 6:
                     exit = true;
