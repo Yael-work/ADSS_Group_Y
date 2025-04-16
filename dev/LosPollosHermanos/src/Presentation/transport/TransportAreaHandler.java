@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class TransportAreaHandler {
     private static boolean addTransportArea() {
         String areaName = "";
-        ArrayList<Integer> suppliersIds = null; // Need to be initialized
+        ArrayList<Integer> suppliersIds = null; //TODO: Need to be initialized
         ArrayList<Integer> branchesIds = new ArrayList<>();
         try {
             Helper.println("Transport Area creation:");
@@ -188,7 +188,7 @@ public class TransportAreaHandler {
                     updateTransportArea();
                     break;
                 case 5:
-                    // Implement remove transport area logic
+                    deleteTransportArea();
                     break;
                 case 6:
                     exit = true;
