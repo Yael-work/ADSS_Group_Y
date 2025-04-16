@@ -7,7 +7,6 @@ import DB.interfaces.*;
  * DBManager is a singleton class that manages the database controllers for various entities.
  * It provides access to the controllers for site, delivery file, truck, delivery file item,
  * transport area, driver, supplier, transport, branch, and transport issue log.
- *
  */
 public class DBManager {
     static DBManager instance = null;
@@ -21,6 +20,7 @@ public class DBManager {
     private final ITransportController transportController;
     private final IBranchController branchController;
     private final ITransportIssueLogController transportIssueLogController;
+    private final ITransportRouteController transportRouteController;
 
     private DBManager() {
         this.siteController = MockSiteController.getInstance();
@@ -33,6 +33,7 @@ public class DBManager {
         this.transportController = MockTransportController.getInstance();
         this.branchController = MockBranchController.getInstance();
         this.transportIssueLogController = MockTransportIssueLogController.getInstance();
+        this.transportRouteController = MockTransportRouteController.getInstance();
     }
 
     /**
@@ -135,6 +136,15 @@ public class DBManager {
      */
     public final ITransportIssueLogController getTransportIssueLogController() {
         return transportIssueLogController;
+    }
+
+    /**
+     * Returns the transport route controller.
+     *
+     * @return The transport route controller.
+     */
+    public final ITransportRouteController getTransportRouteController() {
+        return transportRouteController;
     }
 
 }
