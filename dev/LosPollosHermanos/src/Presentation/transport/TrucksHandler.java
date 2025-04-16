@@ -180,7 +180,13 @@ public class TrucksHandler {
             Helper.println("4. Print Truck by ID");
             Helper.println("5. Print All Trucks");
             Helper.println("6. Back to Main Menu");
-            choice = Helper.getUserInputInteger();
+            Helper.print("Please choose an option: ");
+
+            do {
+                Helper.print("Please choose an option: ");
+                choice = Helper.getUserInputInteger();
+            } while (choice == Helper.UndefinedUserInput);
+
             switch (choice) {
                 case 1:
                     addTruck();

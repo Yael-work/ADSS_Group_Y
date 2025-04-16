@@ -154,15 +154,21 @@ public class TransportAreaHandler {
     public static void HandleTransportAreaMenu() {
         boolean exit = false;
         while (!exit) {
+            int choice;
             Helper.println("Transport Area Menu:");
             Helper.println("1. Add Transport Area");
             Helper.println("2. View All Transport Areas");
             Helper.println("3. View Transport Area by ID");
             Helper.println("4. Update Transport Area");
             Helper.println("5. Remove Transport Area");
-            Helper.println("6. Exit");
+            Helper.println("6. Return to Main Menu");
+            Helper.print("Please choose an option: ");
 
-            int choice = Helper.getUserInputInteger();
+            do {
+                Helper.print("Please choose an option: ");
+                choice = Helper.getUserInputInteger();
+            } while (choice == Helper.UndefinedUserInput);
+
             switch (choice) {
                 case 1:
                     addTransportArea();

@@ -178,7 +178,6 @@ public class BranchesHandler {
             Helper.println("4. View Branch by ID");
             Helper.println("5. View Existing Branches");
             Helper.println("6. Back to Main Menu");
-
             do {
                 Helper.print("Please choose an option: ");
                 choice = Helper.getUserInputInteger();
