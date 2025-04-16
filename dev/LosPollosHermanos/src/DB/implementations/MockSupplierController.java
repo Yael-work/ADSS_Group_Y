@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class MockSupplierController implements ISupplierController {
     private static MockSupplierController instance = null;
     private final ArrayList<Supplier> suppliers;
-    private int idCounter = 0;
+    private int idCounter = 1;
 
     private MockSupplierController() {
         this.suppliers = new ArrayList<>();

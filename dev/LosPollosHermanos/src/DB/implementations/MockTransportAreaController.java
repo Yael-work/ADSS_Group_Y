@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class MockTransportAreaController implements ITransportAreaController {
     private static MockTransportAreaController instance = null;
     private final ArrayList<TransportArea> transportAreas;
+    private static int idCounter = 1; // Static counter for unique IDs
 
     private MockTransportAreaController() {
         // Private constructor to prevent instantiation
@@ -29,13 +30,10 @@ public class MockTransportAreaController implements ITransportAreaController {
     @Override
     public boolean addTransportArea(TransportArea transportArea) {
         if (transportArea == null) {
-            return false;
+            return false; // Invalid transport area
         }
-        for (TransportArea area : transportAreas) {
-            if (area.getId() == transportArea.getId()) {
-                return false; // ID already exists
-            }
-        }
+        // Assign a unique ID to the transport area
+        transportArea.setId(idCounter++);
         transportAreas.add(transportArea);
         return true; // Successfully added
     }

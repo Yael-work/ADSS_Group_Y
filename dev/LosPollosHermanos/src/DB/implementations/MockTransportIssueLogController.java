@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class MockTransportIssueLogController implements ITransportIssueLogController {
     private static MockTransportIssueLogController instance = null;
     private final ArrayList<TransportIssueLog> transportIssueLogs;
+    private int idCounter = 1;
 
     private MockTransportIssueLogController() {
         this.transportIssueLogs = new ArrayList<>();
@@ -30,6 +31,7 @@ public class MockTransportIssueLogController implements ITransportIssueLogContro
         if (transportIssueLog == null) {
             return false;
         }
+        transportIssueLog.setId(idCounter++);
         transportIssueLogs.add(transportIssueLog);
         return true;
     }
