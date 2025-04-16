@@ -21,7 +21,6 @@ public class TransportAreaHandler {
             } while (name == null || name.isEmpty());
             ArrayList<Branch> b = BranchesHandler.viewAllBranches();
             if (b == null || b.isEmpty()) {
-                Helper.showError("No branches available. Cannot create a transport area.");
                 return false;
             } else {
                 Helper.println("Choose branches you want to add: ");
