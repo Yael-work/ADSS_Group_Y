@@ -85,6 +85,27 @@ public class TransportAreaHandler {
         return allAreas;
     }
 
+    /*
+        * This method is used to print a transport area by its ID.
+        * It prompts the user to enter the ID of the transport area they want to view.
+        * If the ID is valid, it retrieves and prints the transport area details.
+     */
+    private static boolean printTransportAreaById() {
+        try {
+            Helper.println("Enter the transport area you want to view:");
+            int id = Helper.getUserInputInteger();
+            TransportArea area = TransportAreasManager.getTransportAreaById(id);
+            if (area != null) {
+                Helper.println("ID: " + area.getId() + ", Name: " + area.getAreaName());
+                return true;
+            } else {
+                Helper.println("No transport area found with the given ID.");
+            }
+        } catch (Exception e) {
+            Helper.showError("Error: " + e.getMessage(), e);
+        }
+        return false;
+    }
 
     private static boolean updateTransportArea() {
         try {
