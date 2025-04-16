@@ -25,10 +25,6 @@ public class TransportAreaHandler {
             if (b == null || b.isEmpty()) {
                 return false;
             } else {
-                Helper.println("Choose branches you want to add: ");
-                for (Branch branch : b) {
-                    Helper.println("Branch ID: " + branch.getId() + ", Name: " + branch.getSiteName());
-                }
                 int id = 0;
                 do {
                     Helper.println("Enter Id: ");
@@ -103,7 +99,7 @@ public class TransportAreaHandler {
             int id = Helper.getUserInputInteger();
             TransportArea area = TransportAreasManager.getTransportAreaById(id);
             if (area != null) {
-                Helper.println("ID: " + area.getId() + ", Name: " + area.getAreaName());
+                Helper.println(area.toString());
                 return true;
             } else {
                 Helper.println("No transport area found with the given ID.");
