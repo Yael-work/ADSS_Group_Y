@@ -146,7 +146,7 @@ public class DriversHandler {
             return;
         }
         for (Driver driver : DriversManager.getAllDrivers())  {
-            Helper.println(Integer.toString(driver.getId()) + ": " + driver.getFirstName() + ", " + driver.getLastName());
+            Helper.println("ID: " + Integer.toString(driver.getId()) + ", First name:  " + driver.getFirstName() + ", Last name: " + driver.getLastName());
         }
     }
 

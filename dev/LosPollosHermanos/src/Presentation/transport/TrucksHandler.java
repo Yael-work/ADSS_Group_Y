@@ -162,7 +162,7 @@ public class TrucksHandler {
             return;
         }
         for (Truck t : trucks) {
-            Helper.println(Integer.toString(t.getId()) + ": " + t.getPlate());
+            Helper.println("ID: " + Integer.toString(t.getId()) + ", Plate: " + t.getPlate());
         }
     }
 
