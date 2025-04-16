@@ -93,6 +93,6 @@ public class MockTruckController implements ITruckController {
 
     @Override
     public final ArrayList<Truck> getAllRecords() {
-        return trucks;
+        return new ArrayList<>(trucks);
     }
 }

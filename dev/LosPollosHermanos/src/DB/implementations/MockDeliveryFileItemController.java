@@ -86,6 +86,6 @@ public class MockDeliveryFileItemController implements IDeliveryFileItemControll
 
     @Override
     public final ArrayList<DeliveryFileItem> getAllRecords() {
-        return sites;
+        return new ArrayList<>(sites);
     }
 }

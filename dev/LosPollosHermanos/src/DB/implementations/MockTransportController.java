@@ -109,6 +109,6 @@ public class MockTransportController implements ITransportController {
 
     @Override
     public final ArrayList<Transport> getAllRecords() {
-        return transports;
+        return new ArrayList<>(transports);
     }
 }

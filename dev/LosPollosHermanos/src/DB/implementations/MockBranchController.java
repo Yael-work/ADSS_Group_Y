@@ -134,6 +134,6 @@ public class MockBranchController implements IBranchController {
 
     @Override
     public final ArrayList<Branch> getAllRecords() {
-        return branches;
+        return new ArrayList<>(branches);
     }
 }

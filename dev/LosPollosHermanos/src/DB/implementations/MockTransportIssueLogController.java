@@ -79,6 +79,6 @@ public class MockTransportIssueLogController implements ITransportIssueLogContro
 
     @Override
     public final ArrayList<TransportIssueLog> getAllRecords() {
-        return transportIssueLogs;
+        return new ArrayList<>(transportIssueLogs);
     }
 }

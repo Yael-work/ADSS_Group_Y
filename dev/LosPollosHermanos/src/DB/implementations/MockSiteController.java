@@ -119,6 +119,6 @@ public class MockSiteController implements ISiteController {
 
     @Override
     public final ArrayList<Site> getAllRecords() {
-        return sites;
+        return new ArrayList<>(sites);
     }
 }

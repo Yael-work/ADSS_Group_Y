@@ -108,6 +108,6 @@ public class MockSupplierController implements ISupplierController {
 
     @Override
     public final ArrayList<Supplier> getAllRecords() {
-        return suppliers;
+        return new ArrayList<>(suppliers);
     }
 }

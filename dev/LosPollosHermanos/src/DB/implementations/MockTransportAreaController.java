@@ -88,6 +88,6 @@ public class MockTransportAreaController implements ITransportAreaController {
 
     @Override
     public final ArrayList<TransportArea> getAllRecords() {
-        return transportAreas; // Return all transport areas
+        return new ArrayList<>(transportAreas);
     }
 }
