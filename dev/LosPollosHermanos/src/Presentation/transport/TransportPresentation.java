@@ -24,7 +24,7 @@ public class TransportPresentation {
     private static boolean handleUserInput(int choice) {
         switch (choice) {
             case 1:
-                // Call method to manage transport areas
+                TransportAreaHandler.HandleTransportAreaMenu();
                 break;
             case 2:
                 // Call method to manage transports

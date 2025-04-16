@@ -86,9 +86,9 @@ public class TransportAreaHandler {
     }
 
     /*
-        * This method is used to print a transport area by its ID.
-        * It prompts the user to enter the ID of the transport area they want to view.
-        * If the ID is valid, it retrieves and prints the transport area details.
+     * This method is used to print a transport area by its ID.
+     * It prompts the user to enter the ID of the transport area they want to view.
+     * If the ID is valid, it retrieves and prints the transport area details.
      */
     private static boolean printTransportAreaById() {
         try {
@@ -125,4 +125,67 @@ public class TransportAreaHandler {
         return false;
     }
 
+    /*
+     * This method is used to delete a transport area.
+     * It prompts the user to enter the ID of the transport area they want to delete.
+     * If the ID is valid, it deletes the transport area and prints a success message.
+     */
+    private static boolean deleteTransportArea() {
+        try {
+            Helper.println("Enter the transport area you want to delete:");
+            int id = Helper.getUserInputInteger();
+            boolean result = TransportAreasManager.removeTransportArea(id);
+            if (result) {
+                Helper.println("Transport area deleted successfully.");
+                return true;
+            } else {
+                Helper.println("Failed to delete transport area.");
+            }
+        } catch (Exception e) {
+            Helper.showError("Error: " + e.getMessage(), e);
+        }
+        return false;
+    }
+
+    /*
+     * This method is used to handle the transport area menu.
+     * It displays the menu options and prompts the user to select an action.
+     * Based on the user's choice, it calls the appropriate method to perform the action.
+     */
+    public static void HandleTransportAreaMenu() {
+        boolean exit = false;
+        while (!exit) {
+            Helper.println("Transport Area Menu:");
+            Helper.println("1. Add Transport Area");
+            Helper.println("2. View All Transport Areas");
+            Helper.println("3. View Transport Area by ID");
+            Helper.println("4. Update Transport Area");
+            Helper.println("5. Remove Transport Area");
+            Helper.println("6. Exit");
+
+            int choice = Helper.getUserInputInteger();
+            switch (choice) {
+                case 1:
+                    addTransportArea();
+                    break;
+                case 2:
+                    printAllTransportAreas();
+                    break;
+                case 3:
+                    printTransportAreaById();
+                    break;
+                case 4:
+                    updateTransportArea();
+                    break;
+                case 5:
+                    // Implement remove transport area logic
+                    break;
+                case 6:
+                    exit = true;
+                    break;
+                default:
+                    Helper.showError("Invalid choice. Please try again.");
+            }
+        }
+    }
 }
