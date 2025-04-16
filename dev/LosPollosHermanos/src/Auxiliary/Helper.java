@@ -2,6 +2,7 @@ package Auxiliary;
 
 import Models.DBModels.BaseModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Helper {
@@ -162,5 +163,37 @@ public class Helper {
      */
     public static boolean isValidId(List<? extends BaseModel> areas, int checkId) {
         return checkId > 0 && areas.stream().anyMatch(a -> a.getId() == checkId);
+    }
+
+    /**
+     * This method is used to retrieve a list of IDs from the user.
+     * It prompts the user to enter IDs in a specific format and validates them.
+     * The valid IDs are added to a list and returned.
+     *
+     * @param srcLst - the source list of objects to validate the IDs against
+     * @return - a list of valid IDs entered by the user
+     */
+    public static ArrayList<Integer> retrieveIdsListFromInput(List<? extends BaseModel> srcLst) {
+        ArrayList<Integer> finalList = new ArrayList<>();
+        String idsToAdd;
+        String[] idsToAddList;
+        do {
+            Helper.println("Enter Ids like this: '1,2,3,4,5' or '1' to add a single object.");
+            idsToAdd = Helper.getUserInputString();
+            if (idsToAdd != null && !idsToAdd.isEmpty()) {
+                idsToAddList = idsToAdd.split(",");
+                for (String currentId : idsToAddList) {
+                    int idToAdd = Integer.parseInt(currentId.trim());
+                    if (Helper.isValidId(srcLst, idToAdd)) {
+                        finalList.add(idToAdd);
+                    } else {
+                        Helper.println("Invalid ID: " + idToAdd);
+                    }
+                }
+            } else {
+                Helper.println("Invalid input. Please try again.");
+            }
+        } while (finalList.isEmpty());
+        return finalList;
     }
 }
