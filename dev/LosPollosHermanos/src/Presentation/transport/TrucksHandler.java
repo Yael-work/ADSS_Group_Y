@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * It provides methods to add, update, delete, and print truck information.
  */
 public class TrucksHandler {
-    public static boolean addTruck() {
+    private static boolean addTruck() {
         String plate;
         double netWeight;
         double maxWeight;
@@ -57,7 +57,7 @@ public class TrucksHandler {
      *
      * @return true if the update was successful, false otherwise
      */
-    public static boolean updateTruck() {
+    private static boolean updateTruck() {
         String someString;
         int id = Helper.UndefinedUserInput;
         do {
@@ -121,7 +121,7 @@ public class TrucksHandler {
      *
      * @return true if the deletion was successful, false otherwise
      */
-    public static boolean deleteTruck() {
+    private static boolean deleteTruck() {
         int id = Helper.UndefinedUserInput;
         do {
             Helper.println("Enter Truck ID to delete: ");
@@ -138,7 +138,7 @@ public class TrucksHandler {
     /**
      * Prints the details of a truck based on user input.
      */
-    public static void printTruckById() {
+    private static void printTruckById() {
         int id = Helper.UndefinedUserInput;
         do {
             Helper.println("Enter Truck ID to print: ");
@@ -155,7 +155,7 @@ public class TrucksHandler {
     /**
      * Prints the details of all trucks.
      */
-    public static void printAllTrucks() {
+    private static void printAllTrucks() {
         ArrayList<Truck> trucks = TrucksManager.getAllTrucks();
         if (trucks == null || trucks.isEmpty()) {
             Helper.showError("No trucks found");
