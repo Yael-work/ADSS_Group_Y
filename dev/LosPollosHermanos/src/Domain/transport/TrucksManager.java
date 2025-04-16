@@ -40,19 +40,19 @@ public class TrucksManager {
         }
         switch (value) {
             case 1:
-                t.setPlate(Helper.getUserInputString());
+                t.setPlate(some);
                 break;
             case 2:
-                t.setNetWeight(Helper.getUserInputDouble());
+                t.setNetWeight(Integer.parseInt(some));
                 break;
             case 3:
-                t.setMaxWeight(Helper.getUserInputDouble());
+                t.setMaxWeight(Integer.parseInt(some));
                 break;
             case 4:
-                t.setRequiredLicenseType(Helper.getUserInputString());
+                t.setRequiredLicenseType(some);
                 break;
             case 5:
-                t.setModel(Helper.getUserInputString());
+                t.setModel(some);
                 break;
             default:
                 Helper.showError("Invalid choice", null);

@@ -1,8 +1,7 @@
 package Presentation.transport;
 
-import Domain.transport.DriversManager;
+//mport Domain.transport.DriversManager;
 import Domain.transport.TrucksManager;
-import Models.DBModels.transport.Driver;
 import Auxiliary.Helper;
 import Models.DBModels.transport.Truck;
 
@@ -109,7 +108,7 @@ public class TrucksHandler {
             Helper.showError("Error: " + e.getMessage());
             return false;
         }
-        boolean f = DriversManager.updateDriver(someString, id, choice);
+        boolean f = TrucksManager.updateTruck(someString, id, choice);
         if (!f) {
             Helper.showError("Error updating truck");
             return false;

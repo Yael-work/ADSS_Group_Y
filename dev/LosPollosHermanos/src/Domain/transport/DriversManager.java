@@ -60,19 +60,19 @@ public class DriversManager {
         }
         switch (value) {
             case 1:
-                d.setFirstName(Helper.getUserInputString());
+                d.setFirstName(some);
                 break;
             case 2:
-                d.setLastName(Helper.getUserInputString());
+                d.setLastName(some);
                 break;
             case 3:
-                d.setPersonalId(Helper.getUserInputString());
+                d.setPersonalId(some);
                 break;
             case 4:
-                d.setPhoneNumber(Helper.getUserInputString());
+                d.setPhoneNumber(some);
                 break;
             case 5:
-                d.setLicenseType(Helper.getUserInputString());
+                d.setLicenseType(some);
                 break;
             default:
                 Helper.showError("Invalid choice", null);
