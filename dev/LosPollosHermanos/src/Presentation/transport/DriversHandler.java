@@ -7,7 +7,7 @@ import Auxiliary.Helper;
 import java.util.ArrayList;
 
 public class DriversHandler {
-    public static boolean addDriver() {
+    private static boolean addDriver() {
         String firstName = null;
         String lastName = null;
         String personalId = null;
@@ -48,7 +48,7 @@ public class DriversHandler {
         return true;
     }
 
-    public static boolean updateDriver() {
+    private static boolean updateDriver() {
         String someString;
         int id = Helper.UndefinedUserInput;
         do {
@@ -107,7 +107,7 @@ public class DriversHandler {
         return true;
     }
 
-    public static boolean deleteDriver() {
+    private static boolean deleteDriver() {
         int id = Helper.UndefinedUserInput;
         do {
             Helper.println("Enter Driver ID to delete: ");
@@ -121,7 +121,7 @@ public class DriversHandler {
         return true;
     }
 
-    public static void printDriverById() {
+    private static void printDriverById() {
         int id = Helper.UndefinedUserInput;
         do {
             Helper.println("Enter Driver ID to view: ");
@@ -135,7 +135,7 @@ public class DriversHandler {
         Helper.println(d.toString());
     }
 
-    public static void viewAllDrivers() {
+    private static void viewAllDrivers() {
         // Implement method to view all drivers
         // This could be a simple print of all drivers in the system
         Helper.println("List of all drivers:");
