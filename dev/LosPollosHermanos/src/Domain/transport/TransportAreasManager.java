@@ -94,13 +94,21 @@ public class TransportAreasManager {
         if ((AreaName == null || AreaName.isEmpty()) && updateType == UpdateTransportAreaEnum.Update_Name) {
             Helper.showError("Cant update transport area with empty name when updating name");
             return false;
+        } else if (AreaName != null && !AreaName.isEmpty() && updateType == UpdateTransportAreaEnum.Update_Name) {
+            // Check if the area name already exists for some other area
+            TransportArea existingArea = transportAreaController.getTransportAreaByAreaName(AreaName);
+            if (existingArea != null && existingArea.getId() != id) {
+                Helper.showError(String.format("Cant update transport area with id=%d," +
+                        " area name=%s already exists", id, AreaName));
+                return false;
+            }
         }
         if ((suppliersIDs == null || suppliersIDs.isEmpty()) && (updateType == UpdateTransportAreaEnum.Add_Suppliers
                 || updateType == UpdateTransportAreaEnum.Remove_Suppliers)) {
             Helper.showError("Cant update transport area with empty suppliers IDs when updating suppliers");
             return false;
         }
-        if (branchesIDs == null || branchesIDs.isEmpty() && (updateType == UpdateTransportAreaEnum.Add_Branches
+        if ((branchesIDs == null || branchesIDs.isEmpty()) && (updateType == UpdateTransportAreaEnum.Add_Branches
                 || updateType == UpdateTransportAreaEnum.Remove_Branches)) {
             Helper.showError("Cant update transport area with empty branches IDs when updating branches");
             return false;
@@ -143,8 +151,12 @@ public class TransportAreasManager {
                 ArrayList<Integer> removeLst = new ArrayList<>(area.getBranchesIds());
                 for (int branchID : branchesIDs) {
                     if (area.getBranchesIds().contains(branchID)) {
-                        removeLst.remove(branchID);
+                        removeLst.remove((Integer) branchID);
                     }
+                }
+                if (removeLst.isEmpty()) {
+                    Helper.showError("Cant remove all branches from transport area, there must be at least one branch.");
+                    return false;
                 }
                 area.setBranchesIds(removeLst);
             }

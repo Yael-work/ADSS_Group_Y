@@ -154,6 +154,7 @@ public class TransportAreaHandler {
             Helper.println("Which transport area do you want to update?");
             ArrayList<TransportArea> areas = printAllTransportAreas();
             if (areas != null && !areas.isEmpty()) {
+                Helper.print("Enter the ID: ");
                 int id = Helper.getUserInputInteger();
                 while (!Helper.isValidId(areas, id)) {
                     Helper.println("Invalid ID. Please enter a valid transport area ID that exists in the system.");
@@ -161,7 +162,9 @@ public class TransportAreaHandler {
                 }
                 Helper.println("What would you like to update?");
                 for (UpdateTransportAreaEnum e : UpdateTransportAreaEnum.values()) {
-                    Helper.println(e.getValue() + ". " + e.getStringLabel());
+                    if (e != UpdateTransportAreaEnum.UNDEFINED) {
+                        Helper.println(e.getValue() + ". " + e.getStringLabel());
+                    }
                 }
                 Helper.print("Enter your choice: ");
                 int choice = Helper.getUserInputInteger();
@@ -198,9 +201,11 @@ public class TransportAreaHandler {
                         ArrayList<Branch> branches = BranchesHandler.viewAllBranches();
                         if (branches != null && !branches.isEmpty()) {
                             ArrayList<Integer> lst = retrieveIdsListFromInput(branches);
-                            if (!lst.isEmpty()) {
-                                TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Add_Branches, id,
-                                        null, null, lst);
+                            if (!lst.isEmpty() && TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Add_Branches, id,
+                                    null, null, lst)) {
+                                Helper.println("Branches added successfully.");
+                            } else {
+                                Helper.println("Failed to add branches.");
                             }
                         } else {
                             Helper.showError("No branches available to add.");
@@ -211,9 +216,11 @@ public class TransportAreaHandler {
                         ArrayList<Branch> branches = BranchesHandler.viewAllBranches();
                         if (branches != null && !branches.isEmpty()) {
                             ArrayList<Integer> lst = retrieveIdsListFromInput(branches);
-                            if (!lst.isEmpty()) {
-                                TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Remove_Branches, id,
-                                        null, null, lst);
+                            if (!lst.isEmpty() && TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Remove_Branches, id,
+                                    null, null, lst)) {
+                                Helper.println("Branches removed successfully.");
+                            } else {
+                                Helper.println("Failed to remove branches.");
                             }
                         } else {
                             Helper.showError("No branches available to remove.");
