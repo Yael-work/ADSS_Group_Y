@@ -63,4 +63,18 @@ public class TransportAreaHandler {
         }
         return true;
     }
+
+    private static ArrayList<TransportArea> printAllTransportAreas() {
+        ArrayList<TransportArea> allAreas = TransportAreasManager.getAllTransportAreas();
+        if (allAreas == null || allAreas.isEmpty()) {
+            Helper.println("No transport areas available.");
+            return null;
+        }
+        Helper.println("All Transport Areas:");
+        for (TransportArea area : allAreas) {
+            Helper.println("ID: " + area.getId() + ", Name: " + area.getAreaName());
+        }
+        return allAreas;
+    }
+
 }
