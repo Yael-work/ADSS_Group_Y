@@ -1,11 +1,14 @@
 package Presentation.transport;
 
+import Auxiliary.Enums.Domain.UpdateTransportAreaEnum;
 import Auxiliary.Helper;
+import Models.DBModels.BaseModel;
 import Models.DBModels.transport.Branch;
 import Models.DBModels.transport.TransportArea;
 import Domain.transport.TransportAreasManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TransportAreaHandler {
     private static boolean addTransportArea() {
@@ -56,8 +59,7 @@ public class TransportAreaHandler {
                             if (choice == 2) {
                                 break;
                             }
-                        }
-                        else{
+                        } else {
                             Helper.println("No more branches available.");
                             break;
                         }
@@ -112,7 +114,45 @@ public class TransportAreaHandler {
         return false;
     }
 
-    private static boolean updateTransportArea() {
+    /**
+     * This method is used to retrieve a list of IDs from the user.
+     * It prompts the user to enter IDs in a specific format and validates them.
+     * The valid IDs are added to a list and returned.
+     *
+     * @param srcLst - the source list of objects to validate the IDs against
+     * @return - a list of valid IDs entered by the user
+     */
+    private static ArrayList<Integer> retrieveIdsListFromInput(List<? extends BaseModel> srcLst) {
+        ArrayList<Integer> finalList = new ArrayList<>();
+        String idsToAdd;
+        String[] idsToAddList;
+        do {
+            Helper.println("Enter Ids like this: '1,2,3,4,5' or '1' to add a single object.");
+            idsToAdd = Helper.getUserInputString();
+            if (idsToAdd != null && !idsToAdd.isEmpty()) {
+                idsToAddList = idsToAdd.split(",");
+                for (String currentId : idsToAddList) {
+                    int idToAdd = Integer.parseInt(currentId.trim());
+                    if (Helper.isValidId(srcLst, idToAdd)) {
+                        finalList.add(idToAdd);
+                    } else {
+                        Helper.println("Invalid ID: " + idToAdd);
+                    }
+                }
+            } else {
+                Helper.println("Invalid input. Please try again.");
+            }
+        } while (finalList.isEmpty());
+        return finalList;
+    }
+
+    /**
+     * This method is used to update a transport area.
+     * It prompts the user to enter the ID of the transport area they want to update,
+     * and then allows them to choose which attribute to update.
+     * Depending on the user's choice, it updates the transport area accordingly.
+     */
+    private static void updateTransportArea() {
         try {
             Helper.println("Transport Area update:");
             Helper.println("Which transport area do you want to update?");
@@ -123,11 +163,74 @@ public class TransportAreaHandler {
                     Helper.println("Invalid ID. Please enter a valid transport area ID that exists in the system.");
                     id = Helper.getUserInputInteger();
                 }
+                Helper.println("What would you like to update?");
+                for (UpdateTransportAreaEnum e : UpdateTransportAreaEnum.values()) {
+                    Helper.println(e.getValue() + ". " + e.getStringLabel());
+                }
+                Helper.print("Enter your choice: ");
+                int choice = Helper.getUserInputInteger();
+                UpdateTransportAreaEnum updateChoice = UpdateTransportAreaEnum.intToEnum(choice);
+                while (updateChoice == UpdateTransportAreaEnum.UNDEFINED) {
+                    Helper.print("Invalid choice. Please enter a valid option: ");
+                    choice = Helper.getUserInputInteger();
+                    updateChoice = UpdateTransportAreaEnum.intToEnum(choice);
+                }
+
+                switch (updateChoice) {
+                    case Update_Name -> {
+                        Helper.print("Enter new name: ");
+                        String newName = Helper.getUserInputString();
+                        if (newName != null && !newName.isEmpty()) {
+                            if (TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Update_Name, id,
+                                    newName, null, null)) {
+                                Helper.println("Transport area name updated successfully.");
+                            } else {
+                                Helper.println("Failed to update transport area name.");
+                            }
+                        } else {
+                            Helper.println("Invalid name. Update failed.");
+                        }
+                    }
+                    case Add_Suppliers -> {
+                        // TODO Implement adding suppliers
+                    }
+                    case Remove_Suppliers -> {
+                        // TODO Implement removing suppliers
+                    }
+                    case Add_Branches -> {
+                        Helper.println("Choose branches you want to add: ");
+                        ArrayList<Branch> branches = BranchesHandler.viewAllBranches();
+                        if (branches != null && !branches.isEmpty()) {
+                            ArrayList<Integer> lst = retrieveIdsListFromInput(branches);
+                            if (!lst.isEmpty()) {
+                                TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Add_Branches, id,
+                                        null, null, lst);
+                            }
+                        } else {
+                            Helper.showError("No branches available to add.");
+                        }
+                    }
+                    case Remove_Branches -> {
+                        Helper.println("Choose branches you want to remove: ");
+                        ArrayList<Branch> branches = BranchesHandler.viewAllBranches();
+                        if (branches != null && !branches.isEmpty()) {
+                            ArrayList<Integer> lst = retrieveIdsListFromInput(branches);
+                            if (!lst.isEmpty()) {
+                                TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Remove_Branches, id,
+                                        null, null, lst);
+                            }
+                        } else {
+                            Helper.showError("No branches available to remove.");
+                        }
+                    }
+                    default -> {
+                        Helper.println("Invalid choice. No updates made.");
+                    }
+                }
             }
         } catch (Exception e) {
             Helper.showError("Error: " + e.getMessage(), e);
         }
-        return false;
     }
 
     /*
