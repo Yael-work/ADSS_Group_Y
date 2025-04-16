@@ -3,7 +3,9 @@ package Auxiliary;
 import Models.DBModels.BaseModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Helper {
     public final static int UndefinedUserInput = -1;
@@ -166,34 +168,42 @@ public class Helper {
     }
 
     /**
-     * This method is used to retrieve a list of IDs from the user.
-     * It prompts the user to enter IDs in a specific format and validates them.
-     * The valid IDs are added to a list and returned.
+     * Retrieves a list of unique, valid IDs from user input based on a provided list of models.
      *
-     * @param srcLst - the source list of objects to validate the IDs against
-     * @return - a list of valid IDs entered by the user
+     * @param srcLst - the list of models extending BaseModel
+     * @return an ArrayList of unique, valid IDs entered by the user
      */
     public static ArrayList<Integer> retrieveIdsListFromInput(List<? extends BaseModel> srcLst) {
-        ArrayList<Integer> finalList = new ArrayList<>();
-        String idsToAdd;
-        String[] idsToAddList;
-        do {
-            Helper.println("Enter Ids like this: '1,2,3,4,5' or '1' to add a single object.");
-            idsToAdd = Helper.getUserInputString();
-            if (idsToAdd != null && !idsToAdd.isEmpty()) {
-                idsToAddList = idsToAdd.split(",");
-                for (String currentId : idsToAddList) {
-                    int idToAdd = Integer.parseInt(currentId.trim());
-                    if (Helper.isValidId(srcLst, idToAdd)) {
-                        finalList.add(idToAdd);
-                    } else {
-                        Helper.println("Invalid ID: " + idToAdd);
-                    }
-                }
-            } else {
+        Set<Integer> uniqueIds = new HashSet<>();//todo do unit testing for this shit
+
+        while (uniqueIds.isEmpty()) {
+            Helper.println("Enter IDs like this: '1,2,3,4,5' or just '1' to add a single object.");
+            String input = Helper.getUserInputString();
+
+            if (input == null || input.trim().isEmpty()) {
                 Helper.println("Invalid input. Please try again.");
+                continue;
             }
-        } while (finalList.isEmpty());
-        return finalList;
+
+            for (String rawId : input.split(",")) {
+                try {
+                    int id = Integer.parseInt(rawId.trim());
+                    if (Helper.isValidId(srcLst, id)) {
+                        uniqueIds.add(id);
+                    } else {
+                        Helper.println("Invalid ID: " + id);
+                    }
+                } catch (NumberFormatException e) {
+                    Helper.println("Invalid number format: '" + rawId.trim() + "'. Please enter only integers.");
+                }
+            }
+
+            if (uniqueIds.isEmpty()) {
+                Helper.println("No valid IDs were entered. Please try again.");
+            }
+        }
+
+        return new ArrayList<>(uniqueIds);
     }
+
 }
