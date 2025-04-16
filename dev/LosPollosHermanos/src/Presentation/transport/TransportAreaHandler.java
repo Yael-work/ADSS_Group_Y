@@ -55,7 +55,7 @@ public class TransportAreaHandler {
                                 Helper.println("Error, please try again. ");
                             }
                         } while (true);
-                        if (choice == 1){
+                        if (choice == 1) {
                             break;
                         }
                     }
@@ -74,7 +74,6 @@ public class TransportAreaHandler {
     }
 
 
-
     private static ArrayList<TransportArea> printAllTransportAreas() {
         ArrayList<TransportArea> allAreas = TransportAreasManager.getAllTransportAreas();
         if (allAreas == null || allAreas.isEmpty()) {
@@ -86,6 +85,36 @@ public class TransportAreaHandler {
             Helper.println("ID: " + area.getId() + ", Name: " + area.getAreaName());
         }
         return allAreas;
+    }
+
+    /**
+     * Check if the given ID is valid by checking if it exists in the list of transport areas.
+     *
+     * @param areas   - the list of transport areas
+     * @param checkId - the ID to check
+     * @return true if the ID is valid, false otherwise
+     */
+    private static boolean isValidId(ArrayList<TransportArea> areas, int checkId) {
+        return checkId > 0 && areas.stream().anyMatch(a -> a.getId() == checkId);
+    }
+
+
+    private static boolean updateTransportArea() {
+        try {
+            Helper.println("Transport Area update:");
+            Helper.println("Which transport area do you want to update?");
+            ArrayList<TransportArea> areas = printAllTransportAreas();
+            if (areas != null && !areas.isEmpty()) {
+                int id = Helper.getUserInputInteger();
+                while (!isValidId(areas, id)) {
+                    Helper.println("Invalid ID. Please enter a valid transport area ID that exists in the system.");
+                    id = Helper.getUserInputInteger();
+                }
+            }
+        } catch (Exception e) {
+            Helper.showError("Error: " + e.getMessage(), e);
+        }
+        return false;
     }
 
 }
