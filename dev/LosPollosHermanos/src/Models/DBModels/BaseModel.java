@@ -5,23 +5,23 @@ package Models.DBModels;
  */
 public abstract class BaseModel {
     private int id;
-    private String name;
+    private String modelName;
 
 
-    public BaseModel(int id, String name) {
-        if (name == null) {
+    public BaseModel(int id, String modelName) {
+        if (modelName == null) {
             throw new IllegalArgumentException(String.format("%s::Name cannot be null", this.getClass().getName()));
         }
         this.id = id;
-        this.name = name;
+        this.modelName = modelName;
     }
 
     public int getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getModelName() {
+        return modelName;
     }
 
     public void setId(int _id) {
@@ -32,14 +32,14 @@ public abstract class BaseModel {
         if (_name == null) {
             throw new IllegalArgumentException(String.format("%s::Name cannot be null", this.getClass().getName()));
         }
-        this.name = _name;
+        this.modelName = _name;
     }
 
     @Override
     public String toString() {
         return "BaseModel{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", modelName='" + modelName + '\'' +
                 '}';
     }
 }

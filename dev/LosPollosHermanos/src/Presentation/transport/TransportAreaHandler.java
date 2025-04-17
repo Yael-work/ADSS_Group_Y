@@ -2,18 +2,40 @@ package Presentation.transport;
 
 import Auxiliary.Enums.Domain.UpdateTransportAreaEnum;
 import Auxiliary.Helper;
-import Models.DBModels.BaseModel;
+import Domain.suppliers.SuppliersManager;
+import Models.DBModels.suppliers.Supplier;
 import Models.DBModels.transport.Branch;
 import Models.DBModels.transport.TransportArea;
 import Domain.transport.TransportAreasManager;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TransportAreaHandler {
-    private static boolean addTransportArea() {
+
+    //temp method to show suppliers list
+    private static ArrayList<Supplier> showSuppliersList() {
+        ArrayList<Supplier> suppliers = SuppliersManager.getSuppliers();
+        Helper.println("Suppliers List:");
+        if (suppliers != null && !suppliers.isEmpty()) {
+            for (Supplier s : suppliers) {
+                Helper.println("ID: " + s.getId() + ", Name: " + s.getSiteName());
+            }
+            return suppliers;
+        } else {
+            Helper.println("No suppliers available.");
+        }
+        return null;
+    }
+
+
+    /**
+     * This method is used to add a new transport area.
+     * It prompts the user to enter the name of the transport area and the IDs of the suppliers and branches.
+     * If the input is valid, it creates a new transport area and adds it to the system.
+     */
+    private static void addTransportArea() {
         String areaName = "";
-        ArrayList<Integer> suppliersIds = null; //TODO: Need to be initialized
+        ArrayList<Integer> suppliersIds = new ArrayList<>();//get user input!
         ArrayList<Integer> branchesIds = new ArrayList<>();
         try {
             Helper.println("Transport Area creation:");
@@ -22,40 +44,28 @@ public class TransportAreaHandler {
                 areaName = Helper.getUserInputString();
             } while (areaName == null || areaName.isEmpty());
             ArrayList<Branch> b = BranchesHandler.viewAllBranches();
-            if (b == null || b.isEmpty()) {
-                return false;
-            } else {
-                do {
+            if (b != null && !b.isEmpty()) {
+                while (branchesIds.isEmpty()) {
+                    Helper.println("Select branches for the transport area:");
                     branchesIds = Helper.retrieveIdsListFromInput(b);
-                    if (branchesIds.isEmpty()) {
-                        return false;
-                    } else {
-                        int choice = 0;
-                        do {
-                            Helper.print("You want to add more? press 1 for yes or 2 for no: ");
-                            choice = Helper.getUserInputInteger();
-                            if (choice == 1 || choice == 2) {
-                                break;
-                            } else {
-                                Helper.println("Error, please try again. ");
-                            }
-                        } while (true);
-                        if (choice == 2) {
-                            break;
-                        }
-                    }
-                } while (true);
+                }
+            }
+
+            ArrayList<Supplier> suppliers = showSuppliersList();
+            if (suppliers != null && !suppliers.isEmpty()) {
+                while (suppliersIds.isEmpty()) {
+                    Helper.println("Select suppliers for the transport area:");
+                    suppliersIds = Helper.retrieveIdsListFromInput(suppliers);
+                }
             }
         } catch (Exception e) {
             Helper.showError("Error: " + e.getMessage());
-            return false;
         }
-        boolean f = TransportAreasManager.addNewTransportArea(areaName, branchesIds, suppliersIds);
-        if (!f) {
-            Helper.showError("Transport area with this name already exists");
-            return false;
+        if (TransportAreasManager.addNewTransportArea(areaName, branchesIds, suppliersIds)) {
+            Helper.println("Transport area added successfully.");
+        } else {
+            Helper.println("Failed to add transport area.");
         }
-        return true;
     }
 
 
@@ -132,8 +142,7 @@ public class TransportAreaHandler {
                         Helper.print("Enter new name: ");
                         String newName = Helper.getUserInputString();
                         if (newName != null && !newName.isEmpty()) {
-                            if (TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Update_Name, id,
-                                    newName, null, null)) {
+                            if (TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Update_Name, id, newName, null, null)) {
                                 Helper.println("Transport area name updated successfully.");
                             } else {
                                 Helper.println("Failed to update transport area name.");
@@ -153,8 +162,7 @@ public class TransportAreaHandler {
                         ArrayList<Branch> branches = BranchesHandler.viewAllBranches();
                         if (branches != null && !branches.isEmpty()) {
                             ArrayList<Integer> lst = Helper.retrieveIdsListFromInput(branches);
-                            if (!lst.isEmpty() && TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Add_Branches, id,
-                                    null, null, lst)) {
+                            if (!lst.isEmpty() && TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Add_Branches, id, null, null, lst)) {
                                 Helper.println("Branches added successfully.");
                             } else {
                                 Helper.println("Failed to add branches.");
@@ -168,8 +176,7 @@ public class TransportAreaHandler {
                         ArrayList<Branch> branches = BranchesHandler.viewAllBranches();
                         if (branches != null && !branches.isEmpty()) {
                             ArrayList<Integer> lst = Helper.retrieveIdsListFromInput(branches);
-                            if (!lst.isEmpty() && TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Remove_Branches, id,
-                                    null, null, lst)) {
+                            if (!lst.isEmpty() && TransportAreasManager.updateTransportArea(UpdateTransportAreaEnum.Remove_Branches, id, null, null, lst)) {
                                 Helper.println("Branches removed successfully.");
                             } else {
                                 Helper.println("Failed to remove branches.");

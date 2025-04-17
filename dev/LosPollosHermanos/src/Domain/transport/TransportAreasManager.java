@@ -29,15 +29,13 @@ public class TransportAreasManager {
             return false;
         }
         if (branchesIDs == null || branchesIDs.isEmpty()) {
-            Helper.showError("Branches IDs list is empty");
+            Helper.showError("Cant add transport area with empty branches IDs");
             return false;
         }
-        /*
         if (suppliersIDs == null || suppliersIDs.isEmpty()) {
-            Helper.showError("Suppliers IDs list is empty");
+            Helper.showError("Cant add transport area with empty suppliers IDs");
             return false;
-        }*/ //TODO will implement it later
-
+        }
         area = new TransportArea(Helper.UndefinedId, areaName, suppliersIDs, branchesIDs);
         return transportAreaController.addTransportArea(area);
     }
