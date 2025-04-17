@@ -132,8 +132,12 @@ public class TransportAreasManager {
                 ArrayList<Integer> removeLst = new ArrayList<>(area.getSuppliersIds());
                 for (int supplierID : suppliersIDs) {
                     if (area.getSuppliersIds().contains(supplierID)) {
-                        removeLst.remove(supplierID);
+                        removeLst.remove((Integer)supplierID);
                     }
+                }
+                if (removeLst.isEmpty()) {
+                    Helper.showError("Cant remove all suppliers from transport area, there must be at least one supplier.");
+                    return false;
                 }
                 area.setSuppliersIds(removeLst);
             }
