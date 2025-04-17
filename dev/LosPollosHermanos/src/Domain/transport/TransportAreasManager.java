@@ -7,6 +7,7 @@ import DB.interfaces.ITransportAreaController;
 import Models.DBModels.transport.TransportArea;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TransportAreasManager {
     private static final ITransportAreaController transportAreaController = DBManager.getInstance()
@@ -20,8 +21,8 @@ public class TransportAreasManager {
      * @param suppliersIDs - the IDs of the suppliers in the transport area - assumes IDs are correct
      * @return - true if the transport area was added successfully, false otherwise
      */
-    public static boolean addNewTransportArea(String areaName, ArrayList<Integer> branchesIDs,
-                                              ArrayList<Integer> suppliersIDs) {
+    public static boolean addNewTransportArea(String areaName, List<Integer> branchesIDs,
+                                              List<Integer> suppliersIDs) {
         TransportArea area = transportAreaController.getTransportAreaByAreaName(areaName);
         if (area != null) {
             Helper.showError(String.format("Transport area with this name={%s} already exists", areaName));
@@ -86,7 +87,7 @@ public class TransportAreasManager {
      * @return - true if the transport area was updated successfully, false otherwise
      */
     public static boolean updateTransportArea(UpdateTransportAreaEnum updateType, int id, String AreaName,
-                                              ArrayList<Integer> suppliersIDs, ArrayList<Integer> branchesIDs) {
+                                              List<Integer> suppliersIDs, List<Integer> branchesIDs) {
         if (id <= 0) {
             Helper.showError("Cant update transport area with id <= 0");
             return false;

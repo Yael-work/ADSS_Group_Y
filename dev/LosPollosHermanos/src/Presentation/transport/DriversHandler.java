@@ -159,7 +159,7 @@ public class DriversHandler {
             Helper.println("2. Update Driver");
             Helper.println("3. Delete Driver");
             Helper.println("4. View Driver by ID");
-            Helper.println("5. View Existing Drivers IDs");
+            Helper.println("5. View Existing Drivers");
             Helper.println("6. Back to Main Menu");
 
             do {

@@ -219,7 +219,7 @@ public class TransportAreaHandler {
         boolean exit = false;
         while (!exit) {
             int choice;
-            Helper.println("Truck Management Menu:");
+            Helper.println("Transport Management Menu:");
             Helper.println("1. Add Transport Area");
             Helper.println("2. Update Transport Area");
             Helper.println("3. Delete Transport Area");
