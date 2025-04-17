@@ -27,14 +27,12 @@ public class SuppliersManager {
         return supplierController.getSupplierByName(name);
     }
 
-    public static void addSupplier(String name, String address, String phone) {
+    public static boolean addSupplier(String name, String address, String phone) {
         Supplier s = getSupplierByName(name);
         if (s != null) {
             Helper.showError("Supplier with this name already exists");
         }
         s = new Supplier(Helper.UndefinedUserInput, name, address, phone);
-        if (!supplierController.addSupplier(s)) {
-            Helper.showError("Failed to add supplier");
-        }
+        return supplierController.addSupplier(s);
     }
 }

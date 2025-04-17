@@ -65,30 +65,29 @@ public class TransportPresentation {
      * @return true if the data was loaded successfully, false otherwise
      */
     private static boolean handleTempMockDataRuntimeLoad() {
-        BranchesManager.addBranch("Branch1", "Address1", "+972 5412311");
-        BranchesManager.addBranch("Branch2", "Address2", "+972 5488899");
-        BranchesManager.addBranch("Branch3", "Address3", "+972 5412988");
+        return BranchesManager.addBranch("Branch1", "Address1", "+972 5412311") &&
+                BranchesManager.addBranch("Branch2", "Address2", "+972 5488899") &&
+                BranchesManager.addBranch("Branch3", "Address3", "+972 5412988") &&
 
-        DriversManager.addDriver("John", "Doe", "123456789", "+972 5412311", "C");
-        DriversManager.addDriver("Sam", "Wilson", "987654321", "+972 5488899", "B");
-        DriversManager.addDriver("Jane", "Smith", "456789123", "+972 5412988", "C1");
+                DriversManager.addDriver("John", "Doe", "123456789", "+972 5412311", "C") &&
+                DriversManager.addDriver("Sam", "Wilson", "987654321", "+972 5488899", "B") &&
+                DriversManager.addDriver("Jane", "Smith", "456789123", "+972 5412988", "C1") &&
 
-        TrucksManager.addTruck("5498875", 3500, 5000, "C1", "Toyota");
-        TrucksManager.addTruck("5491176", 4000, 6000, "C", "Ford");
-        TrucksManager.addTruck("5491177", 4500, 7000, "C1", "Mercedes");
+                TrucksManager.addTruck("5498875", 3500, 5000, "C1", "Toyota") &&
+                TrucksManager.addTruck("5491176", 4000, 6000, "C", "Ford") &&
+                TrucksManager.addTruck("5491177", 4500, 7000, "C1", "Mercedes") &&
 
-        SuppliersManager.addSupplier("Supplier1", "Address1", "+972 77788855");
-        SuppliersManager.addSupplier("Supplier2", "Address2", "+972 77788856");
-        SuppliersManager.addSupplier("Supplier3", "Address3", "+972 77788857");
+                SuppliersManager.addSupplier("Supplier1", "Address1", "+972 77788855") &&
+                SuppliersManager.addSupplier("Supplier2", "Address2", "+972 77788856") &&
+                SuppliersManager.addSupplier("Supplier3", "Address3", "+972 77788857") &&
 
-        TransportAreasManager.addNewTransportArea("Area1",
-                BranchesManager.getExistingBranches().subList(0, BranchesManager.getExistingBranches().size()).stream().map(BaseModel::getId).toList(),
-                SuppliersManager.getSuppliers().subList(0, BranchesManager.getExistingBranches().size()).stream().map(BaseModel::getId).toList());
+                TransportAreasManager.addNewTransportArea("Area1",
+                        BranchesManager.getExistingBranches().subList(0, BranchesManager.getExistingBranches().size()).stream().map(BaseModel::getId).toList(),
+                        SuppliersManager.getSuppliers().subList(0, BranchesManager.getExistingBranches().size()).stream().map(BaseModel::getId).toList()) &
 
-        TransportAreasManager.addNewTransportArea("Area2",
-                BranchesManager.getExistingBranches().subList(0, BranchesManager.getExistingBranches().size() - 1).stream().map(BaseModel::getId).toList(),
-                SuppliersManager.getSuppliers().subList(0, BranchesManager.getExistingBranches().size() - 1).stream().map(BaseModel::getId).toList());
-        return true;
+                        TransportAreasManager.addNewTransportArea("Area2",
+                                BranchesManager.getExistingBranches().subList(0, BranchesManager.getExistingBranches().size() - 1).stream().map(BaseModel::getId).toList(),
+                                SuppliersManager.getSuppliers().subList(0, BranchesManager.getExistingBranches().size() - 1).stream().map(BaseModel::getId).toList());
     }
 
     /**
