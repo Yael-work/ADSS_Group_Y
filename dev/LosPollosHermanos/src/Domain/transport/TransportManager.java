@@ -6,10 +6,10 @@ package Domain.transport;
 * 2. Show specific detailed transport by ID -> all the static details (status, date...)
 *   + print all linked transport routes -> also print the delivery file of each route
 *   + print all linked issue logs -> also print the issue file of each log
-* 3. Print transport drives for driver:
-*   A. Take all the linked transport routes of the transport
-*   B. Make a dict of all the routes by their branch ID {"branch_id":[<transport_route_id>,...]...}
-*   C. For each branch ID, check if they started any transport route and haven't finished all.
+* 3. Print transport drives for driver - by Transport ID:
+*   A. Take all the linked transport routes of the transport ID
+*   B. Make a dict (or pair?) of all the routes by their branch ID {"branch_id":[<transport_route_id>,...]...}
+*   C. For each branch ID, check if they started any transport route and haven't finished all.(create list of boolean as the len of the branches and each of them true or false).
 *        In case that none started, pick random branch id.
 *   C. Using the picked branch id - aggregate the relevant Transport Routes and return.
 * [???]. Maybe also do something like [3] but with the option to see all pending routes according to branch id??
