@@ -5,6 +5,7 @@ import DB.interfaces.IDeliveryFileItemController;
 import Models.DBModels.transport.DeliveryFileItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockDeliveryFileItemController implements IDeliveryFileItemController {
     private final ArrayList<DeliveryFileItem> items;
@@ -74,7 +75,7 @@ public class MockDeliveryFileItemController implements IDeliveryFileItemControll
     }
 
     @Override
-    public ArrayList<DeliveryFileItem> getDeliveryFileItemsByIds(ArrayList<Integer> ids) {
+    public List<DeliveryFileItem> getDeliveryFileItemsByIds(List<Integer> ids) {
         ArrayList<DeliveryFileItem> result = new ArrayList<>();
         for (int id : ids) {
             DeliveryFileItem deliveryFileItem = getDeliveryFileItemById(id);

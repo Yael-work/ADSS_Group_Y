@@ -239,6 +239,53 @@ public class Helper {
         }
     }
 
+    /**
+     * This method is used to check if a given license type is valid.
+     * Only supported license types are: B, C1, C, C+E
+     *
+     * @param licenseType - The license type to be checked.
+     * @return - true if the license type is valid, false otherwise.
+     */
+    public static boolean isLicenseTypeValid(String licenseType) {
+        return licenseType != null
+                && !licenseType.trim().isEmpty()
+                && (
+                licenseType.equalsIgnoreCase("B")
+                        || licenseType.equalsIgnoreCase("C")
+                        || licenseType.equalsIgnoreCase("C1")
+                        || licenseType.equalsIgnoreCase("C+E")
+        );
+    }
 
+
+    /**
+     * This method is used to check if a given license type is valid for a truck.
+     * Only supported license types are: B, C1, C, C+E
+     *
+     * @param driverLicenseType   - The license type to be checked.
+     * @param requiredLicenseType - The required license type for the truck.
+     * @return - true if the license type is valid for the truck, false otherwise.
+     */
+    public static boolean isLicenseTypeValidPerTruck(String driverLicenseType, String requiredLicenseType) {
+        if (!isLicenseTypeValid(driverLicenseType) || !isLicenseTypeValid(requiredLicenseType)) {
+            return false;
+        }
+        switch (driverLicenseType) {
+            case "C+E" -> {
+                return requiredLicenseType.equals("C+E") || requiredLicenseType.equals("C")
+                        || requiredLicenseType.equals("C1") || requiredLicenseType.equals("B");
+            }
+            case "C" -> {
+                return requiredLicenseType.equals("C") || requiredLicenseType.equals("C1")
+                        || requiredLicenseType.equals("B");
+            }
+            case "C1" -> {
+                return requiredLicenseType.equals("C1") || requiredLicenseType.equals("B");
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
 
 }

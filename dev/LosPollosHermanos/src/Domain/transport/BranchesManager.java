@@ -125,4 +125,36 @@ public class BranchesManager {
         }
         return branchController.deleteBranch(id);
     }
+
+
+    /**
+     * Retrieves the current contact phone number of a branch.
+     *
+     * @param branchId - the ID of the branch
+     * @return - the contact phone number of the branch, or null if not found
+     */
+    public static String getCurrentContactPhoneOfBranch(int branchId) {
+        Branch b = branchController.getBranchById(branchId);
+        if (b == null) {
+            Helper.showError("Branch with this ID does not exist");
+            return null;
+        }
+        return b.getPhone();
+    }
+
+
+    /**
+     * Retrieves the current contact name of a branch.
+     *
+     * @param branchId - the ID of the branch
+     * @return - the contact name of the branch, or null if not found
+     */
+    public static String getCurrentContactNameOfBranch(int branchId) {
+        Branch b = branchController.getBranchById(branchId);
+        if (b == null) {
+            Helper.showError("Branch with this ID does not exist");
+            return null;
+        }
+        return "Someone from " + b.getSiteName();
+    }
 }

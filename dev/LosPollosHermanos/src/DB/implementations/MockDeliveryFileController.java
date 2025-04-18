@@ -59,10 +59,10 @@ public class MockDeliveryFileController implements IDeliveryFileController {
     }
 
     @Override
-    public String getDeliveryFileById(int id) {
+    public DeliveryFile getDeliveryFileById(int id) {
         for (DeliveryFile deliveryFile : files) {
             if (deliveryFile.getId() == id) {
-                return deliveryFile.toString();
+                return deliveryFile;
             }
         }
         return null;

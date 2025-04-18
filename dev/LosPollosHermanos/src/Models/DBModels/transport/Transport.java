@@ -107,4 +107,14 @@ public class Transport extends BaseModel {
                 ", actualEndDatetime=" + actualEndDatetime +
                 "} " + super.toString();
     }
+
+    @Override
+    public String toPrettyString() {
+        return String.format("ID: %d, Planned DateTime: %s, Status: %s, Truck ID: %d, Driver ID: %d, " +
+                        "Transport Route IDs: %s, Transport Issue Log IDs: %s, Actual Start DateTime: %s, Actual End DateTime: %s",
+                getId(), plannedDateTime, status, truckId, driverId,
+                transportRouteIds.toString(), transportIssueLogIds != null ? transportIssueLogIds.toString()
+                        : "[No issue logs]"
+                , actualStartDatetime, actualEndDatetime);
+    }
 }

@@ -117,11 +117,6 @@ public class DriversManager {
      * @return - an ArrayList of Driver objects representing all drivers in the system
      */
     public static ArrayList<Driver> getAllDrivers() {
-        ArrayList<Driver> drivers = driverController.getAllRecords();
-        if (drivers == null || drivers.isEmpty()) {
-            Helper.showError("No drivers found");
-            return null;
-        }
-        return drivers;
+        return driverController.getAllRecords();
     }
 }
