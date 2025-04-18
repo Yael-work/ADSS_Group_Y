@@ -4,6 +4,7 @@ import DB.interfaces.ITransportAreaController;
 import Models.DBModels.transport.TransportArea;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockTransportAreaController implements ITransportAreaController {
     private static MockTransportAreaController instance = null;
@@ -84,6 +85,13 @@ public class MockTransportAreaController implements ITransportAreaController {
             }
         }
         return null; // Not found
+    }
+
+    @Override
+    public List<TransportArea> getAllTransportAreasByBranchId(int branchId) {
+        return transportAreas.stream()
+                .filter(area -> area.getBranchesIds().contains(branchId))
+                .toList(); // Filter transport areas by branch ID
     }
 
     @Override

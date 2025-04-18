@@ -45,11 +45,11 @@ public class TransportHandler {
             Helper.println("No branches available. Please create a branch first.");
             return;
         }
-        for (Branch branch : branches) {
-            Helper.println(String.format("Branch ID: %d, Branch Name: %s", branch.getId(), branch.getSiteName()));
-        }
         String userInput;
         do {
+            for (Branch branch : branches) {
+                Helper.println(String.format("Branch ID: %d, Branch Name: %s", branch.getId(), branch.getSiteName()));
+            }
             Helper.print("Select the current branch to create transport for, " +
                     "or write 'continue' to proceed with the transport creation: ");
             userInput = Helper.getUserInputString();
@@ -73,9 +73,65 @@ public class TransportHandler {
                 }
                 Helper.println("You have selected branch: " + selectedBranch.getSiteName());
 
-                Helper.print("Please enter the search string for stock items: ");
-                String searchString = Helper.getUserInputString();
-                ArrayList<StockItem> stockItems = mockSearchAndReturnRelevantStockItems(searchString, branchId);
+                userInput = null;
+                ArrayList<StockItem> selectedItems = new ArrayList<>();
+                do {
+                    Helper.print("Please enter the search string for stock items or 'continue' to proceed: ");
+                    userInput = Helper.getUserInputString();
+                    while (userInput == null || userInput.trim().isEmpty()) {
+                        Helper.print("Invalid search string. Please try again: ");
+                        userInput = Helper.getUserInputString();
+                    }
+                    if (userInput.equalsIgnoreCase("continue")) {
+                        break;
+                    }
+                    ArrayList<StockItem> stockItems = mockSearchAndReturnRelevantStockItems(userInput, branchId);
+                    for (StockItem stockItem : stockItems) {
+                        Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
+                                stockItem.getItemId(), stockItem.getItemName(), stockItem.getAmount()));
+                    }
+                    Helper.print("Please select the relevant item you want to add to the transport by its ID," +
+                            " or write 0 to skip this item: ");
+                    int itemId = Helper.getUserInputInteger();
+                    while (itemId == Helper.UndefinedUserInput) {
+                        Helper.print("Invalid item ID. Please try again: ");
+                        itemId = Helper.getUserInputInteger();
+                    }
+                    if (itemId == 0) {
+                        Helper.println("Skipping this item.");
+                    } else {
+                        int finalItemId = itemId;
+                        StockItem selectedItem = stockItems.stream().filter(item -> item.getItemId() == finalItemId)
+                                .findFirst().orElse(null);
+                        if (selectedItem != null) {
+                            if (selectedItems.stream().anyMatch(item -> item.getItemId() == selectedItem.getItemId())) {
+                                Helper.println("Item already selected. Please choose a different item.");
+                            } else {
+                                Helper.println("You have selected item: " + selectedItem.getItemName());
+                                Helper.println("The current amount at the branch is: " + selectedItem.getAmount());
+                                Helper.println("Please enter the amount you want to add to the transport: ");
+                                double amount = Helper.getUserInputDouble();
+                                while (amount <= 0) {
+                                    Helper.print("Invalid amount. Please enter a valid amount: ");
+                                    amount = Helper.getUserInputDouble();
+                                }
+                                selectedItem.setAmount(amount);
+                                selectedItems.add(selectedItem);
+                            }
+                        } else {
+                            Helper.println("Invalid item ID. Please try again.");
+                        }
+                    }
+                }
+                while (userInput.trim().isEmpty() || !userInput.equalsIgnoreCase("continue"));
+                userInput = null;
+
+
+                Helper.println("The items you selected for this transport are:");
+                for (StockItem selectedItem : selectedItems) {
+                    Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
+                            selectedItem.getItemId(), selectedItem.getItemName(), selectedItem.getAmount()));
+                }
             }
         } while (userInput == null || !userInput.equalsIgnoreCase("continue"));
 

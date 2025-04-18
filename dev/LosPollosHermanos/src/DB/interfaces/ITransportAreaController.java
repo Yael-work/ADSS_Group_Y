@@ -2,6 +2,8 @@ package DB.interfaces;
 
 import Models.DBModels.transport.TransportArea;
 
+import java.util.List;
+
 public interface ITransportAreaController extends IController<TransportArea> {
     /**
      * Adds a transport area to the database.
@@ -42,4 +44,13 @@ public interface ITransportAreaController extends IController<TransportArea> {
      * @return The transport area with the specified name, or null if not found.
      */
     TransportArea getTransportAreaByAreaName(String areaName);
+
+
+    /**
+     * Retrieves all transport areas associated with a specific branch ID.
+     *
+     * @param branchId The ID of the branch to retrieve transport areas for.
+     * @return A list of transport areas associated with the specified branch ID.
+     */
+    List<TransportArea> getAllTransportAreasByBranchId(int branchId);
 }

@@ -132,7 +132,7 @@ public class TransportAreasManager {
                 ArrayList<Integer> removeLst = new ArrayList<>(area.getSuppliersIds());
                 for (int supplierID : suppliersIDs) {
                     if (area.getSuppliersIds().contains(supplierID)) {
-                        removeLst.remove((Integer)supplierID);
+                        removeLst.remove((Integer) supplierID);
                     }
                 }
                 if (removeLst.isEmpty()) {
@@ -169,5 +169,15 @@ public class TransportAreasManager {
             }
         }
         return transportAreaController.updateTransportArea(area, id);
+    }
+
+    /**
+     * This method is used to get all transport areas by branch ID.
+     *
+     * @param branchId - the ID of the branch
+     * @return - a list of transport areas associated with the branch ID
+     */
+    public static List<TransportArea> getTransportAreasByBranchId(int branchId) {
+        return transportAreaController.getAllTransportAreasByBranchId(branchId);
     }
 }
