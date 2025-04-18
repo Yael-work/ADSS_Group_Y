@@ -43,6 +43,12 @@ import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Helper;
 import DB.DBManager;
 import DB.interfaces.*;
+import DB.implementations.MockDeliveryFileController;
+import DB.implementations.MockDeliveryFileItemController;
+import DB.interfaces.IDeliveryFileController;
+import DB.interfaces.IDeliveryFileItemController;
+import DB.interfaces.ITransportController;
+import DB.interfaces.ITransportRouteController;
 import Domain.suppliers.SuppliersManager;
 import Models.DBModels.suppliers.Supplier;
 import Models.DBModels.transport.*;
@@ -93,6 +99,30 @@ public class TransportManager {
         return deliveryFileController.addDeliveryFile(new DeliveryFile(Helper.UndefinedId, addedIds));
     }
 
+    /**
+     * This method is used to delete a delivery file and its items.
+     *
+     * @param deliveryFileId - the ID of the delivery file to be deleted
+     * @return - true if the delivery file was deleted successfully, false otherwise
+     */
+    private static boolean deleteDeliveryFile(int deliveryFileId) {
+        if (deliveryFileId <= 0) {
+            Helper.showError("Cant delete delivery file with id <= 0");
+            return false;
+        }
+        ArrayList<Integer> Ids = new ArrayList<>();
+        Ids.add(deliveryFileId);
+        ArrayList<DeliveryFileItem> items = deliveryFileItemController.getDeliveryFileItemsByIds(Ids);
+        if (items != null && !items.isEmpty()) {
+            for (DeliveryFileItem item : items) {
+                if (!deliveryFileItemController.deleteDeliveryFileItem(item.getId())) {
+                    Helper.showError("Failed to delete delivery file item with id: " + item.getId());
+                    return false;
+                }
+            }
+        }
+        return deliveryFileController.deleteDeliveryFile(deliveryFileId);
+    }
 
     /**
      * This method is used to create a transport route.
@@ -206,6 +236,30 @@ public class TransportManager {
                 someItemsUnprovided ? CreateNewTransportRouteResultEnum.SomeItemsUnprovided :
                         CreateNewTransportRouteResultEnum.Success,
                 items);
+    }
+
+    public static boolean deleteTransportById(int transportId) {
+        if(transportId <= 0) {
+            Helper.showError("Cant delete transport with id <= 0");
+            return false;
+        }
+        ArrayList<Integer> ids = new ArrayList<>();
+        ids.add(transportId);
+        List<TransportRoute> routes = transportRouteController.getTransportRoutesByIds(ids);
+        if(routes == null || routes.isEmpty()) {
+            Helper.showError("Cant delete transport with id=" + transportId + ", it does not exist");
+            return false;
+        }
+        else {
+            for(TransportRoute route : routes) {
+                if(route.getStatus() != TransportStatusEnum.PENDING) {
+                    Helper.showError("Cant delete transport with id=" + transportId + ", it is not in pending status");
+                    return false;
+                }
+
+            }
+        }
+        return false;
     }
 
 
