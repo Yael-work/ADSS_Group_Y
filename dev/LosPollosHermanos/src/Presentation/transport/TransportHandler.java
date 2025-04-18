@@ -5,10 +5,10 @@ import Domain.transport.BranchesManager;
 import Domain.transport.TransportManager;
 import Models.DBModels.transport.Branch;
 import Models.DTOs.StockItem;
+import Models.DTOs.transport.CreateNewTransportRoutesResult;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 public class TransportHandler {
 
@@ -134,11 +134,41 @@ public class TransportHandler {
                     Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
                             selectedItem.getItemId(), selectedItem.getItemName(), selectedItem.getAmount()));
                 }
-                //TODO create transport routes from this point
-                List<Integer> routes = TransportManager.createNewTransportRoutes(branchId, selectedItems);
+                CreateNewTransportRoutesResult routesCreationResult =
+                        TransportManager.createNewTransportRoutes(branchId, selectedItems);
+                switch (routesCreationResult.getResultEnum()) {
+                    case Success -> {
+
+                    }
+                    case SomeItemsUnprovided -> {
+                        Helper.println("Some items could not be provided by the suppliers.");
+                        Helper.println("Please check the following items:");
+                        for (StockItem unprovidedItem : routesCreationResult.getUnprovidedItems()) {
+                            Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
+                                    unprovidedItem.getItemId(), unprovidedItem.getItemName(), unprovidedItem.getAmount()));
+                        }
+                        Helper.print("Would you like to proceed with the transport creation? (yes/no): ");
+                        String proceedInput = Helper.getUserInputString();
+                        while (proceedInput == null
+                                || (!proceedInput.equalsIgnoreCase("yes")
+                                && !proceedInput.equalsIgnoreCase("no"))) {
+                            Helper.print("Invalid input. Please enter 'yes' or 'no': ");
+                            proceedInput = Helper.getUserInputString();
+                        }
+                        if (proceedInput.equalsIgnoreCase("yes")) {
+                            //todo handle success
+                        } else {
+                            Helper.println("Transport creation cancelled.");
+                            return;
+                        }
+                    }
+                    case UNDEFINED -> {
+                        Helper.println("Failed to create transport routes.");
+                        return;
+                    }
+                }
             }
         } while (userInput == null || !userInput.equalsIgnoreCase("continue"));
-
     }
 
     private static void deleteTransportById() {
