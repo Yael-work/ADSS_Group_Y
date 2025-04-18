@@ -40,11 +40,15 @@ package Domain.transport;
 import Auxiliary.Helper;
 import DB.DBManager;
 import DB.interfaces.ITransportController;
+import Domain.suppliers.SuppliersManager;
+import Models.DBModels.suppliers.Supplier;
 import Models.DBModels.transport.TransportArea;
 import Models.DBModels.transport.TransportRoute;
 import Models.DTOs.StockItem;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TransportManager {
     private static final ITransportController transportController = DBManager.getInstance().getTransportController();
@@ -58,13 +62,15 @@ public class TransportManager {
      * @return - the transport route object if created successfully, null otherwise
      */
     public static TransportRoute createNewTransportRoute(int branchId, List<StockItem> requiredItems) {
-        List<TransportArea> relevantAreas = TransportAreasManager.getTransportAreasByBranchId(branchId);
+        List<TransportArea> transportAreas = DBManager.getInstance().getTransportAreaController()
+                .getAllTransportAreasByBranchId(branchId);
+        if (transportAreas != null && !transportAreas.isEmpty()) {
+            Set<Supplier> suppliers = new HashSet<>();
+            for (TransportArea area : transportAreas) {
+                suppliers.addAll(SuppliersManager.getSuppliersByIds(area.getSuppliersIds()));
+            }
 
-        if (relevantAreas != null && !relevantAreas.isEmpty()) {
-            // need to perform algo to find the suppliers that can provide the items from this area
         }
-
         return null;
     }
-
 }
