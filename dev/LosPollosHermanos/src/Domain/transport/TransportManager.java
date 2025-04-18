@@ -261,6 +261,48 @@ public class TransportManager {
         }
     }
 
+    private static boolean deleteTransportRoutes(List<Integer> routes) {
+        if (routes == null || routes.isEmpty()) {
+            Helper.showError("Cant delete transport, it does not exist");
+            return false;
+        } else {
+            for (Integer routeId : routes) {
+                TransportRoute t = transportRouteController.getTransportRouteById(routeId);
+                if (t == null) {
+                    Helper.showError("Cant delete transport with id=" + routeId + ", it does not exist");
+                    return false;
+                }
+                if (t.getStatus() != TransportStatusEnum.PENDING) {
+                    Helper.showError("Cant delete transport with id=" + t.getId() + ", it is not in pending status");
+                    return false;
+                }
+                if (!deleteDeliveryFile(t.getDeliveryFileId())) {
+                    Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete delivery file");
+                    return false;
+                }
+                if (deleteSourceAndDestanationSite(t.getSourceSiteId())) {
+                    Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete source site");
+                    return false;
+                }
+                if (deleteSourceAndDestanationSite(t.getDestinationSiteId())) {
+                    Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete destination site");
+                    return false;
+                }
+                if (!transportRouteController.deleteTransportRoute(t.getId())) {
+                    Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete transport route");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * This method is used to delete transport by ID.
+     *
+     * @param transportId - the ID of the transport to be deleted
+     * @return - true if the transport was deleted successfully, false otherwise
+     */
     public static boolean deleteTransportById(int transportId) {
         if (transportId <= 0) {
             Helper.showError("Cant delete transport with id <= 0");
@@ -272,29 +314,18 @@ public class TransportManager {
         if (routes == null || routes.isEmpty()) {
             Helper.showError("Cant delete transport with id=" + transportId + ", it does not exist");
             return false;
-        } else {
-            for (TransportRoute route : routes) {
-                if (route.getStatus() != TransportStatusEnum.PENDING) {
-                    Helper.showError("Cant delete transport with id=" + transportId + ", it is not in pending status");
-                    return false;
-                }
-                if (!deleteDeliveryFile(route.getDeliveryFileId())) {
-                    Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete delivery file");
-                    return false;
-                }
-                if (deleteSourceAndDestanationSite(route.getSourceSiteId())) {
-                    Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete source site");
-                    return false;
-                }
-                if (deleteSourceAndDestanationSite(route.getDestinationSiteId())) {
-                    Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete destination site");
-                    return false;
-                }
-                if (!transportRouteController.deleteTransportRoute(route.getId())) {
-                    Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete transport route");
-                    return false;
-                }
-            }
+        }
+        List<Integer> routeIds = new ArrayList<>();
+        for (TransportRoute route : routes) {
+            routeIds.add(route.getId());
+        }
+        if (!deleteTransportRoutes(routeIds)) {
+            Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete transport routes");
+            return false;
+        }
+        if (!transportController.deleteTransport(transportId)) {
+            Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete transport");
+            return false;
         }
         return true;
     }
@@ -381,15 +412,12 @@ public class TransportManager {
         int transportId = transportController.addTransport(transport);
         if (transportId <= Helper.UndefinedId) {
             Helper.showError("Failed to create transport.");
-            //todo remove all the created transport routes
-            for (int routeId : transportRoutes) {
-                TransportRoute route = transportRouteController.getTransportRouteById(routeId);
-                if (route != null) {
-                    //todo delete delivery file items and delivery file
-                    //todo delete src and dest sites of route
-                    // todo finally delete the transport route
-                }
+            if (deleteTransportRoutes(transportRoutes)) {
+                Helper.println("Deleted successfully the transport routes");
+            } else {
+                Helper.showError("Failed to delete transport routes");
             }
+            return Helper.UndefinedId;
         } else {
             for (int routeId : transportRoutes) {
                 TransportRoute route = transportRouteController.getTransportRouteById(routeId);

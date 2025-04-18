@@ -275,7 +275,6 @@ public class TransportHandler {
                             if (routesIds != null && !routesIds.isEmpty()) {
                                 TransportManager.deleteTransportById(routesIds.getFirst());
                                  Helper.println("Deleting created routes...");
-                                //todo delete the created routes here!!!
                             }
                         }
                     }
@@ -285,7 +284,6 @@ public class TransportHandler {
                         if (routesIds != null && !routesIds.isEmpty()) {
                             TransportManager.deleteTransportById(routesIds.getFirst());
                             Helper.println("Deleting created routes...");
-                            //todo delete the created routes here!!!
                         }
                     }
                 }
