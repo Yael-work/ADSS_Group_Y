@@ -41,6 +41,7 @@ import Auxiliary.Helper;
 import DB.DBManager;
 import DB.interfaces.ITransportController;
 import Models.DBModels.transport.TransportArea;
+import Models.DBModels.transport.TransportRoute;
 import Models.DTOs.StockItem;
 
 import java.util.List;
@@ -54,16 +55,16 @@ public class TransportManager {
      *
      * @param branchId      - the ID of the branch - assumes ID is correct!!!
      * @param requiredItems - the list of required items
-     * @return - true if the transport was added successfully, false otherwise
+     * @return - the transport route object if created successfully, null otherwise
      */
-    public static boolean addNewTransport(int branchId, List<StockItem> requiredItems) {
+    public static TransportRoute createNewTransportRoute(int branchId, List<StockItem> requiredItems) {
         List<TransportArea> relevantAreas = TransportAreasManager.getTransportAreasByBranchId(branchId);
 
         if (relevantAreas != null && !relevantAreas.isEmpty()) {
             // need to perform algo to find the suppliers that can provide the items from this area
         }
 
-        return false;
+        return null;
     }
 
 }
