@@ -6,6 +6,7 @@ import DB.interfaces.ISupplierController;
 import Models.DBModels.suppliers.Supplier;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a temp mock class for the suppliers manager.
@@ -21,6 +22,10 @@ public class SuppliersManager {
 
     public static Supplier getSupplierById(int id) {
         return supplierController.getSupplierById(id);
+    }
+
+    public static List<Supplier> getSuppliersByIds(List<Integer> ids) {
+        return supplierController.getSuppliersByIds(ids);
     }
 
     public static Supplier getSupplierByName(String name) {

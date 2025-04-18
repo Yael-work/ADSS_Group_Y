@@ -4,6 +4,7 @@ import DB.interfaces.ISupplierController;
 import Models.DBModels.suppliers.Supplier;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockSupplierController implements ISupplierController {
     private static MockSupplierController instance = null;
@@ -92,7 +93,7 @@ public class MockSupplierController implements ISupplierController {
     }
 
     @Override
-    public ArrayList<Supplier> getSuppliersByIds(ArrayList<Integer> ids) {
+    public ArrayList<Supplier> getSuppliersByIds(List<Integer> ids) {
         ArrayList<Supplier> result = new ArrayList<>();
         if (ids == null || ids.isEmpty()) {
             return result;

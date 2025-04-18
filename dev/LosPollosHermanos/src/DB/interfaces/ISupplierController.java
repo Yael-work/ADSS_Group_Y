@@ -3,6 +3,7 @@ package DB.interfaces;
 import Models.DBModels.suppliers.Supplier;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface ISupplierController extends IController<Supplier>{
     /**
@@ -51,5 +52,5 @@ public interface ISupplierController extends IController<Supplier>{
      * @param ids The list of IDs of the suppliers to retrieve.
      * @return A list of suppliers with the specified IDs, or an empty list if none found.
      */
-    ArrayList<Supplier> getSuppliersByIds(ArrayList<Integer> ids);
+    ArrayList<Supplier> getSuppliersByIds(List<Integer> ids);
 }
