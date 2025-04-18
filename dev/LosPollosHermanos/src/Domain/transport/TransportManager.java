@@ -205,6 +205,27 @@ public class TransportManager {
         return routes;
     }
 
+    private static boolean deleteSourceAndDestanationSite(int id) {
+        if (id <= 0) {
+            Helper.showError("Cant delete site with id <= 0");
+            return false;
+        }
+        Site site = DBManager.getInstance().getSiteController().getSiteById(id);
+        if (site == null) {
+            Helper.showError("Cant delete site with id=" + id + ", it does not exist");
+            return false;
+        } else {
+            for (Site site : sites) {
+                if (!DBManager.getInstance().getSiteController().deleteSite(site.getId())) {
+                    Helper.showError("Cant delete site with id=" + id + ", failed to delete site");
+                    return false;
+                }
+            }
+        }
+        return true;
+
+    }
+
     public static boolean deleteTransportById(int transportId) {
         if(transportId <= 0) {
             Helper.showError("Cant delete transport with id <= 0");
@@ -223,9 +244,24 @@ public class TransportManager {
                     Helper.showError("Cant delete transport with id=" + transportId + ", it is not in pending status");
                     return false;
                 }
-
+                if(!deleteDeliveryFile(route.getDeliveryFileId())) {
+                    Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete delivery file");
+                    return false;
+                }
+                if(!deleteSourceAndDestanationSite(route.getSourceSiteId())) {
+                    Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete source site");
+                    return false;
+                }
+                if(!deleteSourceAndDestanationSite(route.getDestinationSiteId())) {
+                    Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete destination site");
+                    return false;
+                }
+                if(!transportRouteController.deleteTransportRoute(route.getId())) {
+                    Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete transport route");
+                    return false;
+                }
             }
         }
-        return false;
+        return true;
     }
 }
