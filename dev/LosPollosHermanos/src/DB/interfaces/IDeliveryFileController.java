@@ -2,14 +2,15 @@ package DB.interfaces;
 
 import Models.DBModels.transport.DeliveryFile;
 
-public interface IDeliveryFileController extends IController<DeliveryFile>{
+public interface IDeliveryFileController extends IController<DeliveryFile> {
+
     /**
      * Adds a new delivery file to the database.
      *
      * @param deliveryFile The delivery file to be added.
-     * @return true if the delivery file was added successfully, false otherwise.
+     * @return The ID of the newly added delivery file, or -1 if the operation failed.
      */
-    boolean addDeliveryFile(DeliveryFile deliveryFile);
+    int addDeliveryFile(DeliveryFile deliveryFile);
 
     /**
      * Updates an existing delivery file in the database.

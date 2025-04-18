@@ -37,40 +37,144 @@ package Domain.transport;
  * 10. EditUnstartedTransport:TODO
  * */
 
+import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Helper;
 import DB.DBManager;
+import DB.interfaces.IDeliveryFileController;
+import DB.interfaces.IDeliveryFileItemController;
 import DB.interfaces.ITransportController;
+import DB.interfaces.ITransportRouteController;
 import Domain.suppliers.SuppliersManager;
 import Models.DBModels.suppliers.Supplier;
+import Models.DBModels.transport.DeliveryFile;
+import Models.DBModels.transport.DeliveryFileItem;
 import Models.DBModels.transport.TransportArea;
 import Models.DBModels.transport.TransportRoute;
+import Models.DTOs.ItemsAtSupplier;
 import Models.DTOs.StockItem;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TransportManager {
     private static final ITransportController transportController = DBManager.getInstance().getTransportController();
+    private static final IDeliveryFileItemController deliveryFileItemController = DBManager.getInstance().getDeliveryFileItemController();
+    private static final IDeliveryFileController deliveryFileController = DBManager.getInstance().getDeliveryFileController();
+    private static final ITransportRouteController transportRouteController = DBManager.getInstance().getTransportRouteController();
 
 
     /**
-     * This method is used to add a new transport.
+     * This method is used to create a delivery file.
      *
-     * @param branchId      - the ID of the branch - assumes ID is correct!!!
      * @param requiredItems - the list of required items
-     * @return - the transport route object if created successfully, null otherwise
+     * @return - the ID of the created delivery file, or Helper.UndefinedId if failed
      */
-    public static TransportRoute createNewTransportRoute(int branchId, List<StockItem> requiredItems) {
-        List<TransportArea> transportAreas = DBManager.getInstance().getTransportAreaController()
-                .getAllTransportAreasByBranchId(branchId);
+    private static int createDeliveryFile(List<StockItem> requiredItems) {
+        if (requiredItems == null || requiredItems.isEmpty()) {
+            Helper.showError("No items to create a delivery file.");
+            return Helper.UndefinedId;
+        }
+        List<Integer> addedIds = new ArrayList<>();
+        for (StockItem item : requiredItems) {
+            if (item.getAmount() <= 0) {
+                Helper.showError("Invalid amount for item: " + item.getItemName());
+            } else {
+                int addedId = deliveryFileItemController.addDeliveryFileItem(new DeliveryFileItem(Helper.UndefinedId, item.getItemId(), item.getAmount(), 0));
+                if (addedId <= Helper.UndefinedId) {
+                    Helper.showError("Failed to add item: " + item.getItemName());
+                } else {
+                    addedIds.add(addedId);
+                }
+            }
+        }
+        if (addedIds.isEmpty()) {
+            Helper.showError("No items were added to the delivery file.");
+            return Helper.UndefinedId;
+        }
+        return deliveryFileController.addDeliveryFile(new DeliveryFile(Helper.UndefinedId, addedIds));
+    }
+
+
+    /**
+     * This method is used to create a transport route.
+     *
+     * @param branchId   - the ID of the branch - assumes ID is correct!!!
+     * @param supplierId - the ID of the supplier - assumes ID is correct!!!
+     * @param items      - the list of items to be delivered
+     * @return - the ID of the created transport route, or Helper.UndefinedId if failed
+     */
+    private static int createTransportRoute(int branchId, int supplierId, List<StockItem> items) {
+        if (items == null || items.isEmpty()) {
+            Helper.showError("No items to create a transport route.");
+            return Helper.UndefinedId;
+        }
+        int deliveryFileId = createDeliveryFile(items);
+        if (deliveryFileId <= Helper.UndefinedId) {
+            Helper.showError("Failed to create delivery file for transport route.");
+            return Helper.UndefinedId;
+        }
+        TransportRoute transportRoute = new TransportRoute(Helper.UndefinedId, TransportStatusEnum.PENDING, branchId, supplierId, deliveryFileId);
+        return transportRouteController.addTransportRoute(transportRoute);
+    }
+
+    /**
+     * This method is used to create new transport routes for the given branch and required items.
+     *
+     * @param branchId      - the ID of the branch
+     * @param requiredItems - the list of required items
+     * @return - a list of created transport route IDs
+     */
+    public static List<Integer> createNewTransportRoutes(int branchId, List<StockItem> requiredItems) {
+        List<Integer> routes = new ArrayList<>();
+        List<StockItem> items = new ArrayList<>(requiredItems);
+        Map<Integer, List<StockItem>> suppliersAndItems = new HashMap<>();
+        List<TransportArea> transportAreas = DBManager.getInstance().getTransportAreaController().getAllTransportAreasByBranchId(branchId);
         if (transportAreas != null && !transportAreas.isEmpty()) {
             Set<Supplier> suppliers = new HashSet<>();
             for (TransportArea area : transportAreas) {
                 suppliers.addAll(SuppliersManager.getSuppliersByIds(area.getSuppliersIds()));
             }
-
+            if (!suppliers.isEmpty()) {
+                for (Supplier s : suppliers) {
+                    List<ItemsAtSupplier> itemsAtSupplier = SuppliersManager.mockCanSupplierProvideRequestedItems(s.getId(), items);
+                    List<StockItem> providedItems = new ArrayList<>();
+                    for (ItemsAtSupplier itemAS : itemsAtSupplier) {
+                        items.stream().filter(item -> item.getItemId() == itemAS.getItemId()).findFirst().ifPresent(foundItem -> {
+                            providedItems.add(new StockItem(itemAS.getItemId(), foundItem.getItemName(), foundItem.getBranchId(), itemAS.getAmount()));
+                            items.remove(foundItem);
+                        });
+                    }
+                    if (!suppliersAndItems.containsKey(s.getId())) {
+                        suppliersAndItems.put(s.getId(), providedItems);
+                    } else {
+                        suppliersAndItems.get(s.getId()).addAll(providedItems);
+                    }
+                }
+                if (items != null && !items.isEmpty()) {
+                    //todo handle general search for unprovided items...
+                }
+            } else {
+                // todo handle general search...
+            }
+        } else {
+            // todo handle general search...
         }
-        return null;
+
+        if (!items.isEmpty()) {
+            Helper.println("Items that are not provided for: ");
+            for (StockItem item : items) {
+                Helper.println(item.getItemName());
+            }
+            //todo need to decide how to handle a case where even after a general search we have unprovided items
+        }
+        for (Map.Entry<Integer, List<StockItem>> entry : suppliersAndItems.entrySet()) {
+            int supplierId = entry.getKey();
+            List<StockItem> itemsAtSupplier = entry.getValue();
+            int routeId = createTransportRoute(branchId, supplierId, itemsAtSupplier);
+            if (routeId > Helper.UndefinedId) {
+                routes.add(routeId);
+            } else {
+                Helper.showError("Failed to create transport route for supplier: " + supplierId);
+            }
+        }
+        return routes;
     }
 }

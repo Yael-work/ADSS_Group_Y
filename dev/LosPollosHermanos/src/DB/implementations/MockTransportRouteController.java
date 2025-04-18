@@ -1,5 +1,6 @@
 package DB.implementations;
 
+import Auxiliary.Helper;
 import DB.interfaces.ITransportRouteController;
 import Models.DBModels.transport.TransportRoute;
 
@@ -28,13 +29,13 @@ public class MockTransportRouteController implements ITransportRouteController {
     }
 
     @Override
-    public boolean addTransportRoute(TransportRoute transportRoute) {
+    public int addTransportRoute(TransportRoute transportRoute) {
         if (transportRoute == null) {
-            return false;
+            return Helper.UndefinedId;
         }
         transportRoute.setId(currentId++);
         transportRoutes.add(transportRoute);
-        return true;
+        return transportRoute.getId();
     }
 
     @Override

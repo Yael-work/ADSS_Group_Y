@@ -5,13 +5,14 @@ import Models.DBModels.transport.DeliveryFileItem;
 import java.util.ArrayList;
 
 public interface IDeliveryFileItemController extends IController<DeliveryFileItem> {
+
     /**
      * Adds a new delivery file item to the database.
      *
      * @param deliveryFileItem The delivery file item to be added.
-     * @return true if the delivery file item was added successfully, false otherwise.
+     * @return The ID of the newly added delivery file item, or Helper.UndefinedId if the operation failed.
      */
-    boolean addDeliveryFileItem(DeliveryFileItem deliveryFileItem);
+    int addDeliveryFileItem(DeliveryFileItem deliveryFileItem);
 
     /**
      * Updates an existing delivery file item in the database.

@@ -1,5 +1,6 @@
 package DB.implementations;
 
+import Auxiliary.Helper;
 import DB.interfaces.IDeliveryFileItemController;
 import Models.DBModels.transport.DeliveryFileItem;
 
@@ -27,13 +28,13 @@ public class MockDeliveryFileItemController implements IDeliveryFileItemControll
     }
 
     @Override
-    public boolean addDeliveryFileItem(DeliveryFileItem deliveryFileItem) {
+    public int addDeliveryFileItem(DeliveryFileItem deliveryFileItem) {
         if (deliveryFileItem == null) {
-            return false;
+            return Helper.UndefinedId;
         }
         deliveryFileItem.setId(currentId++);
         sites.add(deliveryFileItem);
-        return true;
+        return deliveryFileItem.getId();
     }
 
     @Override

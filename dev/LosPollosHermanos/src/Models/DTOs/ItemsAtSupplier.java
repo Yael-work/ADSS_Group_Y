@@ -3,9 +3,9 @@ package Models.DTOs;
 public class ItemsAtSupplier {
     private int supplierId;
     private int itemId;
-    private int amount;
+    private double amount;
 
-    public ItemsAtSupplier(int supplierId, int itemId, int amount) {
+    public ItemsAtSupplier(int supplierId, int itemId, double amount) {
         this.supplierId = supplierId;
         this.itemId = itemId;
         this.amount = amount;
@@ -27,7 +27,7 @@ public class ItemsAtSupplier {
         this.itemId = itemId;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 

@@ -7,12 +7,12 @@ import java.util.ArrayList;
 public interface ITransportRouteController extends IController<TransportRoute> {
 
     /**
-     * Adds new transport route to the database.
+     * Adds a new transport route to the database.
      *
      * @param transportRoute The transport route to add.
-     * @return true if the transport route was added successfully, false otherwise.
+     * @return The ID of the added transport route, or Helper.UndefinedId if the operation failed.
      */
-    boolean addTransportRoute(TransportRoute transportRoute);
+    int addTransportRoute(TransportRoute transportRoute);
 
     /**
      * Updates existing transport route in the database.
