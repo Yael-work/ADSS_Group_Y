@@ -2,6 +2,7 @@ package Auxiliary;
 
 import Models.DBModels.BaseModel;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -205,5 +206,39 @@ public class Helper {
 
         return new ArrayList<>(uniqueIds);
     }
+
+    public static final String DefaultDateTimeFormat = "yyyy-MM-dd HH:mm";
+
+    /**
+     * This method is used to convert a string to a LocalDateTime object.
+     *
+     * @param dateTime - The string to be converted.
+     * @return - The LocalDateTime object.
+     */
+    public static LocalDateTime stringToDateTime(String dateTime) {
+        return stringToDateTime(dateTime, DefaultDateTimeFormat);
+    }
+
+    /**
+     * This method is used to convert a string to a LocalDateTime object.
+     *
+     * @param dateTime - The string to be converted.
+     * @param format   - The format of the string such as "yyyy-MM-dd HH:mm".
+     * @return - The LocalDateTime object.
+     */
+    public static LocalDateTime stringToDateTime(String dateTime, String format) {
+        try {
+            if (dateTime == null || dateTime.trim().isEmpty() || format == null || format.trim().isEmpty()) {
+                Helper.showError("Invalid date and time format. Please try again.");
+                return null;
+            }
+            return LocalDateTime.parse(dateTime, java.time.format.DateTimeFormatter.ofPattern(format));
+        } catch (java.time.format.DateTimeParseException e) {
+            Helper.showError("Invalid date and time format. Please try again.");
+            return null;
+        }
+    }
+
+
 
 }

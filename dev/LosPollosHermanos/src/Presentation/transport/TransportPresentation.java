@@ -37,7 +37,7 @@ public class TransportPresentation {
                 TransportAreaHandler.HandleTransportAreaMenu();
                 break;
             case 2:
-                // Call method to manage transports
+                TransportHandler.handleTransports();
                 break;
             case 3:
                 TrucksHandler.HandleTrucks();
