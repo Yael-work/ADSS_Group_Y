@@ -4,15 +4,26 @@ package Models.DTOs;
 public class StockItem {
     private int itemId;
     private String itemName;
+    private String barcode;
     private int branchId;
     private double amount;
 
-    public StockItem(int itemId, String itemName, int branchId, double amount) {
+    public StockItem(int itemId, String itemName, int branchId, double amount, String barcode) {
         this.itemId = itemId;
         this.itemName = itemName;
         this.branchId = branchId;
         this.amount = amount;
+        this.barcode = barcode;
     }
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
 
     public int getItemId() {
         return itemId;

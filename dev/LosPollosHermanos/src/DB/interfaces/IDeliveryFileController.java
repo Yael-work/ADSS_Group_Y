@@ -35,5 +35,5 @@ public interface IDeliveryFileController extends IController<DeliveryFile> {
      * @param id The ID of the delivery file to be retrieved.
      * @return The path of the delivery file with the specified ID, or null if not found.
      */
-    String getDeliveryFileById(int id);
+    DeliveryFile getDeliveryFileById(int id);
 }

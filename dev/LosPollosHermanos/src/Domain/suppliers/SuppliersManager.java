@@ -6,6 +6,7 @@ import DB.interfaces.ISupplierController;
 import Models.DBModels.suppliers.Supplier;
 import Models.DTOs.ItemsAtSupplier;
 import Models.DTOs.StockItem;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -44,6 +45,19 @@ public class SuppliersManager {
     }
 
 
+    public static List<ItemsAtSupplier> mockGetItemsAtSupplierByBarcode(int supplierId, List<String> barcodes) {
+        List<ItemsAtSupplier> itemsAtSupplier = new ArrayList<>();
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            int itemId = random.nextInt(1000);
+            double amount = random.nextDouble() * 100;
+            String barcode = barcodes.get(random.nextInt(barcodes.size()));
+            ItemsAtSupplier itemsAtSupplier1 = new ItemsAtSupplier(supplierId, itemId, amount, barcode);
+            itemsAtSupplier.add(itemsAtSupplier1);
+        }
+        return itemsAtSupplier;
+    }
+
     /**
      * This method is used to get the items that can be provided from the supplier in accordance with the requested items and their amounts
      *
@@ -60,7 +74,8 @@ public class SuppliersManager {
             randomAmount = Math.max(0, randomAmount);
 
             if (randomAmount >= originalAmount) {
-                ItemsAtSupplier itemsAtSupplier1 = new ItemsAtSupplier(supplierId, item.getItemId(), randomAmount);
+                ItemsAtSupplier itemsAtSupplier1 = new ItemsAtSupplier(supplierId, item.getItemId(), randomAmount,
+                        item.getBarcode());
                 itemsAtSupplier.add(itemsAtSupplier1);
             }
         }
@@ -71,10 +86,10 @@ public class SuppliersManager {
      * This method is used to reserve the items of the supplier
      *
      * @param supplierId - the ID of the supplier
-     * @param items      - the list of items to be reserved
+     * @param itemIds    - the list of items to be reserved
      * @return - true if the items were reserved successfully, false otherwise
      */
-    public static boolean mockReserveItemsOfSupplier(int supplierId, List<StockItem> items) {
+    public static boolean mockReserveItemsOfSupplier(int supplierId, List<Integer> itemIds) {
         //todo @ whoever
         return true;
     }
@@ -84,11 +99,41 @@ public class SuppliersManager {
      * This method is used to un-reserve the items of the supplier
      *
      * @param supplierId - the ID of the supplier
-     * @param items      - the list of items to be un-reserved
+     * @param itemIds    - the list of items to be un-reserved
      * @return - true if the items were un-reserved successfully, false otherwise
      */
-    public static boolean mockUnReserveItemsOfSupplier(int supplierId, List<StockItem> items) {
+    public static boolean mockUnReserveItemsOfSupplier(int supplierId, List<Integer> itemIds) {
         //todo @ whoever
         return true;
+    }
+
+
+    /**
+     * This method is used to get the current contact phone of the supplier
+     *
+     * @param supplierId - the ID of the supplier
+     * @return - the current contact phone of the supplier
+     */
+    public static String getCurrentContactPhoneOfSupplier(int supplierId) {
+        Supplier supplier = getSupplierById(supplierId);
+        if (supplier != null) {
+            return supplier.getSupplierPhone();
+        }
+        return null;
+    }
+
+
+    /**
+     * This method is used to get the current contact name of the supplier
+     *
+     * @param supplierId - the ID of the supplier
+     * @return - the current contact name of the supplier
+     */
+    public static String getCurrentContactNameOfSupplier(int supplierId) {
+        Supplier supplier = getSupplierById(supplierId);
+        if (supplier != null) {
+            return "Someone from " + supplier.getSiteName();
+        }
+        return null;
     }
 }

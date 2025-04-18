@@ -68,4 +68,17 @@ public class Truck extends BaseModel {
                 ", model='" + model + '\'' +
                 "} " + super.toString();
     }
+
+
+    @Override
+    public String toPrettyString() {
+        return "Truck{" +
+                "id='" + getId() + '\'' +
+                ", plate='" + plate + '\'' +
+                ", netWeight=" + netWeight +
+                ", maxWeight=" + maxWeight +
+                ", requiredLicenseType='" + requiredLicenseType + '\'' +
+                ", model='" + model + '\'' +
+                "} ";
+    }
 }

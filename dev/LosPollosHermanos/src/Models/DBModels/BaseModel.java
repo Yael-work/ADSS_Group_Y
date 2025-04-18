@@ -42,4 +42,8 @@ public abstract class BaseModel {
                 ", modelName='" + modelName + '\'' +
                 '}';
     }
+
+    public String toPrettyString() {
+        return String.format("ID: %d, Model Name: %s", id, modelName);
+    }
 }

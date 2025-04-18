@@ -1,5 +1,6 @@
 package DB.implementations;
 
+import Auxiliary.Helper;
 import DB.interfaces.ISiteController;
 import Models.DBModels.transport.Site;
 
@@ -28,13 +29,13 @@ public class MockSiteController implements ISiteController {
     }
 
     @Override
-    public boolean addSite(Site site) {
+    public int addSite(Site site) {
         if (site == null) {
-            return false;
+            return Helper.UndefinedId;
         }
         site.setId(currentId++);
         sites.add(site);
-        return true;
+        return site.getId();
     }
 
     @Override

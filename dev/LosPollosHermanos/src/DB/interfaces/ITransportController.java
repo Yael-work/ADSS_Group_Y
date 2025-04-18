@@ -1,24 +1,27 @@
 package DB.interfaces;
+
 import Models.DBModels.transport.Transport;
 
 import java.util.ArrayList;
 
-public interface ITransportController extends IController<Transport>{
+public interface ITransportController extends IController<Transport> {
     /**
-     * Adds new transport to the database.
+     * Adds a new transport to the database.
      *
      * @param transport The transport to add.
-     * @return true if the transport was added successfully, false otherwise.
+     * @return The ID of the added transport, or Helper.UndefinedId if the operation failed.
      */
-    boolean addTransport(Transport transport);
+    int addTransport(Transport transport);
+
     /**
      * Updates existing transport in the database.
      *
      * @param transport The transport with updated information.
-     * @param id       The ID of the transport to update.
+     * @param id        The ID of the transport to update.
      * @return true if the transport was updated successfully, false otherwise.
      */
     boolean updateTransport(Transport transport, int id);
+
     /**
      * Deletes transport from the database.
      *
@@ -26,6 +29,7 @@ public interface ITransportController extends IController<Transport>{
      * @return true if the transport was deleted successfully, false otherwise.
      */
     boolean deleteTransport(int id);
+
     /**
      * Retrieves transport by its ID.
      *

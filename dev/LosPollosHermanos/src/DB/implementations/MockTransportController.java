@@ -1,5 +1,6 @@
 package DB.implementations;
 
+import Auxiliary.Helper;
 import DB.interfaces.ITransportController;
 
 import java.util.ArrayList;
@@ -29,13 +30,13 @@ public class MockTransportController implements ITransportController {
     }
 
     @Override
-    public boolean addTransport(Transport transport) {
+    public int addTransport(Transport transport) {
         if (transport == null) {
-            return false;
+            return Helper.UndefinedId;
         }
         transport.setId(currentId++);
         transports.add(transport);
-        return true;
+        return transport.getId();
     }
 
     @Override

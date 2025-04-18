@@ -3,6 +3,7 @@ package DB.interfaces;
 import Models.DBModels.transport.DeliveryFileItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface IDeliveryFileItemController extends IController<DeliveryFileItem> {
 
@@ -45,5 +46,5 @@ public interface IDeliveryFileItemController extends IController<DeliveryFileIte
      * @param ids The list of IDs of the delivery file items to be retrieved.
      * @return A list of delivery file items with the specified IDs, or an empty list if none found.
      */
-    ArrayList<DeliveryFileItem> getDeliveryFileItemsByIds(ArrayList<Integer> ids);
+    List<DeliveryFileItem> getDeliveryFileItemsByIds(List<Integer> ids);
 }

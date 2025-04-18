@@ -68,4 +68,10 @@ public class Driver extends BaseModel {
                 ", licenseType='" + licenseType + '\'' +
                 "} " + super.toString();
     }
+
+    @Override
+    public String toPrettyString() {
+        return String.format("ID: %d, First Name: %s, Last Name: %s, Personal ID: %s, Phone Number: %s, License Type: %s",
+                getId(), firstName, lastName, personalId, phoneNumber, licenseType);
+    }
 }

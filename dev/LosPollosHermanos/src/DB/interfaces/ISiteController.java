@@ -3,13 +3,14 @@ package DB.interfaces;
 import Models.DBModels.transport.Site;
 
 public interface ISiteController extends IController<Site> {
+
     /**
      * Adds a new site to the database.
      *
      * @param site The site to be added.
-     * @return true if the site was added successfully, false otherwise.
+     * @return The ID of the newly added site, or Helper.UndefinedId if the operation failed.
      */
-    boolean addSite(Site site);
+    int addSite(Site site);
 
     /**
      * Updates an existing site in the database.
