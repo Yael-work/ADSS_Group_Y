@@ -273,7 +273,7 @@ public class TransportHandler {
                             Helper.println("Branch will not be added to the transport.");
                             List<Integer> routesIds = routesCreationResult.getCreatedTransportRoutesIds();
                             if (routesIds != null && !routesIds.isEmpty()) {
-                                TransportManager.deleteTransportById(routesIds.getFirst());
+                                //todo delete only the routeIds above ^^
                                  Helper.println("Deleting created routes...");
                             }
                         }

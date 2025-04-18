@@ -243,7 +243,7 @@ public class TransportManager {
      * @param siteId - the ID of the delivery file to be deleted
      * @return - true if the delivery file was deleted successfully, false otherwise
      */
-    private static boolean deleteSourceAndDestanationSite(int siteId) {
+    private static boolean deleteSourceAndDestinationSite(int siteId) {
         if (siteId <= 0) {
             Helper.showError("Cant delete site with id <= 0");
             return true;
@@ -280,11 +280,11 @@ public class TransportManager {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete delivery file");
                     return false;
                 }
-                if (deleteSourceAndDestanationSite(t.getSourceSiteId())) {
+                if (deleteSourceAndDestinationSite(t.getSourceSiteId())) {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete source site");
                     return false;
                 }
-                if (deleteSourceAndDestanationSite(t.getDestinationSiteId())) {
+                if (deleteSourceAndDestinationSite(t.getDestinationSiteId())) {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete destination site");
                     return false;
                 }
