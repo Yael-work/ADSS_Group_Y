@@ -45,14 +45,11 @@ public class SuppliersManager {
     }
 
 
-    public static List<ItemsAtSupplier> mockGetItemsAtSupplierByBarcode(int supplierId, List<String> barcodes) {
+    public static List<ItemsAtSupplier> mockGetSupplierItemsByStockItems(int supplierId, List<StockItem> items) {
         List<ItemsAtSupplier> itemsAtSupplier = new ArrayList<>();
-        Random random = new Random();
-        for (int i = 0; i < 10; i++) {
-            int itemId = random.nextInt(1000);
-            double amount = random.nextDouble() * 100;
-            String barcode = barcodes.get(random.nextInt(barcodes.size()));
-            ItemsAtSupplier itemsAtSupplier1 = new ItemsAtSupplier(supplierId, itemId, amount, barcode);
+        for (StockItem item : items) {
+            ItemsAtSupplier itemsAtSupplier1 = new ItemsAtSupplier(supplierId, item.getStockItemId(), item.getAmount(),
+                    item.getBarcode());
             itemsAtSupplier.add(itemsAtSupplier1);
         }
         return itemsAtSupplier;
@@ -74,7 +71,7 @@ public class SuppliersManager {
             randomAmount = Math.max(0, randomAmount);
 
             if (randomAmount >= originalAmount) {
-                ItemsAtSupplier itemsAtSupplier1 = new ItemsAtSupplier(supplierId, item.getItemId(), randomAmount,
+                ItemsAtSupplier itemsAtSupplier1 = new ItemsAtSupplier(supplierId, item.getStockItemId(), randomAmount,
                         item.getBarcode());
                 itemsAtSupplier.add(itemsAtSupplier1);
             }
@@ -89,7 +86,7 @@ public class SuppliersManager {
      * @param itemIds    - the list of items to be reserved
      * @return - true if the items were reserved successfully, false otherwise
      */
-    public static boolean mockReserveItemsOfSupplier(int supplierId, List<Integer> itemIds) {
+    public static boolean mockReserveItemsOfSupplier(int supplierId, List<ItemsAtSupplier> itemIds) {
         //todo @ whoever
         return true;
     }
@@ -102,7 +99,7 @@ public class SuppliersManager {
      * @param itemIds    - the list of items to be un-reserved
      * @return - true if the items were un-reserved successfully, false otherwise
      */
-    public static boolean mockUnReserveItemsOfSupplier(int supplierId, List<Integer> itemIds) {
+    public static boolean mockUnReserveItemsOfSupplier(int supplierId, List<ItemsAtSupplier> itemIds) {
         //todo @ whoever
         return true;
     }

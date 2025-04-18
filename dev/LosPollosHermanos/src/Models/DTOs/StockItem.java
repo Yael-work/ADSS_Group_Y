@@ -2,14 +2,14 @@ package Models.DTOs;
 
 
 public class StockItem {
-    private int itemId;
+    private int stockItemId;
     private String itemName;
     private String barcode;
     private int branchId;
     private double amount;
 
-    public StockItem(int itemId, String itemName, int branchId, double amount, String barcode) {
-        this.itemId = itemId;
+    public StockItem(int stockItemId, String itemName, int branchId, double amount, String barcode) {
+        this.stockItemId = stockItemId;
         this.itemName = itemName;
         this.branchId = branchId;
         this.amount = amount;
@@ -25,12 +25,12 @@ public class StockItem {
     }
 
 
-    public int getItemId() {
-        return itemId;
+    public int getStockItemId() {
+        return stockItemId;
     }
 
-    public void setItemId(int itemId) {
-        this.itemId = itemId;
+    public void setStockItemId(int stockItemId) {
+        this.stockItemId = stockItemId;
     }
 
     public String getItemName() {
@@ -60,7 +60,7 @@ public class StockItem {
     @Override
     public String toString() {
         return "StockItem{" +
-                "itemId=" + itemId +
+                "stockItemId=" + stockItemId +
                 ", itemName='" + itemName + '\'' +
                 ", branchId=" + branchId +
                 ", amount=" + amount +

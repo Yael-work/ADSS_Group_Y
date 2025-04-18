@@ -3,23 +3,23 @@ package Models.DBModels.transport;
 import Models.DBModels.BaseModel;
 
 public class DeliveryFileItem extends BaseModel {
-    private int itemId; // FK
+    private int stockItemId; // FK
     private double amount;
     private double amountPickedUp;
 
-    public DeliveryFileItem(int id, int itemId, double amount, double amountPickedUp) {
+    public DeliveryFileItem(int id, int stockItemId, double amount, double amountPickedUp) {
         super(id, DeliveryFileItem.class.getName());
-        this.itemId = itemId;
+        this.stockItemId = stockItemId;
         this.amount = amount;
         this.amountPickedUp = amountPickedUp;
     }
 
-    public int getItemId() {
-        return itemId;
+    public int getStockItemId() {
+        return stockItemId;
     }
 
-    public void setItemId(int itemId) {
-        this.itemId = itemId;
+    public void setStockItemId(int stockItemId) {
+        this.stockItemId = stockItemId;
     }
 
     public double getAmount() {
@@ -41,7 +41,7 @@ public class DeliveryFileItem extends BaseModel {
     @Override
     public String toString() {
         return "DeliveryFileItem{" +
-                "itemId=" + itemId +
+                "stockItemId=" + stockItemId +
                 ", amount=" + amount +
                 ", amountPickedUp=" + amountPickedUp +
                 "} " + super.toString();

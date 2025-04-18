@@ -2,13 +2,13 @@ package Models.DTOs;
 
 public class ItemsAtSupplier {
     private int supplierId;
-    private int itemId;
+    private int stockItemId;
     private double amount;
     private String barcode;
 
-    public ItemsAtSupplier(int supplierId, int itemId, double amount, String barcode) {
+    public ItemsAtSupplier(int supplierId, int stockItemId, double amount, String barcode) {
         this.supplierId = supplierId;
-        this.itemId = itemId;
+        this.stockItemId = stockItemId;
         this.amount = amount;
         this.barcode = barcode;
     }
@@ -29,12 +29,12 @@ public class ItemsAtSupplier {
         this.supplierId = supplierId;
     }
 
-    public int getItemId() {
-        return itemId;
+    public int getStockItemId() {
+        return stockItemId;
     }
 
-    public void setItemId(int itemId) {
-        this.itemId = itemId;
+    public void setStockItemId(int stockItemId) {
+        this.stockItemId = stockItemId;
     }
 
     public double getAmount() {
@@ -49,7 +49,7 @@ public class ItemsAtSupplier {
     public String toString() {
         return "ItemsAtSupplier{" +
                 "supplierId=" + supplierId +
-                ", itemId=" + itemId +
+                ", stockItemId=" + stockItemId +
                 ", amount=" + amount +
                 "} ";
     }

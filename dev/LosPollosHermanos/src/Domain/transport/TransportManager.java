@@ -47,6 +47,7 @@ import DB.interfaces.IDeliveryFileController;
 import DB.interfaces.IDeliveryFileItemController;
 import DB.interfaces.ITransportController;
 import DB.interfaces.ITransportRouteController;
+import Domain.stock.StockManager;
 import Domain.suppliers.SuppliersManager;
 import Models.DBModels.suppliers.Supplier;
 import Models.DBModels.transport.*;
@@ -82,7 +83,7 @@ public class TransportManager {
             if (item.getAmount() <= 0) {
                 Helper.showError("Invalid amount for item: " + item.getItemName());
             } else {
-                int addedId = deliveryFileItemController.addDeliveryFileItem(new DeliveryFileItem(Helper.UndefinedId, item.getItemId(), item.getAmount(), 0));
+                int addedId = deliveryFileItemController.addDeliveryFileItem(new DeliveryFileItem(Helper.UndefinedId, item.getStockItemId(), item.getAmount(), 0));
                 if (addedId <= Helper.UndefinedId) {
                     Helper.showError("Failed to add item: " + item.getItemName());
                 } else {
@@ -198,8 +199,8 @@ public class TransportManager {
                     }
                     List<StockItem> providedItems = new ArrayList<>();
                     for (ItemsAtSupplier itemAS : itemsAtSupplier) {
-                        items.stream().filter(item -> item.getItemId() == itemAS.getItemId()).findFirst().ifPresent(foundItem -> {
-                            providedItems.add(new StockItem(itemAS.getItemId(), foundItem.getItemName(), foundItem.getBranchId(), itemAS.getAmount()));
+                        items.stream().filter(item -> item.getStockItemId() == itemAS.getStockItemId()).findFirst().ifPresent(foundItem -> {
+                            providedItems.add(foundItem);
                             items.remove(foundItem);
                         });
                     }
@@ -261,36 +262,35 @@ public class TransportManager {
     }
 
     public static boolean deleteTransportById(int transportId) {
-        if(transportId <= 0) {
+        if (transportId <= 0) {
             Helper.showError("Cant delete transport with id <= 0");
             return false;
         }
         ArrayList<Integer> ids = new ArrayList<>();
         ids.add(transportId);
         List<TransportRoute> routes = transportRouteController.getTransportRoutesByIds(ids);
-        if(routes == null || routes.isEmpty()) {
+        if (routes == null || routes.isEmpty()) {
             Helper.showError("Cant delete transport with id=" + transportId + ", it does not exist");
             return false;
-        }
-        else {
-            for(TransportRoute route : routes) {
-                if(route.getStatus() != TransportStatusEnum.PENDING) {
+        } else {
+            for (TransportRoute route : routes) {
+                if (route.getStatus() != TransportStatusEnum.PENDING) {
                     Helper.showError("Cant delete transport with id=" + transportId + ", it is not in pending status");
                     return false;
                 }
-                if(!deleteDeliveryFile(route.getDeliveryFileId())) {
+                if (!deleteDeliveryFile(route.getDeliveryFileId())) {
                     Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete delivery file");
                     return false;
                 }
-                if(deleteSourceAndDestanationSite(route.getSourceSiteId())) {
+                if (deleteSourceAndDestanationSite(route.getSourceSiteId())) {
                     Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete source site");
                     return false;
                 }
-                if(deleteSourceAndDestanationSite(route.getDestinationSiteId())) {
+                if (deleteSourceAndDestanationSite(route.getDestinationSiteId())) {
                     Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete destination site");
                     return false;
                 }
-                if(!transportRouteController.deleteTransportRoute(route.getId())) {
+                if (!transportRouteController.deleteTransportRoute(route.getId())) {
                     Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete transport route");
                     return false;
                 }
@@ -390,21 +390,27 @@ public class TransportManager {
                     // todo finally delete the transport route
                 }
             }
-        }
-        else{
-            for(int routeId : transportRoutes){
+        } else {
+            for (int routeId : transportRoutes) {
                 TransportRoute route = transportRouteController.getTransportRouteById(routeId);
                 if (route != null) {
                     Site srcSite = siteController.getSiteById(route.getSourceSiteId());
                     DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(route.getDeliveryFileId());
-                    if(srcSite != null){
-                        if(srcSite.getSiteType() == SiteTypeEnum.SUPPLIER){
+                    if (srcSite != null) {
+                        if (srcSite.getSiteType() == SiteTypeEnum.SUPPLIER) {
                             List<DeliveryFileItem> deliveryFileItems =
                                     deliveryFileItemController.getDeliveryFileItemsByIds(
                                             deliveryFile.getDeliveryFileItemIds());
+                            List<StockItem> items = new ArrayList<>();
                             List<ItemsAtSupplier> itemsAtSupplier =
-                                    SuppliersManager.mockGetItemsAtSupplierByBarcode(srcSite.getSiteObjectId());
-                            SuppliersManager.mockReserveItemsOfSupplier(srcSite.getSiteObjectId(),
+                                    SuppliersManager.mockGetSupplierItemsByStockItems(srcSite.getSiteObjectId(),
+                                            StockManager.mockGetStockItemsByIds(
+                                                    deliveryFileItems.stream()
+                                                            .map(DeliveryFileItem::getStockItemId)
+                                                            .collect(Collectors.toList())));
+                            if (!SuppliersManager.mockReserveItemsOfSupplier(srcSite.getSiteObjectId(), itemsAtSupplier)) {
+                                Helper.showError("Failed to reserve items for supplier: " + srcSite.getSiteObjectId());
+                            }
                         }
                     }
 

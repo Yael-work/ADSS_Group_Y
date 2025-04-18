@@ -1,6 +1,7 @@
 package Presentation.transport;
 
 import Auxiliary.Helper;
+import Domain.stock.StockManager;
 import Domain.transport.BranchesManager;
 import Domain.transport.DriversManager;
 import Domain.transport.TransportManager;
@@ -14,24 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TransportHandler {
-
-    /**
-     * This method is used to search for stock items based on a search string and branch ID.
-     *
-     * @param searchString The search string to filter stock items.
-     * @param branchId     The ID of the branch to filter stock items.
-     * @return A list of relevant stock items.
-     */
-    private static ArrayList<StockItem> mockSearchAndReturnRelevantStockItems(String searchString, int branchId) {
-        // Mock implementation to simulate searching and returning relevant stock items
-        ArrayList<StockItem> stockItems = new ArrayList<>();
-        stockItems.add(new StockItem(1, "Item1", branchId, 10, "Item1 Description"));
-        stockItems.add(new StockItem(2, "Item2", branchId, 20, "Item2 Description"));
-        stockItems.add(new StockItem(3, "Item3", branchId, 30, "Item3 Description"));
-        stockItems.add(new StockItem(4, "Item4", branchId, 40, "Item4 Description"));
-        stockItems.add(new StockItem(5, "Item5", branchId, 50, "Item5 Description"));
-        return stockItems;
-    }
 
 
     /**
@@ -103,10 +86,10 @@ public class TransportHandler {
             if (userInput.equalsIgnoreCase("continue")) {
                 break;
             }
-            ArrayList<StockItem> stockItems = mockSearchAndReturnRelevantStockItems(userInput, branchId);
+            ArrayList<StockItem> stockItems = StockManager.mockSearchAndReturnRelevantStockItems(userInput, branchId);
             for (StockItem stockItem : stockItems) {
                 Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
-                        stockItem.getItemId(), stockItem.getItemName(), stockItem.getAmount()));
+                        stockItem.getStockItemId(), stockItem.getItemName(), stockItem.getAmount()));
             }
             Helper.print("Please select the relevant item you want to add to the transport by its ID," +
                     " or write 0 to skip this item: ");
@@ -119,10 +102,10 @@ public class TransportHandler {
                 Helper.println("Skipping this item.");
             } else {
                 int finalItemId = itemId;
-                StockItem selectedItem = stockItems.stream().filter(item -> item.getItemId() == finalItemId)
+                StockItem selectedItem = stockItems.stream().filter(item -> item.getStockItemId() == finalItemId)
                         .findFirst().orElse(null);
                 if (selectedItem != null) {
-                    if (selectedItems.stream().anyMatch(item -> item.getItemId() == selectedItem.getItemId())) {
+                    if (selectedItems.stream().anyMatch(item -> item.getStockItemId() == selectedItem.getStockItemId())) {
                         Helper.println("Item already selected. Please choose a different item.");
                     } else {
                         Helper.println("You have selected item: " + selectedItem.getItemName());
@@ -256,7 +239,7 @@ public class TransportHandler {
                 Helper.println("The items you selected for this transport are:");
                 for (StockItem selectedItem : selectedItems) {
                     Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
-                            selectedItem.getItemId(), selectedItem.getItemName(), selectedItem.getAmount()));
+                            selectedItem.getStockItemId(), selectedItem.getItemName(), selectedItem.getAmount()));
                 }
                 Helper.println("Generating routes from suppliers to branch...");
                 CreateNewTransportRoutesResult routesCreationResult =
@@ -271,7 +254,7 @@ public class TransportHandler {
                         Helper.println("Please check the following items:");
                         for (StockItem unprovidedItem : routesCreationResult.getUnprovidedItems()) {
                             Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
-                                    unprovidedItem.getItemId(),
+                                    unprovidedItem.getStockItemId(),
                                     unprovidedItem.getItemName(), unprovidedItem.getAmount()));
                         }
                         Helper.print("Would you like to add this branch with the unprovided items to the transport? " +
