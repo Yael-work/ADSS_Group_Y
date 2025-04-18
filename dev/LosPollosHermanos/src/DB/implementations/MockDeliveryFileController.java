@@ -7,12 +7,12 @@ import Models.DBModels.transport.DeliveryFile;
 import java.util.ArrayList;
 
 public class MockDeliveryFileController implements IDeliveryFileController {
-    private final ArrayList<DeliveryFile> sites;
+    private final ArrayList<DeliveryFile> files;
     private int currentId = 1;
     private static MockDeliveryFileController instance = null;
 
     private MockDeliveryFileController() {
-        this.sites = new ArrayList<>();
+        this.files = new ArrayList<>();
     }
 
     public static MockDeliveryFileController getInstance() {
@@ -28,7 +28,7 @@ public class MockDeliveryFileController implements IDeliveryFileController {
             return Helper.UndefinedId;
         }
         deliveryFile.setId(currentId++);
-        sites.add(deliveryFile);
+        files.add(deliveryFile);
         return deliveryFile.getId();
     }
 
@@ -37,10 +37,10 @@ public class MockDeliveryFileController implements IDeliveryFileController {
         if (deliveryFile == null) {
             return false;
         }
-        for (int i = 0; i < sites.size(); i++) {
-            if (sites.get(i).getId() == id) {
+        for (int i = 0; i < files.size(); i++) {
+            if (files.get(i).getId() == id) {
                 deliveryFile.setId(id);
-                sites.set(i, deliveryFile);
+                files.set(i, deliveryFile);
                 return true;
             }
         }
@@ -49,9 +49,9 @@ public class MockDeliveryFileController implements IDeliveryFileController {
 
     @Override
     public boolean deleteDeliveryFile(int id) {
-        for (int i = 0; i < sites.size(); i++) {
-            if (sites.get(i).getId() == id) {
-                sites.remove(i);
+        for (int i = 0; i < files.size(); i++) {
+            if (files.get(i).getId() == id) {
+                files.remove(i);
                 return true;
             }
         }
@@ -60,7 +60,7 @@ public class MockDeliveryFileController implements IDeliveryFileController {
 
     @Override
     public String getDeliveryFileById(int id) {
-        for (DeliveryFile deliveryFile : sites) {
+        for (DeliveryFile deliveryFile : files) {
             if (deliveryFile.getId() == id) {
                 return deliveryFile.toString();
             }
@@ -70,6 +70,6 @@ public class MockDeliveryFileController implements IDeliveryFileController {
 
     @Override
     public ArrayList<DeliveryFile> getAllRecords() {
-        return new ArrayList<>(sites);
+        return new ArrayList<>(files);
     }
 }
