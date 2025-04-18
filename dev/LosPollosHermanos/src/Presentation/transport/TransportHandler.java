@@ -2,11 +2,13 @@ package Presentation.transport;
 
 import Auxiliary.Helper;
 import Domain.transport.BranchesManager;
+import Domain.transport.TransportManager;
 import Models.DBModels.transport.Branch;
 import Models.DTOs.StockItem;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TransportHandler {
 
@@ -132,6 +134,8 @@ public class TransportHandler {
                     Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
                             selectedItem.getItemId(), selectedItem.getItemName(), selectedItem.getAmount()));
                 }
+                //TODO create transport routes from this point
+                List<Integer> routes = TransportManager.createNewTransportRoutes(branchId, selectedItems);
             }
         } while (userInput == null || !userInput.equalsIgnoreCase("continue"));
 
