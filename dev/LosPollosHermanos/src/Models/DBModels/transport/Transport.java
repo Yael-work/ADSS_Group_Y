@@ -3,22 +3,22 @@ package Models.DBModels.transport;
 import Models.DBModels.BaseModel;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Transport extends BaseModel {
-    private Date plannedDateTime;
+    private LocalDateTime plannedDateTime;
     private TransportStatusEnum status;
     private int truckId;
     private int driverId;
     private List<Integer> transportRouteIds;
     private List<Integer> transportIssueLogIds;
-    private Date actualStartDatetime;
-    private Date actualEndDatetime;
+    private LocalDateTime actualStartDatetime;
+    private LocalDateTime actualEndDatetime;
 
-    public Transport(int id, Date plannedDateTime, TransportStatusEnum status, int truckId, int driverId,
+    public Transport(int id, LocalDateTime plannedDateTime, TransportStatusEnum status, int truckId, int driverId,
                      List<Integer> transportRouteIds, List<Integer> transportIssueLogIds,
-                     Date actualStartDatetime, Date actualEndDatetime) {
+                     LocalDateTime actualStartDatetime, LocalDateTime actualEndDatetime) {
         super(id, Transport.class.getName());
         this.plannedDateTime = plannedDateTime;
         this.status = status;
@@ -30,11 +30,11 @@ public class Transport extends BaseModel {
         this.actualEndDatetime = actualEndDatetime;
     }
 
-    public Date getPlannedDateTime() {
+    public LocalDateTime getPlannedDateTime() {
         return plannedDateTime;
     }
 
-    public void setPlannedDateTime(Date plannedDateTime) {
+    public void setPlannedDateTime(LocalDateTime plannedDateTime) {
         this.plannedDateTime = plannedDateTime;
     }
 
@@ -70,19 +70,19 @@ public class Transport extends BaseModel {
         this.transportIssueLogIds = transportIssueLogIds;
     }
 
-    public Date getActualStartDatetime() {
+    public LocalDateTime getActualStartDatetime() {
         return actualStartDatetime;
     }
 
-    public void setActualStartDatetime(Date actualStartDatetime) {
+    public void setActualStartDatetime(LocalDateTime actualStartDatetime) {
         this.actualStartDatetime = actualStartDatetime;
     }
 
-    public Date getActualEndDatetime() {
+    public LocalDateTime getActualEndDatetime() {
         return actualEndDatetime;
     }
 
-    public void setActualEndDatetime(Date actualEndDatetime) {
+    public void setActualEndDatetime(LocalDateTime actualEndDatetime) {
         this.actualEndDatetime = actualEndDatetime;
     }
 
