@@ -25,11 +25,11 @@ public class TransportHandler {
     private static ArrayList<StockItem> mockSearchAndReturnRelevantStockItems(String searchString, int branchId) {
         // Mock implementation to simulate searching and returning relevant stock items
         ArrayList<StockItem> stockItems = new ArrayList<>();
-        stockItems.add(new StockItem(1, "Item1", branchId, 10));
-        stockItems.add(new StockItem(2, "Item2", branchId, 20));
-        stockItems.add(new StockItem(3, "Item3", branchId, 30));
-        stockItems.add(new StockItem(4, "Item4", branchId, 40));
-        stockItems.add(new StockItem(5, "Item5", branchId, 50));
+        stockItems.add(new StockItem(1, "Item1", branchId, 10, "Item1 Description"));
+        stockItems.add(new StockItem(2, "Item2", branchId, 20, "Item2 Description"));
+        stockItems.add(new StockItem(3, "Item3", branchId, 30, "Item3 Description"));
+        stockItems.add(new StockItem(4, "Item4", branchId, 40, "Item4 Description"));
+        stockItems.add(new StockItem(5, "Item5", branchId, 50, "Item5 Description"));
         return stockItems;
     }
 
@@ -290,6 +290,8 @@ public class TransportHandler {
                             Helper.println("Branch will not be added to the transport.");
                             List<Integer> routesIds = routesCreationResult.getCreatedTransportRoutesIds();
                             if (routesIds != null && !routesIds.isEmpty()) {
+                                TransportManager.deleteTransportById(routesIds.getFirst());
+                                 Helper.println("Deleting created routes...");
                                 //todo delete the created routes here!!!
                             }
                         }
@@ -298,6 +300,8 @@ public class TransportHandler {
                         Helper.println("Failed to create transport routes for branch " + branchId);
                         List<Integer> routesIds = routesCreationResult.getCreatedTransportRoutesIds();
                         if (routesIds != null && !routesIds.isEmpty()) {
+                            TransportManager.deleteTransportById(routesIds.getFirst());
+                            Helper.println("Deleting created routes...");
                             //todo delete the created routes here!!!
                         }
                     }

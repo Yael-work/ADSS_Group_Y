@@ -43,8 +43,6 @@ import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Helper;
 import DB.DBManager;
 import DB.interfaces.*;
-import DB.implementations.MockDeliveryFileController;
-import DB.implementations.MockDeliveryFileItemController;
 import DB.interfaces.IDeliveryFileController;
 import DB.interfaces.IDeliveryFileItemController;
 import DB.interfaces.ITransportController;
@@ -112,7 +110,7 @@ public class TransportManager {
         }
         ArrayList<Integer> Ids = new ArrayList<>();
         Ids.add(deliveryFileId);
-        ArrayList<DeliveryFileItem> items = deliveryFileItemController.getDeliveryFileItemsByIds(Ids);
+        List<DeliveryFileItem> items = deliveryFileItemController.getDeliveryFileItemsByIds(Ids);
         if (items != null && !items.isEmpty()) {
             for (DeliveryFileItem item : items) {
                 if (!deliveryFileItemController.deleteDeliveryFileItem(item.getId())) {
@@ -238,25 +236,28 @@ public class TransportManager {
                 items);
     }
 
-    private static boolean deleteSourceAndDestanationSite(int id) {
-        if (id <= 0) {
+    /**
+     * This method is used to delete a delivery file and its items.
+     *
+     * @param siteId - the ID of the delivery file to be deleted
+     * @return - true if the delivery file was deleted successfully, false otherwise
+     */
+    private static boolean deleteSourceAndDestanationSite(int siteId) {
+        if (siteId <= 0) {
             Helper.showError("Cant delete site with id <= 0");
-            return false;
+            return true;
         }
-        Site site = DBManager.getInstance().getSiteController().getSiteById(id);
+        Site site = DBManager.getInstance().getSiteController().getSiteById(siteId);
         if (site == null) {
-            Helper.showError("Cant delete site with id=" + id + ", it does not exist");
-            return false;
+            Helper.showError("Cant delete site with id=" + siteId + ", it does not exist");
+            return true;
         } else {
-            for (Site site : sites) {
-                if (!DBManager.getInstance().getSiteController().deleteSite(site.getId())) {
-                    Helper.showError("Cant delete site with id=" + id + ", failed to delete site");
-                    return false;
-                }
+            if (!DBManager.getInstance().getSiteController().deleteSite(siteId)) {
+                Helper.showError("Cant delete site with id=" + siteId + ", failed to delete site");
+                return true;
             }
+            return false;
         }
-        return true;
-
     }
 
     public static boolean deleteTransportById(int transportId) {
@@ -281,11 +282,11 @@ public class TransportManager {
                     Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete delivery file");
                     return false;
                 }
-                if(!deleteSourceAndDestanationSite(route.getSourceSiteId())) {
+                if(deleteSourceAndDestanationSite(route.getSourceSiteId())) {
                     Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete source site");
                     return false;
                 }
-                if(!deleteSourceAndDestanationSite(route.getDestinationSiteId())) {
+                if(deleteSourceAndDestanationSite(route.getDestinationSiteId())) {
                     Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete destination site");
                     return false;
                 }
