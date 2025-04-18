@@ -261,7 +261,7 @@ public class TransportManager {
         }
     }
 
-    private static boolean deleteTransportRoutes(List<Integer> routes) {
+    public static boolean deleteTransportRoutes(List<Integer> routes) {
         if (routes == null || routes.isEmpty()) {
             Helper.showError("Cant delete transport, it does not exist");
             return false;
