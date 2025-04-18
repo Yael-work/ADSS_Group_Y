@@ -141,6 +141,31 @@ public class TransportHandler {
 
     }
 
+    private static void deleteTransportById() {
+        Helper.print("Please enter the transport ID to delete: ");
+        int transportId = Helper.getUserInputInteger();
+        while (transportId == Helper.UndefinedUserInput) {
+            Helper.print("Invalid transport ID. Please try again: ");
+            transportId = Helper.getUserInputInteger();
+        }
+        Helper.print("Are you sure you want to delete transport with ID " + transportId + "? (yes/no): ");
+        String confirmation = Helper.getUserInputString();
+        while (confirmation == null || (!confirmation.equalsIgnoreCase("yes") && !confirmation.equalsIgnoreCase("no"))) {
+            Helper.print("Invalid input. Please enter 'yes' or 'no': ");
+            confirmation = Helper.getUserInputString();
+        }
+        if (confirmation.equalsIgnoreCase("no")) {
+            Helper.println("Transport deletion canceled.");
+            return;
+        }
+        boolean success = TransportManager.deleteTransportById(transportId);
+        if (success) {
+            Helper.println("Transport with ID " + transportId + " deleted successfully.");
+        } else {
+            Helper.println("Failed to delete transport with ID " + transportId + ".");
+        }
+    }
+
     /**
      * This method is used to handle the transport management menu.
      */
@@ -181,7 +206,7 @@ public class TransportHandler {
                     // Print the next drive for driver
                     break;
                 case 5:
-                    // Delete transport by ID
+                    deleteTransportById();
                     break;
                 case 6:
                     createTransport();
