@@ -206,7 +206,7 @@ public class TransportHandler {
 
 
     /**
-     * This method is the main routing for creating transport.
+     * This method is the main routine for creating transport.
      * It handles the selection of branches, stock items,
      * and the creation of transport routes.
      */
@@ -273,9 +273,11 @@ public class TransportHandler {
                             Helper.println("Branch will not be added to the transport.");
                             List<Integer> routesIds = routesCreationResult.getCreatedTransportRoutesIds();
                             if (routesIds != null && !routesIds.isEmpty()) {
-                                TransportManager.deleteTransportRoutes(routesIds);
-                                // DONE: delete the created routes
-                                Helper.println("Deleting created routes...");
+                                if (!TransportManager.deleteTransportRoutes(routesIds)) {
+                                    Helper.println("Failed to delete created routes.");
+                                } else {
+                                    Helper.println("Created routes deleted successfully.");
+                                }
                             }
                         }
                     }

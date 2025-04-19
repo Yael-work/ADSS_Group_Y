@@ -157,6 +157,9 @@ public class TransportManager {
         int srcSiteId = siteController.addSite(src);
         if (srcSiteId <= Helper.UndefinedId) {
             Helper.showError("Failed to add source site.");
+            if (!deleteDeliveryFile(deliveryFileId)) {
+                Helper.showError("Failed to delete delivery file");
+            }
             return Helper.UndefinedId;
         }
         Site dest = new Site(Helper.UndefinedId, SiteTypeEnum.BRANCH, branchId, b.getAddress(),
@@ -165,6 +168,12 @@ public class TransportManager {
         int destSiteId = siteController.addSite(dest);
         if (destSiteId <= Helper.UndefinedId) {
             Helper.showError("Failed to add destination site.");
+            if (!deleteDeliveryFile(deliveryFileId)) {
+                Helper.showError("Failed to delete delivery file");
+            }
+            if (!deleteSite(srcSiteId)) {
+                Helper.showError("Failed to delete source site");
+            }
             return Helper.UndefinedId;
         }
 
@@ -238,12 +247,12 @@ public class TransportManager {
     }
 
     /**
-     * This method is used to delete a delivery file and its items.
+     * This method is used to delete a site
      *
      * @param siteId - the ID of the delivery file to be deleted
      * @return - true if the delivery file was deleted successfully, false otherwise
      */
-    private static boolean deleteSourceAndDestinationSite(int siteId) {
+    private static boolean deleteSite(int siteId) {
         if (siteId <= 0) {
             Helper.showError("Cant delete site with id <= 0");
             return true;
@@ -280,11 +289,11 @@ public class TransportManager {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete delivery file");
                     return false;
                 }
-                if (deleteSourceAndDestinationSite(t.getSourceSiteId())) {
+                if (deleteSite(t.getSourceSiteId())) {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete source site");
                     return false;
                 }
-                if (deleteSourceAndDestinationSite(t.getDestinationSiteId())) {
+                if (deleteSite(t.getDestinationSiteId())) {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete destination site");
                     return false;
                 }
