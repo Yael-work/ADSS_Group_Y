@@ -300,6 +300,10 @@ public class TransportHandler {
         }
     }
 
+
+    /**
+     * This method is used to delete a transport by its ID.
+     */
     private static void deleteTransportById() {
         Helper.print("Please enter the transport ID to delete: ");
         int transportId = Helper.getUserInputInteger();
@@ -307,7 +311,12 @@ public class TransportHandler {
             Helper.print("Invalid transport ID. Please try again: ");
             transportId = Helper.getUserInputInteger();
         }
-        Helper.print("Are you sure you want to delete transport with ID " + transportId + "? (yes/no): ");
+        Transport t = TransportManager.getTransportById(transportId);
+        if (t == null) {
+            Helper.println("Transport not found. Please try again.");
+            return;
+        }
+        Helper.print("Are you sure you want to delete this transport?:\n%s" + t.toPrettyString() + "\n(yes/no): ");
         String confirmation = Helper.getUserInputString();
         while (confirmation == null || (!confirmation.equalsIgnoreCase("yes") && !confirmation.equalsIgnoreCase("no"))) {
             Helper.print("Invalid input. Please enter 'yes' or 'no': ");
