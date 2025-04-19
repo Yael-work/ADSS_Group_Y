@@ -90,4 +90,18 @@ public class Site extends BaseModel {
                 "} " + super.toString();
     }
 
+    @Override
+    public String toPrettyString() {
+        return """
+                Site ID: %d
+                Site Type: %s
+                Site Object ID: %d
+                Site Address: %s
+                Contact Phone: %s
+                Contact Name: %s
+                Recorded Weight At Site: %.2f
+                """.formatted(getId(), siteType, siteObjectId, siteAddress, contactPhone,
+                contactName, recordedWeightAtSite);
+    }
+
 }

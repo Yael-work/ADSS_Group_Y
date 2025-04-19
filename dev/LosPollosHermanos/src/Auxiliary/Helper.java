@@ -3,6 +3,7 @@ package Auxiliary;
 import Models.DBModels.BaseModel;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -208,6 +209,8 @@ public class Helper {
     }
 
     public static final String DefaultDateTimeFormat = "yyyy-MM-dd HH:mm";
+    public static final DateTimeFormatter DefaultDateTimeFormatter = java.time.format.DateTimeFormatter
+            .ofPattern(DefaultDateTimeFormat);
 
     /**
      * This method is used to convert a string to a LocalDateTime object.

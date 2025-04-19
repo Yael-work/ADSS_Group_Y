@@ -270,6 +270,13 @@ public class TransportManager {
         }
     }
 
+
+    /**
+     * This method is used to delete transport routes.
+     *
+     * @param routes - the list of transport routes IDs to be deleted
+     * @return - true if the transport routes were deleted successfully, false otherwise
+     */
     public static boolean deleteTransportRoutes(List<Integer> routes) {
         if (routes == null || routes.isEmpty()) {
             Helper.showError("Cant delete transport, it does not exist");
@@ -481,6 +488,99 @@ public class TransportManager {
             Helper.showError("Transport not found.");
         }
         return transport;
+    }
+
+    /**
+     * This method is used to get all transports.
+     *
+     * @return - a list of all transports
+     */
+    public static List<Transport> getAllTransports() {
+        return transportController.getAllRecords();
+    }
+
+
+    /**
+     * This method is used to get a detailed string representation of a delivery file.
+     *
+     * @param deliveryFileId - the ID of the delivery file
+     * @return - a detailed string representation of the delivery file
+     */
+    private static String getDetailedDeliveryFileString(int deliveryFileId) {
+        if (deliveryFileId <= Helper.UndefinedId) {
+            Helper.showError("Cant get delivery file with id <= 0");
+            return null;
+        }
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(deliveryFileId);
+        if (deliveryFile == null) {
+            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
+            return null;
+        }
+        List<DeliveryFileItem> deliveryFileItems = deliveryFileItemController
+                .getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
+        if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
+            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
+            return null;
+        }
+        List<StockItem> items = StockManager.mockGetStockItemsByIds(deliveryFileItems.stream()
+                .map(DeliveryFileItem::getStockItemId)
+                .collect(Collectors.toList()));
+        if (items.isEmpty()) {
+            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Delivery File ID: ").append(deliveryFile.getId()).append("\n");
+        sb.append("Items:");
+        for (DeliveryFileItem item : deliveryFileItems) {
+            items.stream().filter(i -> i.getStockItemId() == item.getStockItemId())
+                    .findFirst()
+                    .ifPresent(stockItem -> sb.append("\n - ")
+                            .append(stockItem.getItemName())
+                            .append(": Amount - ")
+                            .append(item.getAmount())
+                            .append(" Amount Picked Up - ")
+                            .append(item.getAmountPickedUp()));
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * This method is used to get a detailed string representation of a transport route.
+     *
+     * @param routeId - the ID of the transport route
+     * @return - a detailed string representation of the transport route
+     */
+    public static String getDetailedTransportRouteString(int routeId) {
+        if (routeId <= Helper.UndefinedId) {
+            Helper.showError("Cant get transport route with id <= 0");
+            return null;
+        }
+        TransportRoute route = transportRouteController.getTransportRouteById(routeId);
+        if (route == null) {
+            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
+            return null;
+        }
+        String deleiveryFileDetailedString = getDetailedDeliveryFileString(route.getDeliveryFileId());
+
+        Site sourceSite = siteController.getSiteById(route.getSourceSiteId());
+        if (sourceSite == null) {
+            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
+            return null;
+        }
+        Site destinationSite = siteController.getSiteById(route.getDestinationSiteId());
+        if (destinationSite == null) {
+            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
+            return null;
+        }
+
+        return "Transport Route ID: " + route.getId() + "\n" +
+                "Status: " + route.getStatus() + "\n" +
+                "Source Site: " + sourceSite.toPrettyString() + "\n" +
+                "Destination Site: " + destinationSite.toPrettyString() + "\n" +
+                "Delivery File: \n" +
+                deleiveryFileDetailedString;
     }
 
 }

@@ -1,12 +1,17 @@
 package Presentation.transport;
 
 import Auxiliary.Helper;
-import Domain.transport.BranchesManager;
-import Domain.transport.DriversManager;
-import Domain.transport.TransportAreasManager;
-import Domain.transport.TrucksManager;
+import Domain.stock.StockManager;
+import Domain.transport.*;
 import Domain.suppliers.SuppliersManager;
 import Models.DBModels.BaseModel;
+import Models.DBModels.transport.Driver;
+import Models.DBModels.transport.Truck;
+import Models.DTOs.StockItem;
+import Models.DTOs.transport.CreateNewTransportRoutesResult;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransportPresentation {
 
@@ -65,7 +70,7 @@ public class TransportPresentation {
      * @return true if the data was loaded successfully, false otherwise
      */
     private static boolean handleTempMockDataRuntimeLoad() {
-        return BranchesManager.addBranch("Branch1", "Address1", "+972 5412311") &&
+        boolean res1 = BranchesManager.addBranch("Branch1", "Address1", "+972 5412311") &&
                 BranchesManager.addBranch("Branch2", "Address2", "+972 5488899") &&
                 BranchesManager.addBranch("Branch3", "Address3", "+972 5412988") &&
 
@@ -88,6 +93,34 @@ public class TransportPresentation {
                         TransportAreasManager.addNewTransportArea("Area2",
                                 BranchesManager.getExistingBranches().subList(0, BranchesManager.getExistingBranches().size() - 1).stream().map(BaseModel::getId).toList(),
                                 SuppliersManager.getSuppliers().subList(0, BranchesManager.getExistingBranches().size() - 1).stream().map(BaseModel::getId).toList());
+
+        List<StockItem> selectedItems = StockManager.mockSearchAndReturnRelevantStockItems("", 1);
+        LocalDateTime plannedDateTime = LocalDateTime.now().plusDays(1);
+        CreateNewTransportRoutesResult routesCreationResult =
+                TransportManager.createNewTransportRoutes(1, selectedItems);
+        List<Integer> createdTransportRoutesIds = new ArrayList<>(routesCreationResult.getCreatedTransportRoutesIds());
+        List<Truck> trucks = TransportManager.getAvailableTrucksByDate(plannedDateTime);
+        Truck selectedTruck = null;
+        Driver selectedDriver = null;
+        for (Truck truck : trucks) {
+            List<Driver> drivers = TransportManager.getAvailableDriversByDateAndLicense(plannedDateTime, truck.getRequiredLicenseType());
+            if (drivers != null && !drivers.isEmpty()) {
+                selectedTruck = truck;
+                selectedDriver = drivers.getFirst();
+                break;
+            } else {
+                Helper.showError("No available drivers found for truck with license type: " + truck.getRequiredLicenseType());
+                return false;
+            }
+        }
+        if (selectedTruck == null || selectedDriver == null) {
+            Helper.showError("No available trucks or drivers found.");
+            return false;
+        }
+        int createdTransportId = TransportManager.createTransport(plannedDateTime,
+                selectedTruck.getId(), selectedDriver.getId(), createdTransportRoutesIds);
+
+        return res1 && createdTransportId > 0;
     }
 
     /**

@@ -334,6 +334,58 @@ public class TransportHandler {
         }
     }
 
+
+    /**
+     * This method is used to show all transports.
+     *
+     * @return A list of all transports.
+     */
+    private static List<Transport> showAllTransports() {
+        List<Transport> transports = TransportManager.getAllTransports();
+        if (transports == null || transports.isEmpty()) {
+            Helper.println("No transports available.");
+            return null;
+        }
+        Helper.println("All Transports:");
+        for (Transport transport : transports) {
+            Helper.println(String.format("Transport ID: %d, on date: %s", transport.getId(),
+                    transport.getPlannedDateTime().format(Helper.DefaultDateTimeFormatter)));
+        }
+        return transports;
+    }
+
+
+
+    /**
+     * This method is used to show a specific detailed transport by its ID.
+     */
+    private static void showSpecificDetailedTransport() {
+        Helper.println("Showing specific detailed transport by ID");
+        List<Transport> lst = showAllTransports();
+        if (lst == null || lst.isEmpty()) {
+            return;
+        }
+        Helper.print("Please enter the transport ID: ");
+        int transportId = Helper.getUserInputInteger();
+        while (transportId == Helper.UndefinedUserInput || !Helper.isValidId(lst, transportId)) {
+            Helper.print("Invalid transport ID. Please try again: ");
+            transportId = Helper.getUserInputInteger();
+        }
+        Transport transport = TransportManager.getTransportById(transportId);
+        if (transport == null) {
+            Helper.println("Transport not found. Please try again.");
+            return;
+        }
+        Helper.println("You have selected transport:\n" + transport.toPrettyString());
+        Helper.println("Displaying routes:");
+        for (int routeId : transport.getTransportRouteIds()) {
+            Helper.println("--------------------------------");
+            Helper.println(TransportManager.getDetailedTransportRouteString(routeId));
+            Helper.println("--------------------------------");
+        }
+        Helper.println("-End of transport details-");
+    }
+
     /**
      * This method is used to handle the transport management menu.
      */
@@ -341,18 +393,18 @@ public class TransportHandler {
         boolean exit = false;
         while (!exit) {
             int choice;
-            Helper.println("Manage Transports:");
+            Helper.println("\nManage Transports:");
             Helper.println("1. Show all transports");
             Helper.println("2. Show specific detailed transport by ID");
-            Helper.println("3. Print transport drives for driver - by Transport ID");
-            Helper.println("4. Print the next drive for driver");
+            // Helper.println("3. Print transport drives for driver - by Transport ID"); TODO NTH
+            // Helper.println("4. Print the next drive for driver"); TODO NTH
             Helper.println("5. Delete transport by ID");
             Helper.println("6. Create transport");
-            Helper.println("7. Start transport");
-            Helper.println("8. Visit source");
-            Helper.println("9. Visit destination");
-            Helper.println("10. Edit Unstarted Transport");
-            Helper.println("12. Back to main menu");
+            // Helper.println("7. Start transport");
+            // Helper.println("8. Visit source"); TODO NTH
+            // Helper.println("9. Visit destination"); TODO NTH
+            // Helper.println("10. Edit Unstarted Transport"); TODO NTH
+            Helper.println("11. Back to main menu");
 
             do {
                 Helper.print("Please choose an option: ");
@@ -361,17 +413,16 @@ public class TransportHandler {
 
             switch (choice) {
                 case 1:
-                    // Show all transports
+                    showAllTransports();
                     break;
                 case 2:
-                    // Show specific detailed transport by ID
+                    showSpecificDetailedTransport();
                     break;
-
                 case 3:
-                    // Print transport drives for driver - by Transport ID
+                    // TODO NTH Print transport drives for driver - by Transport ID
                     break;
                 case 4:
-                    // Print the next drive for driver
+                    // TODO NTH  Print the next drive for driver
                     break;
                 case 5:
                     deleteTransportById();
@@ -380,21 +431,18 @@ public class TransportHandler {
                     createTransportMainRoutine();
                     break;
                 case 7:
-                    // Start transport
+                    // TODO NTH  Start transport
                     break;
                 case 8:
-                    // Visit source
+                    // TODO NTH  Visit source
                     break;
                 case 9:
-                    // Visit destination
+                    // TODO NTH  Visit destination
                     break;
                 case 10:
-                    // Edit Unstarted Transport
+                    // TODO NTH  Edit Unstarted Transport
                     break;
                 case 11:
-                    // Show all transports
-                    break;
-                case 12:
                     exit = true;
                     break;
                 default:
