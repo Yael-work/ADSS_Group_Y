@@ -302,7 +302,7 @@ public class TransportHandler {
 
 
     /**
-     * This method is used to delete a transport by its ID.
+     * This method is used to delete transport by its ID.
      */
     private static void deleteTransportById() {
         Helper.print("Please enter the transport ID to delete: ");

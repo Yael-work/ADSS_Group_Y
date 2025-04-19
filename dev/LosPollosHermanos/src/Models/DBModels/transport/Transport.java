@@ -91,7 +91,7 @@ public class Transport extends BaseModel {
     }
 
     public List<Integer> getTransportRouteIds() {
-        return transportRouteIds;
+        return this.transportRouteIds;
     }
 
     @Override

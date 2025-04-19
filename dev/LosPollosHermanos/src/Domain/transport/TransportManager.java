@@ -109,9 +109,12 @@ public class TransportManager {
             Helper.showError("Cant delete delivery file with id <= 0");
             return false;
         }
-        ArrayList<Integer> Ids = new ArrayList<>();
-        Ids.add(deliveryFileId);
-        List<DeliveryFileItem> items = deliveryFileItemController.getDeliveryFileItemsByIds(Ids);
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(deliveryFileId);
+        if (deliveryFile == null) {
+            Helper.showError("Cant delete delivery file with id=" + deliveryFileId + ", it does not exist");
+            return false;
+        }
+        List<DeliveryFileItem> items = deliveryFileItemController.getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
         if (items != null && !items.isEmpty()) {
             for (DeliveryFileItem item : items) {
                 if (!deliveryFileItemController.deleteDeliveryFileItem(item.getId())) {
@@ -119,8 +122,15 @@ public class TransportManager {
                     return false;
                 }
             }
+            if (!deliveryFileController.deleteDeliveryFile(deliveryFileId)) {
+                Helper.showError("Failed to delete delivery file with id: " + deliveryFileId);
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
-        return deliveryFileController.deleteDeliveryFile(deliveryFileId);
     }
 
     /**
@@ -255,18 +265,19 @@ public class TransportManager {
     private static boolean deleteSite(int siteId) {
         if (siteId <= 0) {
             Helper.showError("Cant delete site with id <= 0");
-            return true;
+            return false;
         }
         Site site = DBManager.getInstance().getSiteController().getSiteById(siteId);
         if (site == null) {
             Helper.showError("Cant delete site with id=" + siteId + ", it does not exist");
-            return true;
+            return false;
         } else {
             if (!DBManager.getInstance().getSiteController().deleteSite(siteId)) {
                 Helper.showError("Cant delete site with id=" + siteId + ", failed to delete site");
+                return false;
+            } else {
                 return true;
             }
-            return false;
         }
     }
 
@@ -296,11 +307,11 @@ public class TransportManager {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete delivery file");
                     return false;
                 }
-                if (deleteSite(t.getSourceSiteId())) {
+                if (!deleteSite(t.getSourceSiteId())) {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete source site");
                     return false;
                 }
-                if (deleteSite(t.getDestinationSiteId())) {
+                if (!deleteSite(t.getDestinationSiteId())) {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete destination site");
                     return false;
                 }
@@ -320,21 +331,16 @@ public class TransportManager {
      * @return - true if the transport was deleted successfully, false otherwise
      */
     public static boolean deleteTransportById(int transportId) {
-        // TODO @tom
-        // This function doesnt work properly right now:
-        // You should use the transportId to ge the transport object - check if its pending - because if its not pending we cant allow deletion
-        // after that - get the ids of the transport routes - then use these ids to call transportRouteController.getTransportRoutesByIds
-        // the current usage is incorrect.
-        //
-        // each route that is deleted should also delete its corresponding delivery file and sites
-        //Make sure to check the UML diagram for the correct order of deletion
         if (transportId <= 0) {
             Helper.showError("Cant delete transport with id <= 0");
             return false;
         }
-        ArrayList<Integer> ids = new ArrayList<>();
-        ids.add(transportId);
-        List<TransportRoute> routes = transportRouteController.getTransportRoutesByIds(ids);
+        Transport transport = transportController.getTransportById(transportId);
+        if (transport == null) {
+            Helper.showError("Cant delete transport with id=" + transportId + ", it does not exist");
+            return false;
+        }
+        List<TransportRoute> routes = transportRouteController.getTransportRoutesByIds((ArrayList<Integer>) transport.getTransportRouteIds());
         if (routes == null || routes.isEmpty()) {
             Helper.showError("Cant delete transport with id=" + transportId + ", it does not exist");
             return false;
