@@ -313,6 +313,14 @@ public class TransportManager {
      * @return - true if the transport was deleted successfully, false otherwise
      */
     public static boolean deleteTransportById(int transportId) {
+        // TODO @tom
+        // This function doesnt work properly right now:
+        // You should use the transportId to ge the transport object - check if its pending - because if its not pending we cant allow deletion
+        // after that - get the ids of the transport routes - then use these ids to call transportRouteController.getTransportRoutesByIds
+        // the current usage is incorrect.
+        //
+        // each route that is deleted should also delete its corresponding delivery file and sites
+        //Make sure to check the UML diagram for the correct order of deletion
         if (transportId <= 0) {
             Helper.showError("Cant delete transport with id <= 0");
             return false;

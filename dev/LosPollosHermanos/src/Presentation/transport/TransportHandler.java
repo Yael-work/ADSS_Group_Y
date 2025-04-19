@@ -316,7 +316,7 @@ public class TransportHandler {
             Helper.println("Transport not found. Please try again.");
             return;
         }
-        Helper.print("Are you sure you want to delete this transport?:\n%s" + t.toPrettyString() + "\n(yes/no): ");
+        Helper.print("Are you sure you want to delete this transport?:\n" + t.toPrettyString() + "\n(yes/no): ");
         String confirmation = Helper.getUserInputString();
         while (confirmation == null || (!confirmation.equalsIgnoreCase("yes") && !confirmation.equalsIgnoreCase("no"))) {
             Helper.print("Invalid input. Please enter 'yes' or 'no': ");
