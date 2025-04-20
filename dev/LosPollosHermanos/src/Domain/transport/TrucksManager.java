@@ -99,4 +99,19 @@ public class TrucksManager {
         }
         return t;
     }
+
+    /**
+     * Retrieves a truck by its plate number.
+     *
+     * @param plate - the plate number of the truck to be retrieved
+     * @return - the Truck object with the specified plate number, or null if not found
+     */
+    public static Truck getTruckByPlate(String plate) {
+        Truck t = truckController.getTruckByPlate(plate);
+        if (t == null) {
+            Helper.showError("Truck with this plate does not exist");
+            return null;
+        }
+        return t;
+    }
 }
