@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TransportPresentation {
+    private static boolean mockDataLoaded = false;
 
     /**
      * Prints the instructions for the user.
@@ -28,6 +29,7 @@ public class TransportPresentation {
         Helper.println("4. Manage Drivers");
         Helper.println("5. Manage Branches");
         Helper.println("6. Exit");
+        Helper.println("7. Load Temporary Mock Data");
     }
 
     /**
@@ -56,6 +58,14 @@ public class TransportPresentation {
             case 6:
                 Helper.println("Exiting the system. Goodbye!");
                 return false;
+            case 7:
+                Helper.println("Loading temporary mock data...");
+                if (handleTempMockDataRuntimeLoad()) {
+                    Helper.println("Temporary mock data loaded successfully.");
+                } else {
+                    Helper.println("Failed to load temporary mock data.");
+                }
+                break;
             default:
                 Helper.println("Invalid choice. Please try again.");
                 break;
@@ -70,6 +80,10 @@ public class TransportPresentation {
      * @return true if the data was loaded successfully, false otherwise
      */
     private static boolean handleTempMockDataRuntimeLoad() {
+        if (mockDataLoaded) {
+            Helper.println("Temporary mock data has already been loaded.");
+            return false;
+        }
         boolean res1 = BranchesManager.addBranch("Branch1", "Address1", "+972 5412311") &&
                 BranchesManager.addBranch("Branch2", "Address2", "+972 5488899") &&
                 BranchesManager.addBranch("Branch3", "Address3", "+972 5412988") &&
@@ -120,7 +134,11 @@ public class TransportPresentation {
         int createdTransportId = TransportManager.createTransport(plannedDateTime,
                 selectedTruck.getId(), selectedDriver.getId(), createdTransportRoutesIds);
 
-        return res1 && createdTransportId > 0;
+        if (res1 && createdTransportId > 0) {
+            mockDataLoaded = true;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -128,10 +146,19 @@ public class TransportPresentation {
      * This method runs in a loop until the user chooses to exit.
      */
     public static void TransportPresentationHandler() {
-        Helper.println("Loading mock data...");
-        if (!handleTempMockDataRuntimeLoad()) {
-            Helper.println("Failed to load mock data. Exiting.");
-            return;
+        Helper.print("Load mock data? (y/n): ");
+        String loadMockData = Helper.getUserInputString();
+        while (loadMockData == null || loadMockData.isEmpty() || (
+                !loadMockData.equalsIgnoreCase("y") && !loadMockData.equalsIgnoreCase("n"))) {
+            Helper.print("Please enter 'y' or 'n': ");
+            loadMockData = Helper.getUserInputString();
+        }
+        if (loadMockData.equalsIgnoreCase("y")) {
+            Helper.println("Loading mock data...");
+            if (!handleTempMockDataRuntimeLoad()) {
+                Helper.println("Failed to load mock data. Exiting.");
+                return;
+            }
         }
         boolean exit = false;
         while (!exit) {
