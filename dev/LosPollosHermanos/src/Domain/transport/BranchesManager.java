@@ -157,4 +157,19 @@ public class BranchesManager {
         }
         return "Someone from " + b.getSiteName();
     }
+
+    /**
+     * Retrieves a branch by its name.
+     *
+     * @param name - the name of the branch to be retrieved
+     * @return - the Branch object with the specified name, or null if not found
+     */
+    public static Branch getBranchByName(String name) {
+        Branch b = branchController.getBranchByName(name);
+        if (b == null) {
+            Helper.showError("Branch with this name does not exist");
+            return null;
+        }
+        return b;
+    }
 }

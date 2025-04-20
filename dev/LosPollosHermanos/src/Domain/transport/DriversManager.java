@@ -119,4 +119,19 @@ public class DriversManager {
     public static ArrayList<Driver> getAllDrivers() {
         return driverController.getAllRecords();
     }
+
+    /**
+     * Retrieves a driver by their personal ID.
+     *
+     * @param personalId - the personal ID of the driver to be retrieved
+     * @return - the Driver object with the specified personal ID, or null if not found
+     */
+    public static Driver getDriverByPersonalId(String personalId) {
+        Driver d = driverController.getDriveByPersonalId(personalId);
+        if (d == null) {
+            Helper.showError("Driver with this personal ID does not exist");
+            return null;
+        }
+        return d;
+    }
 }
