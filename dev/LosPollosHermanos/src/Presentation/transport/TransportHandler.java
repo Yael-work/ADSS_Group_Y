@@ -376,7 +376,20 @@ public class TransportHandler {
             Helper.println("Transport not found. Please try again.");
             return;
         }
-        Helper.println("You have selected transport:\n" + transport.toPrettyString());
+        Truck truck = TrucksManager.getTruckById(transport.getTruckId());
+        if (truck == null) {
+            Helper.println("Truck not found. Please try again.");
+            return;
+        }
+        Driver driver = DriversManager.getDriverById(transport.getDriverId());
+        if (driver == null) {
+            Helper.println("Driver not found. Please try again.");
+            return;
+        }
+
+        Helper.println("\nYou have selected transport:\n" + transport.toPrettyString());
+        Helper.println("Truck details:\n" + truck.toPrettyString());
+        Helper.println("Driver details:\n" + driver.toPrettyString());
         Helper.println("Displaying routes:");
         for (int routeId : transport.getTransportRouteIds()) {
             Helper.println("--------------------------------");
