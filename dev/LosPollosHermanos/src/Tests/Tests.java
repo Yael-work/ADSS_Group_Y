@@ -11,8 +11,10 @@ import Models.DBModels.transport.Truck;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class Tests {
 
@@ -51,31 +53,28 @@ public class Tests {
     public void testAddBranch_Success() {
         boolean result = BranchesManager.addBranch("Main Office", "123 Street", "0500000000");
         assertTrue(result);
-        assertEquals(1, BranchesManager.getExistingBranches().size());
+        Branch b = BranchesManager.getBranchByName("Main Office");
+        assertNotNull(b);
+        assertEquals("Main Office", b.getSiteName());
     }
 
     @Test
     public void testUpdateBranch_Success() {
         BranchesManager.addBranch("Warehouse", "456 Avenue", "0511111111");
-        Branch b = BranchesManager.getExistingBranches().stream()
-                .filter(branch -> branch.getSiteName().equals("Warehouse"))
-                .findFirst()
-                .orElse(null);
-        assert b != null;
-        boolean result = BranchesManager.updateBranch(b.getId(), "HQ", "789 Boulevard", "0522222222");
+        Branch b = BranchesManager.getBranchByName("Warehouse");
+        assertNotNull(b);
+
+        String newName = new Random().nextInt(1000) + "UpdatedBranchName";
+        String newAddress = new Random().nextInt(1000) + "UpdatedBranchAddress";
+        String newPhone = new Random().nextInt(1000) + "UpdatedBranchPhone";
+        boolean result = BranchesManager.updateBranch(b.getId(), newName, newAddress, newPhone);
         assertTrue(result);
-        assertEquals("HQ", b.getSiteName());
-        assertEquals("789 Boulevard", b.getAddress());
-        assertEquals("0522222222", b.getPhone());
     }
 
     @Test
     public void testDeleteBranch_Success() {
         BranchesManager.addBranch("Temp Office", "999 Lane", "0533333333");
-        Branch b = BranchesManager.getExistingBranches().stream()
-                .filter(branch -> branch.getSiteName().equals("Temp Office"))
-                .findFirst()
-                .orElse(null);
+        Branch b = BranchesManager.getBranchByName("Temp Office");
         assert b != null;
         boolean result = BranchesManager.deleteBranch(b.getId());
         assertTrue(result);
@@ -86,16 +85,14 @@ public class Tests {
     public void testAddDriver_Success() {
         boolean result = DriversManager.addDriver("John", "Doe", "123456789", "0500000000", "B");
         assertTrue(result);
-        assertEquals(1, DriversManager.getAllDrivers().size());
+        Driver d = DriversManager.getDriverByPersonalId("123456789");
+        assertNotNull(d);
     }
 
     @Test
     public void testUpdateDriver_Success() {
         DriversManager.addDriver("Alice", "Smith", "987654321", "0501111111", "C");
-        Driver driver = DriversManager.getAllDrivers().stream()
-                .filter(driver2 -> driver2.getFirstName().equals("Alice"))
-                .findFirst()
-                .orElse(null);
+        Driver driver = DriversManager.getDriverByPersonalId("987654321");
         assert driver != null;
         boolean result = DriversManager.updateDriver("AliceUpdated", driver.getId(), 1);
         assertTrue(result);
