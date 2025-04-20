@@ -1,0 +1,135 @@
+package Tests;
+
+import Domain.transport.TransportAreasManager;
+import Domain.transport.TrucksManager;
+import Domain.transport.BranchesManager;
+import Domain.transport.DriversManager;
+import Models.DBModels.transport.Branch;
+import Models.DBModels.transport.Driver;
+import Models.DBModels.transport.TransportArea;
+import Models.DBModels.transport.Truck;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class Tests {
+
+    @Test
+    public void testAddTruck_Success() {
+        boolean result = TrucksManager.addTruck("ABC123", 1000, 5000, "C", "Volvo");
+        assertTrue(result);
+        Truck truck = TrucksManager.getTruckByPlate("ABC123");
+        assertNotNull(truck);
+        assertEquals("ABC123", truck.getPlate());
+    }
+
+    @Test
+    public void testUpdateTruck_ChangePlate() {
+        TrucksManager.addTruck("DEF456", 1500, 6000, "C1", "MAN");
+        Truck truck = TrucksManager.getTruckByPlate("DEF456");
+        assert truck != null;
+        boolean result = TrucksManager.updateTruck("NEWPLATE", truck.getId(), 1);
+        assertTrue(result);
+        Truck updatedTruck = TrucksManager.getTruckById(truck.getId());
+        assert updatedTruck != null;
+        assertEquals("NEWPLATE", updatedTruck.getPlate());
+    }
+
+    @Test
+    public void testDeleteTruck_Success() {
+        TrucksManager.addTruck("XYZ789", 2000, 7000, "C", "Scania");
+        Truck truck = TrucksManager.getTruckByPlate("XYZ789");
+        assert truck != null;
+        boolean result = TrucksManager.deleteTruck(truck.getId());
+        assertTrue(result);
+        assertNull(TrucksManager.getTruckById(truck.getId()));
+    }
+
+    @Test
+    public void testAddBranch_Success() {
+        boolean result = BranchesManager.addBranch("Main Office", "123 Street", "0500000000");
+        assertTrue(result);
+        assertEquals(1, BranchesManager.getExistingBranches().size());
+    }
+
+    @Test
+    public void testUpdateBranch_Success() {
+        BranchesManager.addBranch("Warehouse", "456 Avenue", "0511111111");
+        Branch b = BranchesManager.getExistingBranches().stream()
+                .filter(branch -> branch.getSiteName().equals("Warehouse"))
+                .findFirst()
+                .orElse(null);
+        assert b != null;
+        boolean result = BranchesManager.updateBranch(b.getId(), "HQ", "789 Boulevard", "0522222222");
+        assertTrue(result);
+        assertEquals("HQ", b.getSiteName());
+        assertEquals("789 Boulevard", b.getAddress());
+        assertEquals("0522222222", b.getPhone());
+    }
+
+    @Test
+    public void testDeleteBranch_Success() {
+        BranchesManager.addBranch("Temp Office", "999 Lane", "0533333333");
+        Branch b = BranchesManager.getExistingBranches().stream()
+                .filter(branch -> branch.getSiteName().equals("Temp Office"))
+                .findFirst()
+                .orElse(null);
+        assert b != null;
+        boolean result = BranchesManager.deleteBranch(b.getId());
+        assertTrue(result);
+        assertNull(BranchesManager.getBranchById(b.getId()));
+    }
+
+    @Test
+    public void testAddDriver_Success() {
+        boolean result = DriversManager.addDriver("John", "Doe", "123456789", "0500000000", "B");
+        assertTrue(result);
+        assertEquals(1, DriversManager.getAllDrivers().size());
+    }
+
+    @Test
+    public void testUpdateDriver_Success() {
+        DriversManager.addDriver("Alice", "Smith", "987654321", "0501111111", "C");
+        Driver driver = DriversManager.getAllDrivers().stream()
+                .filter(driver2 -> driver2.getFirstName().equals("Alice"))
+                .findFirst()
+                .orElse(null);
+        assert driver != null;
+        boolean result = DriversManager.updateDriver("AliceUpdated", driver.getId(), 1);
+        assertTrue(result);
+        assertEquals("AliceUpdated", driver.getFirstName());
+    }
+
+    @Test
+    public void testDeleteDriver_Success() {
+        DriversManager.addDriver("Mark", "Brown", "321654987", "0502222222", "C1");
+        Driver driver1 = DriversManager.getAllDrivers().stream()
+                .filter(driver2 -> driver2.getFirstName().equals("Mark"))
+                .findFirst()
+                .orElse(null);
+        assert driver1 != null;
+        boolean result = DriversManager.deleteDriver(driver1.getId());
+        assertTrue(result);
+        assertNull(DriversManager.getDriverById(driver1.getId()));
+    }
+
+    @Test
+    public void testAddNewTransportArea_Success() {
+        String areaName = "North Region";
+        List<Integer> branches = List.of(1, 2);
+        List<Integer> suppliers = List.of(10, 20);
+        boolean result = TransportAreasManager.addNewTransportArea(areaName, branches, suppliers);
+        assertTrue(result);
+        assertEquals(1, TransportAreasManager.getAllTransportAreas().size());
+        TransportArea area = TransportAreasManager.getAllTransportAreas().stream()
+                .filter(area1 -> area1.getAreaName().equals(areaName))
+                .findFirst()
+                .orElse(null);
+        assert area != null;
+        assertEquals(areaName, area.getAreaName());
+        assertEquals(branches, area.getBranchesIds());
+        assertEquals(suppliers, area.getSuppliersIds());
+    }
+}
