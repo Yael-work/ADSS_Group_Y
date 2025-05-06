@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StockManager {
+    private static final ArrayList<StockItem> stockItems = new ArrayList<>();
+
     /**
      * This method is used to search for stock items based on a search string and branch ID.
      *
@@ -15,15 +17,23 @@ public class StockManager {
      */
     public static ArrayList<StockItem> mockSearchAndReturnRelevantStockItems(String searchString, int branchId) {
         // Mock implementation to simulate searching and returning relevant stock items
-        ArrayList<StockItem> stockItems = new ArrayList<>();
-        stockItems.add(new StockItem(1, "Item1", branchId, 10, "1213165"));
-        stockItems.add(new StockItem(2, "Item2", branchId, 20, "barcode132132"));
-        stockItems.add(new StockItem(3, "Item3", branchId, 30, "23616565"));
-        stockItems.add(new StockItem(4, "Item4", branchId, 40, "163596898"));
-        stockItems.add(new StockItem(5, "Item5", branchId, 50, "65165165165"));
+        stockItems.add(new StockItem(1, "Item1", branchId, 10, "1213165" , 1));
+        stockItems.add(new StockItem(2, "Item2", branchId, 20, "barcode132132" , 50));
+        stockItems.add(new StockItem(3, "Item3", branchId, 30, "23616565", 20));
+        stockItems.add(new StockItem(4, "Item4", branchId, 40, "163596898", 10));
+        stockItems.add(new StockItem(5, "Item5", branchId, 50, "65165165165", 6));
         return stockItems;
     }
 
+
+    public static StockItem getStockItemById(int stockItemId) {
+        for (StockItem stockItem : stockItems) {
+            if (stockItem.getStockItemId() == stockItemId) {
+                return stockItem;
+            }
+        }
+        return null; // Return null if no matching stock item is found
+    }
 
     /**
      * This method is used to get stock items by their IDs.
@@ -35,7 +45,7 @@ public class StockManager {
         // Mock implementation to simulate getting stock items by IDs
         List<StockItem> stockItems = new ArrayList<>();
         for (int id : ids) {
-            stockItems.add(new StockItem(id, "Item" + id, 1, 10, "barcode" + id));
+            stockItems.add(new StockItem(id, "Item" + id, 1, 10, "barcode" + id , 1));
         }
         return stockItems;
     }

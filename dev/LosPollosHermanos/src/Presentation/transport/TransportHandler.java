@@ -1,11 +1,9 @@
 package Presentation.transport;
 
+import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Helper;
 import Domain.stock.StockManager;
-import Domain.transport.BranchesManager;
-import Domain.transport.DriversManager;
-import Domain.transport.TransportManager;
-import Domain.transport.TrucksManager;
+import Domain.transport.*;
 import Models.DBModels.transport.*;
 import Models.DTOs.StockItem;
 import Models.DTOs.transport.CreateNewTransportRoutesResult;
@@ -149,6 +147,48 @@ public class TransportHandler {
             //todo add support to edit the time right here and then search again!
             return false;
         }
+        List<DeliveryFileItem> deliveryFileItems = new ArrayList<>();
+        for (int routeId : createdTransportRoutesIds) {
+            TransportRoute route = TransportManager.getTransportRouteById(routeId);
+            if (route != null) {
+                DeliveryFile deliveryFile = TransportManager.getDeliveryFileById(route.getDeliveryFileId());
+                if (deliveryFile != null) {
+                    for (int itemId : deliveryFile.getDeliveryFileItemIds()) {
+                        DeliveryFileItem item = TransportManager.getDeliveryFileItemById(itemId);
+                        if (item != null) {
+                            deliveryFileItems.add(item);
+                        }
+                    }
+                }
+            }
+        }
+        double sumOfItemsWeight = 0;
+        for (DeliveryFileItem deliveryFileItem : deliveryFileItems) {
+            StockItem stock = StockManager.getStockItemById(deliveryFileItem.getStockItemId());
+            if (stock == null) {
+                Helper.println("Stock item not found. Please try again.");
+                return false;
+            }
+            if (stock.getWeight() > 0) {
+                sumOfItemsWeight += stock.getWeight() * deliveryFileItem.getAmountPickedUp();
+            } else {
+                Helper.println("Invalid weight for stock item. Please try again.");
+                return false;
+            }
+        }
+        if (sumOfItemsWeight == 0) {
+            Helper.println("No items selected for transport. Cannot proceed with transport creation.");
+            return false;
+        }
+        for (Truck truck : trucks) {
+            if (truck.getMaxWeight() - truck.getNetWeight() < sumOfItemsWeight) {
+                trucks.remove(truck);
+            }
+        }
+        if (trucks.isEmpty()) {
+            Helper.println("No trucks available for the selected date and time.");
+            return false;
+        }
         do {
             Helper.println(String.format("Select a truck for the transport (Only available trucks are visible for the" +
                     " date %s):", plannedDateTime));
@@ -160,7 +200,6 @@ public class TransportHandler {
                 truckId = Helper.getUserInputInteger();
             }
             Truck selectedTruck = TrucksManager.getTruckById(truckId);
-            //todo - we need to calculate all the weight of the items linked to each route - and compare that total to the truck max weight!
             if (selectedTruck == null) {
                 Helper.println("Truck not found. Please try again.");
                 continue;
@@ -356,7 +395,6 @@ public class TransportHandler {
     }
 
 
-
     /**
      * This method is used to show a specific detailed transport by its ID.
      */
@@ -401,6 +439,57 @@ public class TransportHandler {
     }
 
     /**
+     * This method is used to start the transport.
+     */
+    private static void startTransport() {
+        Helper.print("Please enter the transport ID to start: ");
+        int transportId = Helper.getUserInputInteger();
+        while (transportId == Helper.UndefinedUserInput) {
+            Helper.print("Invalid transport ID. Please try again: ");
+            transportId = Helper.getUserInputInteger();
+        }
+        Transport transport = TransportManager.getTransportById(transportId);
+        if (transport == null) {
+            Helper.println("Transport not found. Please try again.");
+            return;
+        }
+        Helper.print("Enter the start date and time of the transport (%s):"
+                .formatted(Helper.DefaultDateTimeFormat));
+        String dateTimeStr = Helper.getUserInputString();
+        LocalDateTime startDateTime = Helper.stringToDateTime(dateTimeStr);
+        while (startDateTime == null) {
+            Helper.print("Invalid date and time format. Please try again: ");
+            dateTimeStr = Helper.getUserInputString();
+            startDateTime = Helper.stringToDateTime(dateTimeStr);
+        }
+        if (!TransportManager.StartTransport(transport, startDateTime)) {
+            Helper.println("Failed to start transport.");
+            return;
+        }
+    }
+
+    /**
+     * This method is used to visit the source of the transport.
+     */
+    private static void visitSource() {
+        Helper.print("Please enter the transport ID to visit source: ");
+        int transportId = Helper.getUserInputInteger();
+        while (transportId == Helper.UndefinedUserInput) {
+            Helper.print("Invalid transport ID. Please try again: ");
+            transportId = Helper.getUserInputInteger();
+        }
+        Transport transport = TransportManager.getTransportById(transportId);
+        if (transport == null) {
+            Helper.println("Transport not found. Please try again.");
+            return;
+        }
+        if(!TransportManager.visitSource(transport)){
+            Helper.println("Failed to visit source.");
+            return;
+        }
+    }
+
+    /**
      * This method is used to handle the transport management menu.
      */
     public static void handleTransports() {
@@ -414,8 +503,8 @@ public class TransportHandler {
             // Helper.println("4. Print the next drive for driver"); TODO NTH
             Helper.println("5. Delete transport by ID");
             Helper.println("6. Create transport");
-            // Helper.println("7. Start transport");
-            // Helper.println("8. Visit source"); TODO NTH
+            Helper.println("7. Start transport");
+            Helper.println("8. Visit source"); //להעביר את המשקל כדי לוודא מה הלוז
             // Helper.println("9. Visit destination"); TODO NTH
             // Helper.println("10. Edit Unstarted Transport"); TODO NTH
             Helper.println("11. Back to main menu");
@@ -445,10 +534,10 @@ public class TransportHandler {
                     createTransportMainRoutine();
                     break;
                 case 7:
-                    // TODO NTH  Start transport
+                    startTransport();
                     break;
                 case 8:
-                    // TODO NTH  Visit source
+                    visitSource();
                     break;
                 case 9:
                     // TODO NTH  Visit destination
@@ -464,4 +553,6 @@ public class TransportHandler {
             }
         }
     }
+
+
 }

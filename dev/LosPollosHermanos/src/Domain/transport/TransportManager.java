@@ -589,4 +589,72 @@ public class TransportManager {
                 deleiveryFileDetailedString;
     }
 
+    public static TransportRoute getTransportRouteById(int routeId) {
+        if (routeId <= Helper.UndefinedId) {
+            Helper.showError("Cant get transport route with id <= 0");
+            return null;
+        }
+        TransportRoute route = transportRouteController.getTransportRouteById(routeId);
+        if (route == null) {
+            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
+            return null;
+        }
+        return route;
+    }
+
+    public static DeliveryFile getDeliveryFileById(int deliveryFileId) {
+        if (deliveryFileId <= Helper.UndefinedId) {
+            Helper.showError("Cant get delivery file with id <= 0");
+            return null;
+        }
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(deliveryFileId);
+        if (deliveryFile == null) {
+            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
+            return null;
+        }
+        return deliveryFile;
+    }
+
+    public static DeliveryFileItem getDeliveryFileItemById(int itemId) {
+        if (itemId <= Helper.UndefinedId) {
+            Helper.showError("Cant get delivery file item with id <= 0");
+            return null;
+        }
+        DeliveryFileItem deliveryFileItem = deliveryFileItemController.getDeliveryFileItemById(itemId);
+        if (deliveryFileItem == null) {
+            Helper.showError("Cant get delivery file item with id=" + itemId + ", it does not exist");
+            return null;
+        }
+        return deliveryFileItem;
+    }
+
+    public static boolean StartTransport(Transport transport, LocalDateTime startDateTime){
+        if (transport.getStatus() == TransportStatusEnum.PENDING) {
+            LocalDateTime plannedDateTime = transport.getPlannedDateTime();
+            if (startDateTime.isBefore(plannedDateTime) || startDateTime.isAfter(plannedDateTime)) {
+                Helper.println("The start date and time cannot be before the planned date and time.");
+                return false;
+            }
+            Helper.print("Are you sure you want to start the transport? (yes/no)");
+            String answer = Helper.getUserInputString();
+            if (answer == null || answer.isEmpty()) {
+                Helper.println("Invalid input. Transport start cancelled.");
+                return false;
+            }
+            if (!answer.equalsIgnoreCase("yes")) {
+                Helper.println("Transport start cancelled.");
+                return false;
+            }
+            transport.setStatus(TransportStatusEnum.STARTED);
+            Helper.println("Transport started successfully.");
+            return true;
+        } else {
+            Helper.println("Transport is already started or completed. Cannot start again.");
+            return false;
+        }
+    }
+
+    public static boolean visitSource(Transport transport) {
+        return false;
+    }
 }

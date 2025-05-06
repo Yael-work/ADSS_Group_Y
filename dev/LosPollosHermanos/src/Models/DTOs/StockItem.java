@@ -7,13 +7,15 @@ public class StockItem {
     private String barcode;
     private int branchId;
     private double amount;
+    private final double weight;
 
-    public StockItem(int stockItemId, String itemName, int branchId, double amount, String barcode) {
+    public StockItem(int stockItemId, String itemName, int branchId, double amount, String barcode , int weight) {
         this.stockItemId = stockItemId;
         this.itemName = itemName;
         this.branchId = branchId;
         this.amount = amount;
         this.barcode = barcode;
+        this.weight = weight;
     }
 
     public String getBarcode() {
@@ -23,7 +25,6 @@ public class StockItem {
     public void setBarcode(String barcode) {
         this.barcode = barcode;
     }
-
 
     public int getStockItemId() {
         return stockItemId;
@@ -51,6 +52,10 @@ public class StockItem {
 
     public double getAmount() {
         return amount;
+    }
+
+    public double getWeight() {
+        return weight;
     }
 
     public void setAmount(double amount) {
