@@ -34,4 +34,20 @@ public class StockManager {
         }
         return null; // Return null if no matching stock item is found
     }
+
+    /**
+     * This method is used to get stock items by their IDs.
+     *
+     * @param ids The list of IDs of the stock items to be retrieved.
+     * @return A list of stock items with the specified IDs.
+     */
+    public static List<StockItem> mockGetStockItemsByIds(List<Integer> ids) {
+        // Mock implementation to simulate getting stock items by IDs
+        List<StockItem> stockItems = new ArrayList<>();
+        for (int id : ids) {
+            stockItems.add(new StockItem(id, "Item" + id, 1, 10, "barcode" + id , 1));
+        }
+        return stockItems;
+    }
+
 }

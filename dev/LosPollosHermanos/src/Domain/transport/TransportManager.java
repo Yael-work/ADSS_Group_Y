@@ -627,4 +627,34 @@ public class TransportManager {
         }
         return deliveryFileItem;
     }
+
+    public static boolean StartTransport(Transport transport, LocalDateTime startDateTime){
+        if (transport.getStatus() == TransportStatusEnum.PENDING) {
+            LocalDateTime plannedDateTime = transport.getPlannedDateTime();
+            if (startDateTime.isBefore(plannedDateTime) || startDateTime.isAfter(plannedDateTime)) {
+                Helper.println("The start date and time cannot be before the planned date and time.");
+                return false;
+            }
+            Helper.print("Are you sure you want to start the transport? (yes/no)");
+            String answer = Helper.getUserInputString();
+            if (answer == null || answer.isEmpty()) {
+                Helper.println("Invalid input. Transport start cancelled.");
+                return false;
+            }
+            if (!answer.equalsIgnoreCase("yes")) {
+                Helper.println("Transport start cancelled.");
+                return false;
+            }
+            transport.setStatus(TransportStatusEnum.STARTED);
+            Helper.println("Transport started successfully.");
+            return true;
+        } else {
+            Helper.println("Transport is already started or completed. Cannot start again.");
+            return false;
+        }
+    }
+
+    public static boolean visitSource(Transport transport) {
+        return false;
+    }
 }

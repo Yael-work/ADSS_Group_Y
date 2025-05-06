@@ -1,5 +1,6 @@
 package Presentation.transport;
 
+import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Helper;
 import Domain.stock.StockManager;
 import Domain.transport.*;
@@ -175,11 +176,11 @@ public class TransportHandler {
                 return false;
             }
         }
-        if(sumOfItemsWeight == 0) {
+        if (sumOfItemsWeight == 0) {
             Helper.println("No items selected for transport. Cannot proceed with transport creation.");
             return false;
         }
-        for(Truck truck : trucks) {
+        for (Truck truck : trucks) {
             if (truck.getMaxWeight() - truck.getNetWeight() < sumOfItemsWeight) {
                 trucks.remove(truck);
             }
@@ -438,6 +439,57 @@ public class TransportHandler {
     }
 
     /**
+     * This method is used to start the transport.
+     */
+    private static void startTransport() {
+        Helper.print("Please enter the transport ID to start: ");
+        int transportId = Helper.getUserInputInteger();
+        while (transportId == Helper.UndefinedUserInput) {
+            Helper.print("Invalid transport ID. Please try again: ");
+            transportId = Helper.getUserInputInteger();
+        }
+        Transport transport = TransportManager.getTransportById(transportId);
+        if (transport == null) {
+            Helper.println("Transport not found. Please try again.");
+            return;
+        }
+        Helper.print("Enter the start date and time of the transport (%s):"
+                .formatted(Helper.DefaultDateTimeFormat));
+        String dateTimeStr = Helper.getUserInputString();
+        LocalDateTime startDateTime = Helper.stringToDateTime(dateTimeStr);
+        while (startDateTime == null) {
+            Helper.print("Invalid date and time format. Please try again: ");
+            dateTimeStr = Helper.getUserInputString();
+            startDateTime = Helper.stringToDateTime(dateTimeStr);
+        }
+        if (!TransportManager.StartTransport(transport, startDateTime)) {
+            Helper.println("Failed to start transport.");
+            return;
+        }
+    }
+
+    /**
+     * This method is used to visit the source of the transport.
+     */
+    private static void visitSource() {
+        Helper.print("Please enter the transport ID to visit source: ");
+        int transportId = Helper.getUserInputInteger();
+        while (transportId == Helper.UndefinedUserInput) {
+            Helper.print("Invalid transport ID. Please try again: ");
+            transportId = Helper.getUserInputInteger();
+        }
+        Transport transport = TransportManager.getTransportById(transportId);
+        if (transport == null) {
+            Helper.println("Transport not found. Please try again.");
+            return;
+        }
+        if(!TransportManager.visitSource(transport)){
+            Helper.println("Failed to visit source.");
+            return;
+        }
+    }
+
+    /**
      * This method is used to handle the transport management menu.
      */
     public static void handleTransports() {
@@ -451,8 +503,8 @@ public class TransportHandler {
             // Helper.println("4. Print the next drive for driver"); TODO NTH
             Helper.println("5. Delete transport by ID");
             Helper.println("6. Create transport");
-            // Helper.println("7. Start transport");
-            // Helper.println("8. Visit source"); TODO NTH
+            Helper.println("7. Start transport");
+            Helper.println("8. Visit source"); //להעביר את המשקל כדי לוודא מה הלוז
             // Helper.println("9. Visit destination"); TODO NTH
             // Helper.println("10. Edit Unstarted Transport"); TODO NTH
             Helper.println("11. Back to main menu");
@@ -482,10 +534,10 @@ public class TransportHandler {
                     createTransportMainRoutine();
                     break;
                 case 7:
-                    // TODO NTH  Start transport
+                    startTransport();
                     break;
                 case 8:
-                    // TODO NTH  Visit source
+                    visitSource();
                     break;
                 case 9:
                     // TODO NTH  Visit destination
@@ -501,4 +553,6 @@ public class TransportHandler {
             }
         }
     }
+
+
 }
