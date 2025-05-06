@@ -160,6 +160,7 @@ public class TransportHandler {
                 truckId = Helper.getUserInputInteger();
             }
             Truck selectedTruck = TrucksManager.getTruckById(truckId);
+            //todo - we need to calculate all the weight of the items linked to each route - and compare that total to the truck max weight!
             if (selectedTruck == null) {
                 Helper.println("Truck not found. Please try again.");
                 continue;
