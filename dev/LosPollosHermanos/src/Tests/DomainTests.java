@@ -90,7 +90,7 @@ public class DomainTests {
         assertNull(BranchesManager.getBranchById(b.getId()));
     }
 
-    @UseTestingDatabase
+    //@UseTestingDatabase
     @Test
     public void testAddDriver_Success() {
         Driver d = DriversManager.getDriverByPersonalId("123456789");

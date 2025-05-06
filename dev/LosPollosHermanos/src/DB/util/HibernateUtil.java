@@ -7,6 +7,21 @@ import org.hibernate.cfg.Configuration;
 public class HibernateUtil {
     private static SessionFactory sessionFactory = null;
 
+    /**
+     * Function to invalidate the current session factory.
+     */
+    public static void invalidateSessionFactory() {
+        if (sessionFactory != null) {
+            sessionFactory.close();
+            sessionFactory = null;
+        }
+    }
+
+    /**
+     * Function to build the session factory.
+     *
+     * @return SessionFactory
+     */
     private static SessionFactory buildSessionFactory() {
         try {
             return new Configuration().configure(GlobalConfig.getDatabaseConfigUrl()).buildSessionFactory();
@@ -16,6 +31,11 @@ public class HibernateUtil {
         }
     }
 
+    /**
+     * Function to get the session factory.
+     *
+     * @return SessionFactory
+     */
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null || sessionFactory.isClosed()) {
             sessionFactory = buildSessionFactory();

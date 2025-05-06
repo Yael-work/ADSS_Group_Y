@@ -7,6 +7,11 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.lang.reflect.Method;
 
+
+/**
+ * This extension is used to set the test mode for the database before executing a test method
+ * annotated with @UseTestingDatabase. It also resets the test mode after the test execution.
+ */
 public class UseTestingDatabaseExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
     private boolean wasActivated = false;

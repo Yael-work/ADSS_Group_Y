@@ -9,12 +9,8 @@ import org.hibernate.SessionFactory;
 import java.util.ArrayList;
 
 public class SqliteDriverController implements IDriverController {
-    private final SessionFactory sessionFactory;
     private static SqliteDriverController instance;
 
-    private SqliteDriverController() {
-        this.sessionFactory = HibernateUtil.getSessionFactory();
-    }
     public static SqliteDriverController getInstance() {
         if (instance == null) {
             instance = new SqliteDriverController();
@@ -24,7 +20,7 @@ public class SqliteDriverController implements IDriverController {
 
     @Override
     public boolean addDriver(Driver driver) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.persist(driver);
             session.getTransaction().commit();
@@ -34,7 +30,7 @@ public class SqliteDriverController implements IDriverController {
 
     @Override
     public boolean updateDriver(Driver driver, int id) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
             Driver existing = session.get(Driver.class, id);
             if (existing == null) return false;
@@ -50,7 +46,7 @@ public class SqliteDriverController implements IDriverController {
 
     @Override
     public boolean deleteDriver(int id) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
             Driver driver = session.get(Driver.class, id);
             if (driver != null) {
@@ -64,14 +60,14 @@ public class SqliteDriverController implements IDriverController {
 
     @Override
     public Driver getDriverById(int id) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(Driver.class, id);
         }
     }
 
     @Override
     public Driver getDriverByFullName(String firstName, String lastName) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("FROM Driver WHERE firstName = :fn AND lastName = :ln", Driver.class)
                     .setParameter("fn", firstName)
                     .setParameter("ln", lastName)
@@ -81,7 +77,7 @@ public class SqliteDriverController implements IDriverController {
 
     @Override
     public Driver getDriveByPersonalId(String personalId) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("FROM Driver WHERE personalId = :pid", Driver.class)
                     .setParameter("pid", personalId)
                     .uniqueResult();
@@ -90,7 +86,7 @@ public class SqliteDriverController implements IDriverController {
 
     @Override
     public Driver getDriverByPhoneNumber(String phoneNumber) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("FROM Driver WHERE phoneNumber = :ph", Driver.class)
                     .setParameter("ph", phoneNumber)
                     .uniqueResult();
@@ -99,7 +95,7 @@ public class SqliteDriverController implements IDriverController {
 
     @Override
     public ArrayList<Driver> getAllRecords() {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return new ArrayList<>(session.createQuery("FROM Driver", Driver.class).getResultList());
         }
     }
