@@ -2,10 +2,7 @@ package Presentation.transport;
 
 import Auxiliary.Helper;
 import Domain.stock.StockManager;
-import Domain.transport.BranchesManager;
-import Domain.transport.DriversManager;
-import Domain.transport.TransportManager;
-import Domain.transport.TrucksManager;
+import Domain.transport.*;
 import Models.DBModels.transport.*;
 import Models.DTOs.StockItem;
 import Models.DTOs.transport.CreateNewTransportRoutesResult;
@@ -149,6 +146,48 @@ public class TransportHandler {
             //todo add support to edit the time right here and then search again!
             return false;
         }
+        List<DeliveryFileItem> deliveryFileItems = new ArrayList<>();
+        for (int routeId : createdTransportRoutesIds) {
+            TransportRoute route = TransportManager.getTransportRouteById(routeId);
+            if (route != null) {
+                DeliveryFile deliveryFile = TransportManager.getDeliveryFileById(route.getDeliveryFileId());
+                if (deliveryFile != null) {
+                    for (int itemId : deliveryFile.getDeliveryFileItemIds()) {
+                        DeliveryFileItem item = TransportManager.getDeliveryFileItemById(itemId);
+                        if (item != null) {
+                            deliveryFileItems.add(item);
+                        }
+                    }
+                }
+            }
+        }
+        double sumOfItemsWeight = 0;
+        for (DeliveryFileItem deliveryFileItem : deliveryFileItems) {
+            StockItem stock = StockManager.getStockItemById(deliveryFileItem.getStockItemId());
+            if (stock == null) {
+                Helper.println("Stock item not found. Please try again.");
+                return false;
+            }
+            if (stock.getWeight() > 0) {
+                sumOfItemsWeight += stock.getWeight() * deliveryFileItem.getAmountPickedUp();
+            } else {
+                Helper.println("Invalid weight for stock item. Please try again.");
+                return false;
+            }
+        }
+        if(sumOfItemsWeight == 0) {
+            Helper.println("No items selected for transport. Cannot proceed with transport creation.");
+            return false;
+        }
+        for(Truck truck : trucks) {
+            if (truck.getMaxWeight() - truck.getNetWeight() < sumOfItemsWeight) {
+                trucks.remove(truck);
+            }
+        }
+        if (trucks.isEmpty()) {
+            Helper.println("No trucks available for the selected date and time.");
+            return false;
+        }
         do {
             Helper.println(String.format("Select a truck for the transport (Only available trucks are visible for the" +
                     " date %s):", plannedDateTime));
@@ -160,7 +199,6 @@ public class TransportHandler {
                 truckId = Helper.getUserInputInteger();
             }
             Truck selectedTruck = TrucksManager.getTruckById(truckId);
-            //todo - we need to calculate all the weight of the items linked to each route - and compare that total to the truck max weight!
             if (selectedTruck == null) {
                 Helper.println("Truck not found. Please try again.");
                 continue;
@@ -354,7 +392,6 @@ public class TransportHandler {
         }
         return transports;
     }
-
 
 
     /**

@@ -589,4 +589,42 @@ public class TransportManager {
                 deleiveryFileDetailedString;
     }
 
+    public static TransportRoute getTransportRouteById(int routeId) {
+        if (routeId <= Helper.UndefinedId) {
+            Helper.showError("Cant get transport route with id <= 0");
+            return null;
+        }
+        TransportRoute route = transportRouteController.getTransportRouteById(routeId);
+        if (route == null) {
+            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
+            return null;
+        }
+        return route;
+    }
+
+    public static DeliveryFile getDeliveryFileById(int deliveryFileId) {
+        if (deliveryFileId <= Helper.UndefinedId) {
+            Helper.showError("Cant get delivery file with id <= 0");
+            return null;
+        }
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(deliveryFileId);
+        if (deliveryFile == null) {
+            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
+            return null;
+        }
+        return deliveryFile;
+    }
+
+    public static DeliveryFileItem getDeliveryFileItemById(int itemId) {
+        if (itemId <= Helper.UndefinedId) {
+            Helper.showError("Cant get delivery file item with id <= 0");
+            return null;
+        }
+        DeliveryFileItem deliveryFileItem = deliveryFileItemController.getDeliveryFileItemById(itemId);
+        if (deliveryFileItem == null) {
+            Helper.showError("Cant get delivery file item with id=" + itemId + ", it does not exist");
+            return null;
+        }
+        return deliveryFileItem;
+    }
 }
