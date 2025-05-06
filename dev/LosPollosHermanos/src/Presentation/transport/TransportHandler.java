@@ -1,6 +1,7 @@
 package Presentation.transport;
 
 import Auxiliary.Enums.Models.TransportStatusEnum;
+import Auxiliary.Enums.Models.visitSourceEnum;
 import Auxiliary.Helper;
 import Domain.stock.StockManager;
 import Domain.transport.*;
@@ -11,6 +12,7 @@ import Models.DTOs.transport.CreateNewTransportRoutesResult;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TransportHandler {
 
@@ -170,7 +172,7 @@ public class TransportHandler {
                 return false;
             }
             if (stock.getWeight() > 0) {
-                sumOfItemsWeight += stock.getWeight() * deliveryFileItem.getAmountPickedUp();
+                sumOfItemsWeight += stock.getWeight() * deliveryFileItem.getAmount(); //TODO check if this is correct
             } else {
                 Helper.println("Invalid weight for stock item. Please try again.");
                 return false;
@@ -483,11 +485,144 @@ public class TransportHandler {
             Helper.println("Transport not found. Please try again.");
             return;
         }
-        if(!TransportManager.visitSource(transport)){
-            Helper.println("Failed to visit source.");
+        if (transport.getStatus() == TransportStatusEnum.STARTED) {
+            Helper.println("Relevant sources to visit: ");
+            List<Integer> routes = transport.getTransportRouteIds();
+            Site sourceSiteSelected = null;
+            TransportRoute selectedRoute = null;
+            for (Integer route : routes) {
+                Site soruceSite = TransportManager.getSiteById(route);
+                if (soruceSite == null) {
+                    Helper.println("Source not found. Please try again.");
+                    return;
+                }
+                Helper.println("Source ID: " + soruceSite.getSiteObjectId() + ", Address: " + soruceSite.getSiteAddress());
+            }
+            Helper.println("Enter the ID of the source you want to visit: ");
+            do {
+                int sourceID = Helper.getUserInputInteger();
+                if (sourceID <= Helper.UndefinedId) {
+                    Helper.println("Invalid input. Please try again.");
+                    continue;
+                }
+                for (Integer route : routes) {
+                    Site source = TransportManager.getSiteById(Objects.requireNonNull(TransportManager.getTransportRouteById(route)).getSourceSiteId());
+                    if (source != null && source.getSiteObjectId() == sourceID) {
+                        sourceSiteSelected = source;
+                        selectedRoute = TransportManager.getTransportRouteById(route);
+                        if (selectedRoute == null) {
+                            Helper.println("Route not found. Please try again.");
+                            return;
+                        }
+                        Helper.println("Visiting source: " + source.toPrettyString());
+                        break;
+                    }
+                }
+                Helper.println("Source not found. Please try again.");
+            } while (sourceSiteSelected == null);
+            if (TransportManager.visitSource(transport, sourceSiteSelected, selectedRoute) == visitSourceEnum.OVERLOAD) {
+                do {
+                    Helper.println("Overload detected. Cannot visit source. The total weight exceeds the truck's capacity.");
+                    Helper.println("Choose a different truck (1) or choose which items to discard (2).");
+                    String answer = Helper.getUserInputString();
+                    do {
+                        if (answer == null || answer.isEmpty() || !answer.matches("[1-2]")) {
+                            Helper.println("Invalid input. Please choose 1 or 2.");
+                        }
+                        answer = Helper.getUserInputString();
+                    } while (!answer.matches("[1-2]"));
+                    if (answer.equals("1")) {
+                        List<Truck> availableTrucks = TransportManager.getAvailableTrucksByDate(transport.getPlannedDateTime());
+                        if (availableTrucks.isEmpty()) {
+                            Helper.println("No available trucks found.");
+                            return;
+                        }
+                        Helper.println("Available trucks:");
+                        for (Truck availableTruck : availableTrucks) {
+                            Helper.println("Truck ID: " + availableTruck.getId() + ", total Weight: " + (availableTruck.getMaxWeight() - availableTruck.getNetWeight()));
+                        }
+                        Helper.print("Please enter the truck ID: ");
+                        int truckId = Helper.getUserInputInteger();
+                        while (truckId == Helper.UndefinedUserInput) {
+                            Helper.print("Invalid truck ID. Please try again: ");
+                            truckId = Helper.getUserInputInteger();
+                        }
+                        for (Truck availableTruck : availableTrucks) {
+                            if (availableTruck.getId() == truckId) {
+                                transport.setTruckId(truckId);
+                                Helper.println("Truck changed successfully.");
+                                break;
+                            }
+                        }
+                        if (TransportManager.visitSource(transport, sourceSiteSelected, selectedRoute) == visitSourceEnum.SUCCESS) {
+                            Helper.println("Successfully visited source.");
+                            break;
+                        } else {
+                            Helper.println("Failed to visit source. Try again.");
+                        }
+                    } else if (answer.equals("2")) {
+                        Helper.println("Choose which items to discard:");
+                        DeliveryFile deliveryFile = TransportManager.getDeliveryFileById(selectedRoute.getDeliveryFileId());
+                        if (deliveryFile == null) {
+                            Helper.println("Delivery file not found. Please try again.");
+                            return;
+                        }
+                        for (int itemId : deliveryFile.getDeliveryFileItemIds()) {
+                            DeliveryFileItem item = TransportManager.getDeliveryFileItemById(itemId);
+                            if (item != null) {
+                                Helper.println("Item ID: " + item.getStockItemId() + ", Amount: " + item.getAmount());
+                            }
+                        }
+                        for (int itemId : deliveryFile.getDeliveryFileItemIds()) {
+                            Helper.print("You want to discard this item?" + itemId + " (yes/no): ");
+                            String discardItem = Helper.getUserInputString();
+                            while (discardItem == null || (!discardItem.equalsIgnoreCase("yes") && !discardItem.equalsIgnoreCase("no"))) {
+                                Helper.print("Invalid input. Please enter 'yes' or 'no': ");
+                                discardItem = Helper.getUserInputString();
+                            }
+                            if (discardItem.equalsIgnoreCase("yes")) {
+                                deliveryFile.getDeliveryFileItemIds().remove(itemId);
+                                Helper.println("Item discarded successfully.");
+                                Helper.println("You want to discard another item? (yes/no): ");
+                                String discardAnotherItem = Helper.getUserInputString();
+                                while (discardAnotherItem == null || (!discardAnotherItem.equalsIgnoreCase("yes") && !discardAnotherItem.equalsIgnoreCase("no"))) {
+                                    Helper.print("Invalid input. Please enter 'yes' or 'no': ");
+                                    discardAnotherItem = Helper.getUserInputString();
+                                }
+                                if (discardAnotherItem.equalsIgnoreCase("no")) {
+                                    break;
+                                }
+                            }
+
+                        }
+                        if (TransportManager.visitSource(transport, sourceSiteSelected, selectedRoute) == visitSourceEnum.SUCCESS) {
+                            Helper.println("Successfully visited source.");
+                            break;
+                        } else {
+                            Helper.println("Failed to visit source. Try again.");
+                        }
+                    }
+                } while (true);
+            }
+        }
+        Helper.println("Failed to visit source. Transport not started or source not found.");
+        return;
+    }
+
+    private static void visitDestination() {
+        Helper.print("Please enter the transport ID to visit source: ");
+        int transportId = Helper.getUserInputInteger();
+        while (transportId == Helper.UndefinedUserInput) {
+            Helper.print("Invalid transport ID. Please try again: ");
+            transportId = Helper.getUserInputInteger();
+        }
+        Transport transport = TransportManager.getTransportById(transportId);
+        if (transport == null) {
+            Helper.println("Transport not found. Please try again.");
             return;
         }
     }
+
 
     /**
      * This method is used to handle the transport management menu.
@@ -504,7 +639,7 @@ public class TransportHandler {
             Helper.println("5. Delete transport by ID");
             Helper.println("6. Create transport");
             Helper.println("7. Start transport");
-            Helper.println("8. Visit source"); //להעביר את המשקל כדי לוודא מה הלוז
+            Helper.println("8. Visit source");
             // Helper.println("9. Visit destination"); TODO NTH
             // Helper.println("10. Edit Unstarted Transport"); TODO NTH
             Helper.println("11. Back to main menu");
@@ -540,7 +675,7 @@ public class TransportHandler {
                     visitSource();
                     break;
                 case 9:
-                    // TODO NTH  Visit destination
+                    visitDestination();
                     break;
                 case 10:
                     // TODO NTH  Edit Unstarted Transport

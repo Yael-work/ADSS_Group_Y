@@ -40,6 +40,7 @@ package Domain.transport;
 import Auxiliary.Enums.Domain.CreateNewTransportRouteResultEnum;
 import Auxiliary.Enums.Models.SiteTypeEnum;
 import Auxiliary.Enums.Models.TransportStatusEnum;
+import Auxiliary.Enums.Models.visitSourceEnum;
 import Auxiliary.Helper;
 import DB.DBManager;
 import DB.interfaces.*;
@@ -628,7 +629,7 @@ public class TransportManager {
         return deliveryFileItem;
     }
 
-    public static boolean StartTransport(Transport transport, LocalDateTime startDateTime){
+    public static boolean StartTransport(Transport transport, LocalDateTime startDateTime) {
         if (transport.getStatus() == TransportStatusEnum.PENDING) {
             LocalDateTime plannedDateTime = transport.getPlannedDateTime();
             if (startDateTime.isBefore(plannedDateTime) || startDateTime.isAfter(plannedDateTime)) {
@@ -654,7 +655,47 @@ public class TransportManager {
         }
     }
 
-    public static boolean visitSource(Transport transport) {
-        return false;
+    public static visitSourceEnum visitSource(Transport transport, Site sourceSite, TransportRoute selectedRoute) {
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFileId());
+        if (deliveryFile == null) {
+            Helper.println("Delivery file not found.");
+            return visitSourceEnum.FAILED;
+        }
+        List<DeliveryFileItem> deliveryFileItems = deliveryFileItemController.getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
+        if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
+            Helper.println("No items in the delivery file.");
+            return visitSourceEnum.FAILED;
+        }
+        Truck truck = TrucksManager.getTruckById(transport.getTruckId());
+        if (truck == null) {
+            Helper.println("Truck not found.");
+            return visitSourceEnum.FAILED;
+        }
+        double totalWeight = 0;
+        for (DeliveryFileItem item : deliveryFileItems) {
+            StockItem stockItem = StockManager.getStockItemById(item.getStockItemId());
+            if (stockItem == null) {
+                Helper.println("Stock item not found.");
+                return visitSourceEnum.FAILED;
+            }
+            totalWeight += stockItem.getWeight() * item.getAmountPickedUp();
+        }
+        if (totalWeight > truck.getMaxWeight() - truck.getNetWeight()) {
+            return visitSourceEnum.OVERLOAD;
+        }
+        return visitSourceEnum.SUCCESS;
+    }
+
+    public static Site getSiteById(int sourceSiteId) {
+        if (sourceSiteId <= Helper.UndefinedId) {
+            Helper.showError("Cant get site with id <= 0");
+            return null;
+        }
+        Site site = siteController.getSiteById(sourceSiteId);
+        if (site == null) {
+            Helper.showError("Cant get site with id=" + sourceSiteId + ", it does not exist");
+            return null;
+        }
+        return site;
     }
 }
