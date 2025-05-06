@@ -1,9 +1,14 @@
 package Models.DBModels;
 
+import jakarta.persistence.*;
+
 /**
  * BaseModel is an abstract class that serves as a base for all models in the application.
  */
+@MappedSuperclass
 public abstract class BaseModel {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String modelName;
 
@@ -14,6 +19,11 @@ public abstract class BaseModel {
         }
         this.id = id;
         this.modelName = modelName;
+    }
+
+    public BaseModel() {
+        this.id = 0;
+        this.modelName = this.getClass().getName();
     }
 
     public int getId() {

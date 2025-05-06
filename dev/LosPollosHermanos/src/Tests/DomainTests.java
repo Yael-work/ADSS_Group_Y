@@ -8,16 +8,20 @@ import Models.DBModels.transport.Branch;
 import Models.DBModels.transport.Driver;
 import Models.DBModels.transport.TransportArea;
 import Models.DBModels.transport.Truck;
+import Tests.losPollosAnnotations.UseTestingDatabase;
+import Tests.losPollosAnnotations.UseTestingDatabaseExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class Tests {
+@ExtendWith(UseTestingDatabaseExtension.class)
+public class DomainTests {
 
+    @UseTestingDatabase
     @Test
     public void testAddTruck_Success() {
         boolean result = TrucksManager.addTruck("ABC123", 1000, 5000, "C", "Volvo");
@@ -27,6 +31,7 @@ public class Tests {
         assertEquals("ABC123", truck.getPlate());
     }
 
+    @UseTestingDatabase
     @Test
     public void testUpdateTruck_ChangePlate() {
         TrucksManager.addTruck("DEF456", 1500, 6000, "C1", "MAN");
@@ -39,6 +44,7 @@ public class Tests {
         assertEquals("NEWPLATE", updatedTruck.getPlate());
     }
 
+    @UseTestingDatabase
     @Test
     public void testDeleteTruck_Success() {
         TrucksManager.addTruck("XYZ789", 2000, 7000, "C", "Scania");
@@ -49,6 +55,7 @@ public class Tests {
         assertNull(TrucksManager.getTruckById(truck.getId()));
     }
 
+    @UseTestingDatabase
     @Test
     public void testAddBranch_Success() {
         boolean result = BranchesManager.addBranch("Main Office", "123 Street", "0500000000");
@@ -58,6 +65,7 @@ public class Tests {
         assertEquals("Main Office", b.getSiteName());
     }
 
+    @UseTestingDatabase
     @Test
     public void testUpdateBranch_Success() {
         BranchesManager.addBranch("Warehouse", "456 Avenue", "0511111111");
@@ -71,6 +79,7 @@ public class Tests {
         assertTrue(result);
     }
 
+    @UseTestingDatabase
     @Test
     public void testDeleteBranch_Success() {
         BranchesManager.addBranch("Temp Office", "999 Lane", "0533333333");
@@ -81,14 +90,20 @@ public class Tests {
         assertNull(BranchesManager.getBranchById(b.getId()));
     }
 
+    @UseTestingDatabase
     @Test
     public void testAddDriver_Success() {
+        Driver d = DriversManager.getDriverByPersonalId("123456789");
+        if (d != null) {
+            DriversManager.deleteDriver(d.getId());
+        }
         boolean result = DriversManager.addDriver("John", "Doe", "123456789", "0500000000", "B");
         assertTrue(result);
-        Driver d = DriversManager.getDriverByPersonalId("123456789");
+        d = DriversManager.getDriverByPersonalId("123456789");
         assertNotNull(d);
     }
 
+    @UseTestingDatabase
     @Test
     public void testUpdateDriver_Success() {
         DriversManager.addDriver("Alice", "Smith", "987654321", "0501111111", "C");
@@ -96,9 +111,12 @@ public class Tests {
         assert driver != null;
         boolean result = DriversManager.updateDriver("AliceUpdated", driver.getId(), 1);
         assertTrue(result);
+        driver = DriversManager.getDriverByPersonalId("987654321");
+        assertNotNull(driver);
         assertEquals("AliceUpdated", driver.getFirstName());
     }
 
+    @UseTestingDatabase
     @Test
     public void testDeleteDriver_Success() {
         DriversManager.addDriver("Mark", "Brown", "321654987", "0502222222", "C1");
@@ -112,6 +130,7 @@ public class Tests {
         assertNull(DriversManager.getDriverById(driver1.getId()));
     }
 
+    @UseTestingDatabase
     @Test
     public void testAddNewTransportArea_Success() {
         String areaName = "North Region";

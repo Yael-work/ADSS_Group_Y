@@ -1,12 +1,20 @@
 package Models.DBModels.transport;
 
 import Models.DBModels.BaseModel;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "drivers")
 public class Driver extends BaseModel {
+    @Column(nullable = false)
     private String firstName;
+    @Column(nullable = false)
     private String lastName;
+    @Column(nullable = false)
     private String personalId;
+    @Column(nullable = false)
     private String phoneNumber;
+    @Column(nullable = false)
     private String licenseType;
 
     public Driver(int id, String firstName, String lastName, String personalId, String phoneNumber, String licenseType) {
@@ -16,6 +24,10 @@ public class Driver extends BaseModel {
         this.personalId = personalId;
         this.phoneNumber = phoneNumber;
         this.licenseType = licenseType;
+    }
+
+    public Driver() {
+        super(0, Driver.class.getName());
     }
 
     public String getFirstName() {

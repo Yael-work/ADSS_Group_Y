@@ -1,0 +1,107 @@
+package DB.implementations.sqlite;
+
+import DB.util.HibernateUtil;
+import DB.interfaces.IDriverController;
+import Models.DBModels.transport.Driver;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
+import java.util.ArrayList;
+
+public class SqliteDriverController implements IDriverController {
+    private final SessionFactory sessionFactory;
+    private static SqliteDriverController instance;
+
+    private SqliteDriverController() {
+        this.sessionFactory = HibernateUtil.getSessionFactory();
+    }
+    public static SqliteDriverController getInstance() {
+        if (instance == null) {
+            instance = new SqliteDriverController();
+        }
+        return instance;
+    }
+
+    @Override
+    public boolean addDriver(Driver driver) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.persist(driver);
+            session.getTransaction().commit();
+            return true;
+        }
+    }
+
+    @Override
+    public boolean updateDriver(Driver driver, int id) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            Driver existing = session.get(Driver.class, id);
+            if (existing == null) return false;
+            existing.setFirstName(driver.getFirstName());
+            existing.setLastName(driver.getLastName());
+            existing.setPersonalId(driver.getPersonalId());
+            existing.setPhoneNumber(driver.getPhoneNumber());
+            existing.setLicenseType(driver.getLicenseType());
+            session.getTransaction().commit();
+            return true;
+        }
+    }
+
+    @Override
+    public boolean deleteDriver(int id) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            Driver driver = session.get(Driver.class, id);
+            if (driver != null) {
+                session.remove(driver);
+                session.getTransaction().commit();
+                return true;
+            }
+            return false;
+        }
+    }
+
+    @Override
+    public Driver getDriverById(int id) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.get(Driver.class, id);
+        }
+    }
+
+    @Override
+    public Driver getDriverByFullName(String firstName, String lastName) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM Driver WHERE firstName = :fn AND lastName = :ln", Driver.class)
+                    .setParameter("fn", firstName)
+                    .setParameter("ln", lastName)
+                    .uniqueResult();
+        }
+    }
+
+    @Override
+    public Driver getDriveByPersonalId(String personalId) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM Driver WHERE personalId = :pid", Driver.class)
+                    .setParameter("pid", personalId)
+                    .uniqueResult();
+        }
+    }
+
+    @Override
+    public Driver getDriverByPhoneNumber(String phoneNumber) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM Driver WHERE phoneNumber = :ph", Driver.class)
+                    .setParameter("ph", phoneNumber)
+                    .uniqueResult();
+        }
+    }
+
+    @Override
+    public ArrayList<Driver> getAllRecords() {
+        try (Session session = sessionFactory.openSession()) {
+            return new ArrayList<>(session.createQuery("FROM Driver", Driver.class).getResultList());
+        }
+    }
+}
+
