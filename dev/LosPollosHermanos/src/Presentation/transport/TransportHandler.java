@@ -1,7 +1,7 @@
 package Presentation.transport;
 
 import Auxiliary.Enums.Models.TransportStatusEnum;
-import Auxiliary.Enums.Models.visitSourceEnum;
+import Auxiliary.Enums.Models.visitSiteEnum;
 import Auxiliary.Helper;
 import Domain.stock.StockManager;
 import Domain.transport.*;
@@ -474,6 +474,9 @@ public class TransportHandler {
      * This method is used to visit the source of the transport.
      */
     private static void visitSource() {
+        for (Transport transport : TransportManager.getAllTransports()) {
+            Helper.println("Transport ID: " + transport.getId() + ", Status: " + transport.getStatus());
+        }
         Helper.print("Please enter the transport ID to visit source: ");
         int transportId = Helper.getUserInputInteger();
         while (transportId == Helper.UndefinedUserInput) {
@@ -485,13 +488,26 @@ public class TransportHandler {
             Helper.println("Transport not found. Please try again.");
             return;
         }
+        if (transport.getStatus() == TransportStatusEnum.DONE || transport.getStatus() == TransportStatusEnum.DONE_WITH_ISSUES) {
+            Helper.println("Transport is already done. Cannot visit destination.");
+            return;
+        }
         if (transport.getStatus() == TransportStatusEnum.STARTED) {
             Helper.println("Relevant sources to visit: ");
             List<Integer> routes = transport.getTransportRouteIds();
-            Site sourceSiteSelected = null;
             TransportRoute selectedRoute = null;
             for (Integer route : routes) {
-                Site soruceSite = TransportManager.getSiteById(route);
+                TransportRoute transportRoute = TransportManager.getTransportRouteById(route);
+                if (transportRoute == null) {
+                    Helper.println("Please try again later, error in route ID: " + route);
+                    return;
+                }
+                if (transportRoute.getStatus() == TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES
+                        || transportRoute.getStatus() == TransportStatusEnum.SOURCE_COMPLETED
+                        || transportRoute.getStatus() == TransportStatusEnum.DESTINATION_COMPLETED) {
+                    continue;
+                }
+                Site soruceSite = TransportManager.getSiteById(transportRoute.getSourceSiteId());
                 if (soruceSite == null) {
                     Helper.println("Source not found. Please try again.");
                     return;
@@ -499,6 +515,7 @@ public class TransportHandler {
                 Helper.println("Source ID: " + soruceSite.getSiteObjectId() + ", Address: " + soruceSite.getSiteAddress());
             }
             Helper.println("Enter the ID of the source you want to visit: ");
+            boolean flag = false;
             do {
                 int sourceID = Helper.getUserInputInteger();
                 if (sourceID <= Helper.UndefinedId) {
@@ -508,22 +525,23 @@ public class TransportHandler {
                 for (Integer route : routes) {
                     Site source = TransportManager.getSiteById(Objects.requireNonNull(TransportManager.getTransportRouteById(route)).getSourceSiteId());
                     if (source != null && source.getSiteObjectId() == sourceID) {
-                        sourceSiteSelected = source;
                         selectedRoute = TransportManager.getTransportRouteById(route);
                         if (selectedRoute == null) {
                             Helper.println("Route not found. Please try again.");
                             return;
                         }
                         Helper.println("Visiting source: " + source.toPrettyString());
+                        flag = true;
                         break;
                     }
                 }
                 Helper.println("Source not found. Please try again.");
-            } while (sourceSiteSelected == null);
-            if (TransportManager.visitSource(transport, sourceSiteSelected, selectedRoute) == visitSourceEnum.OVERLOAD) {
+            } while (!flag);
+            if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.OVERLOAD) {
                 do {
                     Helper.println("Overload detected. Cannot visit source. The total weight exceeds the truck's capacity.");
                     Helper.println("Choose a different truck (1) or choose which items to discard (2).");
+
                     String answer = Helper.getUserInputString();
                     do {
                         if (answer == null || answer.isEmpty() || !answer.matches("[1-2]")) {
@@ -547,6 +565,10 @@ public class TransportHandler {
                             Helper.print("Invalid truck ID. Please try again: ");
                             truckId = Helper.getUserInputInteger();
                         }
+                        if (TransportManager.UpdateTransportIssue(transport, 1, selectedRoute, truckId, null, 0)) {
+                            Helper.println("Failed to update transport issue. Please try again.");
+                            return;
+                        }
                         for (Truck availableTruck : availableTrucks) {
                             if (availableTruck.getId() == truckId) {
                                 transport.setTruckId(truckId);
@@ -554,7 +576,7 @@ public class TransportHandler {
                                 break;
                             }
                         }
-                        if (TransportManager.visitSource(transport, sourceSiteSelected, selectedRoute) == visitSourceEnum.SUCCESS) {
+                        if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
                             Helper.println("Successfully visited source.");
                             break;
                         } else {
@@ -593,9 +615,12 @@ public class TransportHandler {
                                     break;
                                 }
                             }
-
+                            if (TransportManager.UpdateTransportIssue(transport, 2, selectedRoute, 0, deliveryFile, 0)) {
+                                Helper.println("Failed to update transport issue. Please try again.");
+                                return;
+                            }
                         }
-                        if (TransportManager.visitSource(transport, sourceSiteSelected, selectedRoute) == visitSourceEnum.SUCCESS) {
+                        if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
                             Helper.println("Successfully visited source.");
                             break;
                         } else {
@@ -610,6 +635,9 @@ public class TransportHandler {
     }
 
     private static void visitDestination() {
+        for (Transport transport : TransportManager.getAllTransports()) {
+            Helper.println("Transport ID: " + transport.getId() + ", Status: " + transport.getStatus());
+        }
         Helper.print("Please enter the transport ID to visit source: ");
         int transportId = Helper.getUserInputInteger();
         while (transportId == Helper.UndefinedUserInput) {
@@ -621,6 +649,67 @@ public class TransportHandler {
             Helper.println("Transport not found. Please try again.");
             return;
         }
+        if (transport.getStatus() == TransportStatusEnum.DONE || transport.getStatus() == TransportStatusEnum.DONE_WITH_ISSUES) {
+            Helper.println("Transport is already done. Cannot visit destination.");
+            return;
+        }
+        if (transport.getStatus() == TransportStatusEnum.STARTED) {
+            Helper.println("Relevant destinations to visit: ");
+            List<Integer> routes = transport.getTransportRouteIds();
+            TransportRoute selectedRoute = null;
+            for (Integer route : routes) {
+                TransportRoute transportRoute = TransportManager.getTransportRouteById(route);
+                if (transportRoute == null) {
+                    Helper.println("Please try again later, error in route ID: " + route);
+                    return;
+                }
+                if (transportRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES
+                        || transportRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED ||
+                        transportRoute.getStatus() == TransportStatusEnum.DESTINATION_COMPLETED) {
+                    continue;
+                }
+                Site destinationSite = TransportManager.getSiteById(transportRoute.getDestinationSiteId());
+                if (destinationSite == null) {
+                    Helper.println("Destination not found. Please try again.");
+                    return;
+                }
+                Helper.println("Destination ID: " + destinationSite.getSiteObjectId() + ", Address: " + destinationSite.getSiteAddress());
+            }
+            Helper.println("Enter the ID of the destination you want to visit: ");
+            boolean flag = false;
+            do {
+                int destinationID = Helper.getUserInputInteger();
+                if (destinationID <= Helper.UndefinedId) {
+                    Helper.println("Invalid input. Please try again.");
+                    continue;
+                }
+                for (Integer route : routes) {
+                    Site destination = TransportManager.getSiteById(Objects.requireNonNull(TransportManager.getTransportRouteById(route)).getDestinationSiteId());
+                    if (destination != null && destination.getSiteObjectId() == destinationID) {
+                        selectedRoute = TransportManager.getTransportRouteById(route);
+                        if (selectedRoute == null) {
+                            Helper.println("Route not found. Please try again.");
+                            return;
+                        }
+                        Helper.println("Visiting destination: " + destination.toPrettyString());
+                        flag = true;
+                        break;
+                    }
+                }
+                Helper.println("Destination not found. Please try again.");
+            } while (!flag);
+            if (TransportManager.visitDestination(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
+                if (TransportManager.checkIfTransportCompleted(transport)) {
+                    Helper.println("Successfully visited destination.");
+                    Helper.println("Transport is completed successfully.");
+                }
+            } else {
+                Helper.println("Failed to visit destination. Try again.");
+            }
+        } else {
+            Helper.println("Transport is not started yet. Please start the transport first.");
+        }
+        return;
     }
 
 
@@ -640,7 +729,7 @@ public class TransportHandler {
             Helper.println("6. Create transport");
             Helper.println("7. Start transport");
             Helper.println("8. Visit source");
-            // Helper.println("9. Visit destination"); TODO NTH
+            Helper.println("9. Visit destination");
             // Helper.println("10. Edit Unstarted Transport"); TODO NTH
             Helper.println("11. Back to main menu");
 

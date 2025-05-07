@@ -40,7 +40,7 @@ package Domain.transport;
 import Auxiliary.Enums.Domain.CreateNewTransportRouteResultEnum;
 import Auxiliary.Enums.Models.SiteTypeEnum;
 import Auxiliary.Enums.Models.TransportStatusEnum;
-import Auxiliary.Enums.Models.visitSourceEnum;
+import Auxiliary.Enums.Models.visitSiteEnum;
 import Auxiliary.Helper;
 import DB.DBManager;
 import DB.interfaces.*;
@@ -655,47 +655,146 @@ public class TransportManager {
         }
     }
 
-    public static visitSourceEnum visitSource(Transport transport, Site sourceSite, TransportRoute selectedRoute) {
+    /**
+     * This method is used to visit the source site of a transport route.
+     *
+     * @param transport     - the transport object
+     * @param selectedRoute - the selected transport route
+     * @return - an enum indicating the result of the visit
+     */
+    public static visitSiteEnum visitSource(Transport transport, TransportRoute selectedRoute) {
         DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFileId());
         if (deliveryFile == null) {
             Helper.println("Delivery file not found.");
-            return visitSourceEnum.FAILED;
+            return visitSiteEnum.FAILED;
         }
         List<DeliveryFileItem> deliveryFileItems = deliveryFileItemController.getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
         if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
             Helper.println("No items in the delivery file.");
-            return visitSourceEnum.FAILED;
+            return visitSiteEnum.FAILED;
         }
         Truck truck = TrucksManager.getTruckById(transport.getTruckId());
         if (truck == null) {
             Helper.println("Truck not found.");
-            return visitSourceEnum.FAILED;
+            return visitSiteEnum.FAILED;
         }
         double totalWeight = 0;
         for (DeliveryFileItem item : deliveryFileItems) {
             StockItem stockItem = StockManager.getStockItemById(item.getStockItemId());
             if (stockItem == null) {
                 Helper.println("Stock item not found.");
-                return visitSourceEnum.FAILED;
+                return visitSiteEnum.FAILED;
             }
             totalWeight += stockItem.getWeight() * item.getAmountPickedUp();
         }
         if (totalWeight > truck.getMaxWeight() - truck.getNetWeight()) {
-            return visitSourceEnum.OVERLOAD;
+            return visitSiteEnum.OVERLOAD;
         }
-        return visitSourceEnum.SUCCESS;
+        if (selectedRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES) {
+            selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED);
+        }
+        return visitSiteEnum.SUCCESS;
     }
 
-    public static Site getSiteById(int sourceSiteId) {
-        if (sourceSiteId <= Helper.UndefinedId) {
+    /**
+     * This method is used to visit the destination site.
+     *
+     * @param transport     - the transport object
+     * @param selectedRoute - the selected transport route
+     * @return - an enum indicating the result of the visit
+     */
+    public static visitSiteEnum visitDestination(Transport transport, TransportRoute selectedRoute) {
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFileId());
+        if (deliveryFile == null) {
+            Helper.println("Delivery file not found.");
+            return visitSiteEnum.FAILED;
+        }
+        List<DeliveryFileItem> deliveryFileItems = deliveryFileItemController.getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
+        if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
+            Helper.println("No items in the delivery file.");
+            return visitSiteEnum.FAILED;
+        }
+        if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES) {
+            selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
+        }
+        selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
+        return visitSiteEnum.SUCCESS;
+    }
+
+    /**
+     * This method is used to get a site by ID.
+     *
+     * @param SiteId - the ID of the site
+     * @return - the site object, or null if not found
+     */
+    public static Site getSiteById(int SiteId) {
+        if (SiteId <= Helper.UndefinedId) {
             Helper.showError("Cant get site with id <= 0");
             return null;
         }
-        Site site = siteController.getSiteById(sourceSiteId);
+        Site site = siteController.getSiteById(SiteId);
         if (site == null) {
-            Helper.showError("Cant get site with id=" + sourceSiteId + ", it does not exist");
+            Helper.showError("Cant get site with id=" + SiteId + ", it does not exist");
             return null;
         }
         return site;
+    }
+
+    public static boolean UpdateTransportIssue(Transport transport, int code, TransportRoute selectedRoute, int truckId, DeliveryFile deliveryFile, int codeSite) {
+        if (selectedRoute == null) {
+            Helper.println("Selected route is null.");
+        } else {
+            if (codeSite == 0) {
+                if (code == 1) {
+                    if (transport.getTransportIssueLogIds().isEmpty()) {
+                        List<Integer> transportIssueLogIds = new ArrayList<>();
+                        TransportIssueLog transportIssueLog = new TransportIssueLog(1, transport.getTruckId(), truckId,
+                                selectedRoute.getId(), 0);
+                        transportIssueLogIds.add(transportIssueLog.getId());
+                        transport.setTransportIssueLogIds(transportIssueLogIds);
+                    }
+                    TransportIssueLog transportIssueLog = new TransportIssueLog(transport.getTransportIssueLogIds().getLast() + 1, transport.getTruckId(), truckId,
+                            selectedRoute.getId(), 0);
+                    transport.getTransportIssueLogIds().add(transportIssueLog.getId());
+                }
+                if (code == 2) {
+                    selectedRoute.setDeliveryFileId(deliveryFile.getId());
+                }
+                selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
+                transport.setStatus(TransportStatusEnum.CONTINUED_WITH_ISSUES);
+                return true;
+            }
+            if (codeSite == 1) {
+                /* Optional for now */
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean checkIfTransportCompleted(Transport transport) {
+        boolean isCompleted = true;
+        for (Integer route : transport.getTransportRouteIds()) {
+            TransportRoute transportRoute = transportRouteController.getTransportRouteById(route);
+            if (transportRoute == null) {
+                Helper.println("Transport route not found.");
+                isCompleted = false;
+                break;
+            }
+            if (transportRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED) {
+                isCompleted = false;
+                break;
+            }
+        }
+        if (isCompleted) {
+            if (transport.getStatus() == TransportStatusEnum.CONTINUED_WITH_ISSUES) {
+                transport.setStatus(TransportStatusEnum.DONE_WITH_ISSUES);
+            } else {
+                transport.setStatus(TransportStatusEnum.DONE);
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 }
