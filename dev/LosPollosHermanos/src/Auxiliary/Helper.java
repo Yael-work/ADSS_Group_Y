@@ -176,7 +176,7 @@ public class Helper {
      * @return an ArrayList of unique, valid IDs entered by the user
      */
     public static ArrayList<Integer> retrieveIdsListFromInput(List<? extends BaseModel> srcLst) {
-        Set<Integer> uniqueIds = new HashSet<>();//todo do unit testing for this shit
+        Set<Integer> uniqueIds = new HashSet<>();//TODO do unit testing for this shit
 
         while (uniqueIds.isEmpty()) {
             Helper.println("Enter IDs like this: '1,2,3,4,5' or just '1' to add a single object.");
