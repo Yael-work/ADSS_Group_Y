@@ -787,9 +787,10 @@ public class TransportManager {
             return false;
         }
         if ((transport.getActualStartDatetime().isAfter(newPlannedDateTime) || transport.getActualStartDatetime().isEqual(newPlannedDateTime))
-            /*&& transport.*//*TODO complete*/) {
-            Helper.println("New planned date and time cannot be before the actual start date and time." +
-                    "Please set a new planned date and time after the actual start date and time.");
+            && !transport.getActualEndDatetime().isAfter(newPlannedDateTime)) {
+            Helper.println("The new planned date and time cannot be before the actual start date and time. " +
+                    "Please set a new actual start date and time.");
+            LocalDateTime actualStartDateTime = Helper.
 
         }
         return false;
