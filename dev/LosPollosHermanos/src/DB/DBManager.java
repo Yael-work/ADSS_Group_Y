@@ -27,7 +27,7 @@ public class DBManager {
         this.siteController = MockSiteController.getInstance();
         this.deliveryFileController = MockDeliveryFileController.getInstance();
         this.truckController = MockTruckController.getInstance();
-        this.deliveryFileItemController = MockDeliveryFileItemController.getInstance();
+        this.deliveryFileItemController = SqliteDeliveryFileItemController.getInstance();
         this.transportAreaController = MockTransportAreaController.getInstance();
         this.driverController = SqliteDriverController.getInstance();
         this.supplierController = MockSupplierController.getInstance();
