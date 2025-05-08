@@ -711,6 +711,63 @@ public class TransportHandler {
         return;
     }
 
+    /**
+     * This method is used to edit an unstarted transport.
+     */
+    private static void editUnstartedTransport() {
+        Helper.print("Please enter the transport ID to edit: ");
+        int transportId = Helper.getUserInputInteger();
+        while (transportId == Helper.UndefinedUserInput) {
+            Helper.print("Invalid transport ID. Please try again: ");
+            transportId = Helper.getUserInputInteger();
+        }
+        Transport transport = TransportManager.getTransportById(transportId);
+        if (transport == null) {
+            Helper.println("Transport not found. Please try again.");
+            return;
+        }
+        if (transport.getStatus() != TransportStatusEnum.PENDING) {
+            Helper.println("Transport is already started. Cannot edit.");
+            return;
+        }
+        do {
+            Helper.println("Choose the field to edit:");
+            Helper.println("1. Planned date and time");
+            Helper.println("2. Transport status (cancel)");
+            Helper.println("3. Truck ID");
+            Helper.println("4. Driver ID");
+            Helper.println("5. Transport route IDs");
+            Helper.println("6. Actual start date and time");
+            Helper.println("7. Actual end date and time");
+            Helper.println("8. Back to main menu");
+            int choice = Helper.getUserInputInteger();
+            switch (choice) {
+                case 1 -> {
+                    Helper.print("Enter the new planned date and time (%s): "
+                            .formatted(Helper.DefaultDateTimeFormat));
+                    String dateTimeStr = Helper.getUserInputString();
+                    LocalDateTime plannedDateTime = Helper.stringToDateTime(dateTimeStr);
+                    while (plannedDateTime == null) {
+                        Helper.print("Invalid date and time format. Please try again: ");
+                        dateTimeStr = Helper.getUserInputString();
+                        plannedDateTime = Helper.stringToDateTime(dateTimeStr);
+                    }
+                    if (TransportManager.setNewPlannedDateTime(transport, plannedDateTime)) {
+                        Helper.println("Planned date and time updated successfully.");
+                    } else {
+                        Helper.println("Failed to update planned date and time. Try again.");
+                    }
+                    break;
+                }
+                case 8 -> {
+                    Helper.println("Exiting edit menu.");
+                    return;
+                }
+                default -> Helper.println("Invalid choice. Please try again.");
+            }
+
+        } while (true);
+    }
 
     /**
      * This method is used to handle the transport management menu.
@@ -766,7 +823,7 @@ public class TransportHandler {
                     visitDestination();
                     break;
                 case 10:
-                    // TODO NTH  Edit Unstarted Transport
+                    editUnstartedTransport();
                     break;
                 case 11:
                     exit = true;
@@ -776,6 +833,4 @@ public class TransportHandler {
             }
         }
     }
-
-
 }
