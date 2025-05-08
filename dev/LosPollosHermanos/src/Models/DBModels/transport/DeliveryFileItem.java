@@ -2,11 +2,15 @@ package Models.DBModels.transport;
 
 import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "delivery_file_items")
 public class DeliveryFileItem extends BaseModel {
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "delivery_file_id", nullable = false)
+    private DeliveryFile deliveryFile;
+
     //@OneToOne
     //TODO: replace the int stockItemId with a StockItem object once it is in the DB!
     @Column(nullable = false)
@@ -21,6 +25,14 @@ public class DeliveryFileItem extends BaseModel {
         this.stockItemId = stockItemId;
         this.amount = amount;
         this.amountPickedUp = amountPickedUp;
+    }
+
+    public void setDeliveryFile(DeliveryFile deliveryFile) {
+        this.deliveryFile = deliveryFile;
+    }
+
+    public DeliveryFile getDeliveryFile() {
+        return deliveryFile;
     }
 
     public DeliveryFileItem() {

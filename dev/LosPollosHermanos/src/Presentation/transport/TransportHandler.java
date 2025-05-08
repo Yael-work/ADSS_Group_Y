@@ -155,8 +155,7 @@ public class TransportHandler {
             if (route != null) {
                 DeliveryFile deliveryFile = TransportManager.getDeliveryFileById(route.getDeliveryFileId());
                 if (deliveryFile != null) {
-                    for (int itemId : deliveryFile.getDeliveryFileItemIds()) {
-                        DeliveryFileItem item = TransportManager.getDeliveryFileItemById(itemId);
+                    for (DeliveryFileItem item : deliveryFile.getDeliveryFileItems()) {
                         if (item != null) {
                             deliveryFileItems.add(item);
                         }

@@ -20,6 +20,8 @@
         <!-- Register your entities -->
         <mapping class="Models.DBModels.transport.Driver"/>
         <mapping class="Models.DBModels.transport.Branch"/>
+        <mapping class="Models.DBModels.transport.DeliveryFileItem"/>
+        <mapping class="Models.DBModels.transport.DeliveryFile"/>
 
     </session-factory>
 </hibernate-configuration>

@@ -1,29 +1,57 @@
 package Models.DBModels.transport;
 
 import Models.DBModels.BaseModel;
+import jakarta.persistence.*;
 
 import java.util.List;
 
+@Entity
+@Table(name = "delivery_files")
 public class DeliveryFile extends BaseModel {
-    private List<Integer> deliveryFileItemIds; // FK IDs
+    @OneToMany(mappedBy = "deliveryFile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)/*We use Eager because we need the file items ASAP*/
+    private List<DeliveryFileItem> deliveryFileItems;
 
-    public DeliveryFile(int id, List<Integer> deliveryFileItemIds) {
+    public DeliveryFile(int id, List<DeliveryFileItem> deliveryFileItemIds) {
         super(id, DeliveryFile.class.getName());
-        this.deliveryFileItemIds = deliveryFileItemIds;
+        this.deliveryFileItems = deliveryFileItemIds;
+        for (var item : deliveryFileItemIds) {
+            item.setDeliveryFile(this);
+        }
     }
 
-    public List<Integer> getDeliveryFileItemIds() {
-        return deliveryFileItemIds;
+    public DeliveryFile() {
+        super(0, DeliveryFile.class.getName());
     }
 
-    public void setDeliveryFileItemIds(List<Integer> deliveryFileItemIds) {
-        this.deliveryFileItemIds = deliveryFileItemIds;
+    public List<DeliveryFileItem> getDeliveryFileItems() {
+        return deliveryFileItems;
+    }
+
+    public void setDeliveryFileItems(List<DeliveryFileItem> deliveryFileItems) {
+        this.deliveryFileItems = deliveryFileItems;
+        for (var item : deliveryFileItems) {
+            item.setDeliveryFile(this);
+        }
     }
 
     @Override
     public String toString() {
-        return "DeliveryFile{" +
-                "deliveryFileItemIds=" + deliveryFileItemIds +
-                "} " + super.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("DeliveryFile{");
+        if (deliveryFileItems != null) {
+            sb.append("deliveryFileItems=[");
+            for (int i = 0; i < deliveryFileItems.size(); i++) {
+                sb.append(deliveryFileItems.get(i).toString());
+                if (i < deliveryFileItems.size() - 1) {
+                    sb.append(", ");
+                }
+            }
+            sb.append("]");
+        } else {
+            sb.append("deliveryFileItems=null");
+        }
+        sb.append("} ");
+        sb.append(super.toString());
+        return sb.toString();
     }
 }

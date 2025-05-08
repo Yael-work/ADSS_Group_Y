@@ -92,11 +92,12 @@ public class TransportManager {
                 }
             }
         }
-        if (addedIds.isEmpty()) {
+        List<DeliveryFileItem> addedItems = deliveryFileItemController.getDeliveryFileItemsByIds(addedIds);
+        if (addedIds.isEmpty() || addedItems == null || addedItems.isEmpty()) {
             Helper.showError("No items were added to the delivery file.");
             return Helper.UndefinedId;
         }
-        return deliveryFileController.addDeliveryFile(new DeliveryFile(Helper.UndefinedId, addedIds));
+        return deliveryFileController.addDeliveryFile(new DeliveryFile(Helper.UndefinedId, addedItems));
     }
 
     /**
@@ -115,7 +116,7 @@ public class TransportManager {
             Helper.showError("Cant delete delivery file with id=" + deliveryFileId + ", it does not exist");
             return false;
         }
-        List<DeliveryFileItem> items = deliveryFileItemController.getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
+        List<DeliveryFileItem> items = deliveryFile.getDeliveryFileItems();
         if (items != null && !items.isEmpty()) {
             for (DeliveryFileItem item : items) {
                 if (!deliveryFileItemController.deleteDeliveryFileItem(item.getId())) {
@@ -457,9 +458,7 @@ public class TransportManager {
                     DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(route.getDeliveryFileId());
                     if (srcSite != null) {
                         if (srcSite.getSiteType() == SiteTypeEnum.SUPPLIER) {
-                            List<DeliveryFileItem> deliveryFileItems =
-                                    deliveryFileItemController.getDeliveryFileItemsByIds(
-                                            deliveryFile.getDeliveryFileItemIds());
+                            List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
                             List<StockItem> items = new ArrayList<>();
                             List<ItemsAtSupplier> itemsAtSupplier =
                                     SuppliersManager.mockGetSupplierItemsByStockItems(srcSite.getSiteObjectId(),
@@ -523,8 +522,7 @@ public class TransportManager {
             Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
             return null;
         }
-        List<DeliveryFileItem> deliveryFileItems = deliveryFileItemController
-                .getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
+        List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
         if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
             Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
             return null;
@@ -661,7 +659,7 @@ public class TransportManager {
             Helper.println("Delivery file not found.");
             return visitSourceEnum.FAILED;
         }
-        List<DeliveryFileItem> deliveryFileItems = deliveryFileItemController.getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
+        List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
         if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
             Helper.println("No items in the delivery file.");
             return visitSourceEnum.FAILED;

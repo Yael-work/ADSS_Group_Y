@@ -1,6 +1,9 @@
 package DB.interfaces;
 
 import Models.DBModels.transport.DeliveryFile;
+import Models.DBModels.transport.DeliveryFileItem;
+
+import java.util.List;
 
 public interface IDeliveryFileController extends IController<DeliveryFile> {
 
@@ -13,13 +16,22 @@ public interface IDeliveryFileController extends IController<DeliveryFile> {
     int addDeliveryFile(DeliveryFile deliveryFile);
 
     /**
-     * Updates an existing delivery file in the database.
+     * Add items to delivery file
      *
-     * @param deliveryFile The delivery file to be updated.
-     * @param id           The ID of the delivery file to be updated.
+     * @param deliveryFileId The delivery file to be updated.
+     * @param items          The items to be added to the delivery file.
      * @return true if the delivery file was updated successfully, false otherwise.
      */
-    boolean updateDeliveryFile(DeliveryFile deliveryFile, int id);
+    boolean addItemsToDeliveryFile(int deliveryFileId, List<DeliveryFileItem> items);
+
+    /**
+     * Removes items from a delivery file.
+     *
+     * @param deliveryFileId The ID of the delivery file to be updated.
+     * @param items          The items to be removed from the delivery file.
+     * @return true if the delivery file was updated successfully, false otherwise.
+     */
+    boolean removeItemsFromDeliveryFile(int deliveryFileId, List<DeliveryFileItem> items);
 
     /**
      * Deletes a delivery file from the database.
