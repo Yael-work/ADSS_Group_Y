@@ -4,7 +4,6 @@ import DB.util.HibernateUtil;
 import DB.interfaces.IDriverController;
 import Models.DBModels.transport.Driver;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 
 import java.util.ArrayList;
 
@@ -19,12 +18,12 @@ public class SqliteDriverController implements IDriverController {
     }
 
     @Override
-    public boolean addDriver(Driver driver) {
+    public int addDriver(Driver driver) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.persist(driver);
             session.getTransaction().commit();
-            return true;
+            return driver.getId();
         }
     }
 
@@ -34,11 +33,7 @@ public class SqliteDriverController implements IDriverController {
             session.beginTransaction();
             Driver existing = session.get(Driver.class, id);
             if (existing == null) return false;
-            existing.setFirstName(driver.getFirstName());
-            existing.setLastName(driver.getLastName());
-            existing.setPersonalId(driver.getPersonalId());
-            existing.setPhoneNumber(driver.getPhoneNumber());
-            existing.setLicenseType(driver.getLicenseType());
+            existing.copyFromOther(driver);
             session.getTransaction().commit();
             return true;
         }

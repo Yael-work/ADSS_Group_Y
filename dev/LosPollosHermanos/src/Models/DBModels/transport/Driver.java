@@ -86,4 +86,16 @@ public class Driver extends BaseModel {
         return String.format("ID: %d, First Name: %s, Last Name: %s, Personal ID: %s, Phone Number: %s, License Type: %s",
                 getId(), firstName, lastName, personalId, phoneNumber, licenseType);
     }
+
+
+    public void copyFromOther(Driver other) {
+        if (other == null) {
+            throw new IllegalArgumentException("Driver to copy from cannot be null");
+        }
+        this.firstName = other.firstName;
+        this.lastName = other.lastName;
+        this.personalId = other.personalId;
+        this.phoneNumber = other.phoneNumber;
+        this.licenseType = other.licenseType;
+    }
 }

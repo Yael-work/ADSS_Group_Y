@@ -7,9 +7,9 @@ public interface IDriverController extends IController<Driver> {
      * Adds a new driver to the database.
      *
      * @param driver The driver to be added.
-     * @return true if the driver was added successfully, false otherwise.
+     * @return id of the added driver if successful, -1 otherwise.
      */
-    boolean addDriver(Driver driver);
+    int addDriver(Driver driver);
 
     /**
      * Updates an existing driver in the database.
