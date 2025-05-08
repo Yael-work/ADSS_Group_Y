@@ -60,11 +60,14 @@ public class SqliteDeliveryFileController implements IDeliveryFileController {
             session.beginTransaction();
             DeliveryFile deliveryFile = session.get(DeliveryFile.class, deliveryFileId);
             if (deliveryFile != null) {
+                List<DeliveryFileItem> attachedItems = deliveryFile.getDeliveryFileItems();
                 for (var item : items) {
-                    item.setDeliveryFile(deliveryFile);
-                    session.remove(item);
+                    attachedItems.stream()
+                            .filter(existing -> existing.getId() == item.getId())
+                            .findFirst().ifPresent(attachedItems::remove);
                 }
-                session.getTransaction().commit();
+
+                session.getTransaction().commit(); // orphanRemoval deletes them from DB
                 return true;
             }
         } catch (Exception e) {
@@ -75,16 +78,37 @@ public class SqliteDeliveryFileController implements IDeliveryFileController {
 
     @Override
     public boolean deleteDeliveryFile(int id) {
+        try (var session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            DeliveryFile deliveryFile = session.get(DeliveryFile.class, id);
+            if (deliveryFile != null) {
+                session.remove(deliveryFile);
+                session.getTransaction().commit();
+                return true;
+            }
+        } catch (Exception e) {
+            Helper.showError("Failed to delete DeliveryFile", e);
+        }
         return false;
     }
 
     @Override
     public DeliveryFile getDeliveryFileById(int id) {
-        return null;
+        try (var session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(DeliveryFile.class, id);
+        } catch (Exception e) {
+            Helper.showError("Failed to get DeliveryFile by ID", e);
+            return null;
+        }
     }
 
     @Override
     public ArrayList<DeliveryFile> getAllRecords() {
-        return null;
+        try (var session = HibernateUtil.getSessionFactory().openSession()) {
+            return new ArrayList<>(session.createQuery("FROM DeliveryFile", DeliveryFile.class).list());
+        } catch (Exception e) {
+            Helper.showError("Failed to get all DeliveryFiles", e);
+            return null;
+        }
     }
 }

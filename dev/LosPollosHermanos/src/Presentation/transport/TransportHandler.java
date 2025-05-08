@@ -540,6 +540,7 @@ public class TransportHandler {
                 do {
                     Helper.println("Overload detected. Cannot visit source. The total weight exceeds the truck's capacity.");
                     Helper.println("Choose a different truck (1) or choose which items to discard (2).");
+
                     String answer = Helper.getUserInputString();
                     do {
                         if (answer == null || answer.isEmpty() || !answer.matches("[1-2]")) {
@@ -563,7 +564,7 @@ public class TransportHandler {
                             Helper.print("Invalid truck ID. Please try again: ");
                             truckId = Helper.getUserInputInteger();
                         }
-                        if (!TransportManager.UpdateTransportIssue(transport, 1, selectedRoute, truckId, null, 0)) {
+                        if (TransportManager.UpdateTransportIssue(transport, 1, selectedRoute, truckId, null, 0)) {
                             Helper.println("Failed to update transport issue. Please try again.");
                             return;
                         }
@@ -579,7 +580,6 @@ public class TransportHandler {
                             break;
                         } else {
                             Helper.println("Failed to visit source. Try again.");
-                            return;
                         }
                     } else if (answer.equals("2")) {
                         Helper.println("Choose which items to discard:");
@@ -588,33 +588,42 @@ public class TransportHandler {
                             Helper.println("Delivery file not found. Please try again.");
                             return;
                         }
-                        for (int itemId : deliveryFile.getDeliveryFileItemIds()) {
-                            DeliveryFileItem item = TransportManager.getDeliveryFileItemById(itemId);
-                            if (item != null) {
-                                Helper.println("Item ID: " + item.getStockItemId() + ", Amount: " + item.getAmount());
-                            }
-                        }
-                        List<Integer> uniqueIds = Helper.retrieveIdsListFromInput(deliveryFile.getDeliveryFileItems());
-                        if (uniqueIds.isEmpty()) {
-                            Helper.println("No items selected. Please try again.");
-                            continue;
-                        }
-                        for (int itemId : uniqueIds) {
-                            DeliveryFileItem item = TransportManager.getDeliveryFileItemById(itemId);
-                            if (item != null) {
-                                deliveryFile.getDeliveryFileItems().remove(item);
-                            }
-                        }
-                        if (!TransportManager.UpdateTransportIssue(transport, 2, selectedRoute, 0, deliveryFile, 0)) {
-                            Helper.println("Failed to update transport issue. Please try again.");
-                            return;
-                        }
+//                        for (int itemId : deliveryFile.getDeliveryFileItemIds()) {
+//                            DeliveryFileItem item = TransportManager.getDeliveryFileItemById(itemId);
+//                            if (item != null) {
+//                                Helper.println("Item ID: " + item.getStockItemId() + ", Amount: " + item.getAmount());
+//                            }
+//                        }
+//                        for (int itemId : deliveryFile.getDeliveryFileItemIds()) {
+//                            Helper.print("You want to discard this item?" + itemId + " (yes/no): ");
+//                            String discardItem = Helper.getUserInputString();
+//                            while (discardItem == null || (!discardItem.equalsIgnoreCase("yes") && !discardItem.equalsIgnoreCase("no"))) {
+//                                Helper.print("Invalid input. Please enter 'yes' or 'no': ");
+//                                discardItem = Helper.getUserInputString();
+//                            }
+//                            if (discardItem.equalsIgnoreCase("yes")) {
+//                                deliveryFile.getDeliveryFileItemIds().remove(itemId);
+//                                Helper.println("Item discarded successfully.");
+//                                Helper.println("You want to discard another item? (yes/no): ");
+//                                String discardAnotherItem = Helper.getUserInputString();
+//                                while (discardAnotherItem == null || (!discardAnotherItem.equalsIgnoreCase("yes") && !discardAnotherItem.equalsIgnoreCase("no"))) {
+//                                    Helper.print("Invalid input. Please enter 'yes' or 'no': ");
+//                                    discardAnotherItem = Helper.getUserInputString();
+//                                }
+//                                if (discardAnotherItem.equalsIgnoreCase("no")) {
+//                                    break;
+//                                }
+//                            }
+//                            if (TransportManager.UpdateTransportIssue(transport, 2, selectedRoute, 0, deliveryFile, 0)) {
+//                                Helper.println("Failed to update transport issue. Please try again.");
+//                                return;
+//                            }
+//                        }
                         if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
                             Helper.println("Successfully visited source.");
                             break;
                         } else {
                             Helper.println("Failed to visit source. Try again.");
-                            return;
                         }
                     }
                 } while (true);
@@ -624,9 +633,6 @@ public class TransportHandler {
         return;
     }
 
-    /**
-     * This method is used to visit the destination of the transport.
-     */
     private static void visitDestination() {
         for (Transport transport : TransportManager.getAllTransports()) {
             Helper.println("Transport ID: " + transport.getId() + ", Status: " + transport.getStatus());
@@ -705,89 +711,6 @@ public class TransportHandler {
         return;
     }
 
-    /**
-     * This method is used to edit an unstarted transport.
-     */
-    private static void EditUnstartedTransport() {
-        Helper.print("Please enter the transport ID to edit: ");
-        int transportId = Helper.getUserInputInteger();
-        while (transportId == Helper.UndefinedUserInput) {
-            Helper.print("Invalid transport ID. Please try again: ");
-            transportId = Helper.getUserInputInteger();
-        }
-        Transport transport = TransportManager.getTransportById(transportId);
-        if (transport == null) {
-            Helper.println("Transport not found. Please try again.");
-            return;
-        }
-        if (transport.getStatus() != TransportStatusEnum.PENDING) {
-            Helper.println("Transport is already started or completed. Cannot edit.");
-            return;
-        }
-        do {
-            Helper.println("Choose an option to edit: ");
-            Helper.println("1. Edit plannedDateTime");
-            Helper.println("2. Edit status (cancel)");
-            Helper.println("3. Edit truck ID");
-            Helper.println("4. Edit driver ID");
-            Helper.println("5. Edit transport route IDs");
-            Helper.println("6. Edit actualStartDatetime");
-            Helper.println("7. Edit actualEndDatetime");
-            Helper.println("8. Back to main menu");
-            int choice = Helper.getUserInputInteger();
-            switch (choice) {
-                case 1:
-                    Helper.print("Enter new planned date and time (%s): ".formatted(Helper.DefaultDateTimeFormat));
-                    String dateTimeStr = Helper.getUserInputString();
-                    LocalDateTime newPlannedDateTime = Helper.stringToDateTime(dateTimeStr);
-                    while (newPlannedDateTime == null) {
-                        Helper.print("Invalid date and time format. Please try again: ");
-                        dateTimeStr = Helper.getUserInputString();
-                        newPlannedDateTime = Helper.stringToDateTime(dateTimeStr);
-                    }
-                    if (TransportManager.setNewPlannedDateTime(transport, newPlannedDateTime)) {
-                        Helper.println("Planned date and time updated successfully.");
-                    } else {
-                        Helper.println("Failed to update planned date and time.");
-                    }
-                    break;
-                case 2:
-                    transport.setStatus(TransportStatusEnum.CANCELLED);
-                    break;
-                case 3:
-                    Helper.print("Enter new truck ID: ");
-                    int newTruckId = Helper.getUserInputInteger();
-                    while (newTruckId == Helper.UndefinedUserInput) {
-                        Helper.print("Invalid truck ID. Please try again: ");
-                        newTruckId = Helper.getUserInputInteger();
-                    }
-                    transport.setTruckId(newTruckId);
-                    break;
-                case 4:
-                    Helper.print("Enter new driver ID: ");
-                    int newDriverId = Helper.getUserInputInteger();
-                    while (newDriverId == Helper.UndefinedUserInput) {
-                        Helper.print("Invalid driver ID. Please try again: ");
-                        newDriverId = Helper.getUserInputInteger();
-                    }
-                    transport.setDriverId(newDriverId);
-                    break;
-                case 5:
-                    // TODO NTH Edit transport route IDs
-                    break;
-                case 6:
-                    // TODO NTH Edit actualStartDatetime
-                    break;
-                case 7:
-                    // TODO NTH Edit actualEndDatetime
-                    break;
-                case 8:
-                    return;
-                default:
-                    Helper.println("Invalid choice. Please try again.");
-            }
-        } while (true);
-    }
 
     /**
      * This method is used to handle the transport management menu.
@@ -806,7 +729,7 @@ public class TransportHandler {
             Helper.println("7. Start transport");
             Helper.println("8. Visit source");
             Helper.println("9. Visit destination");
-            Helper.println("10. Edit Unstarted Transport");
+            // Helper.println("10. Edit Unstarted Transport"); TODO NTH
             Helper.println("11. Back to main menu");
 
             do {
@@ -843,7 +766,7 @@ public class TransportHandler {
                     visitDestination();
                     break;
                 case 10:
-                    EditUnstartedTransport();
+                    // TODO NTH  Edit Unstarted Transport
                     break;
                 case 11:
                     exit = true;

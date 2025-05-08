@@ -3,8 +3,10 @@ package DB.implementations;
 import Auxiliary.Helper;
 import DB.interfaces.IDeliveryFileController;
 import Models.DBModels.transport.DeliveryFile;
+import Models.DBModels.transport.DeliveryFileItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockDeliveryFileController implements IDeliveryFileController {
     private final ArrayList<DeliveryFile> files;
@@ -33,14 +35,27 @@ public class MockDeliveryFileController implements IDeliveryFileController {
     }
 
     @Override
-    public boolean updateDeliveryFile(DeliveryFile deliveryFile, int id) {
-        if (deliveryFile == null) {
-            return false;
+    public boolean addItemsToDeliveryFile(int deliveryFileId, List<DeliveryFileItem> items) {
+        for (DeliveryFile deliveryFile : files) {
+            if (deliveryFile.getId() == deliveryFileId) {
+                for (var item : items) {
+                    item.setDeliveryFile(deliveryFile);
+                    deliveryFile.getDeliveryFileItems().add(item);
+                }
+                return true;
+            }
         }
-        for (int i = 0; i < files.size(); i++) {
-            if (files.get(i).getId() == id) {
-                deliveryFile.setId(id);
-                files.set(i, deliveryFile);
+        return false;
+    }
+
+    @Override
+    public boolean removeItemsFromDeliveryFile(int deliveryFileId, List<DeliveryFileItem> items) {
+        for (DeliveryFile deliveryFile : files) {
+            if (deliveryFile.getId() == deliveryFileId) {
+                for (var item : items) {
+                    item.setDeliveryFile(deliveryFile);
+                    deliveryFile.getDeliveryFileItems().remove(item);
+                }
                 return true;
             }
         }

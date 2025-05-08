@@ -63,7 +63,6 @@ import java.util.stream.Collectors;
 
 public class TransportManager {
     private static final ITransportController transportController = DBManager.getInstance().getTransportController();
-    private static final IDeliveryFileItemController deliveryFileItemController = DBManager.getInstance().getDeliveryFileItemController();
     private static final IDeliveryFileController deliveryFileController = DBManager.getInstance().getDeliveryFileController();
     private static final ITransportRouteController transportRouteController = DBManager.getInstance().getTransportRouteController();
     private static final ISiteController siteController = DBManager.getInstance().getSiteController();
@@ -79,23 +78,13 @@ public class TransportManager {
             Helper.showError("No items to create a delivery file.");
             return Helper.UndefinedId;
         }
-        List<Integer> addedIds = new ArrayList<>();
+        List<DeliveryFileItem> addedItems = new ArrayList<>();
         for (StockItem item : requiredItems) {
             if (item.getAmount() <= 0) {
                 Helper.showError("Invalid amount for item: " + item.getItemName());
             } else {
-                int addedId = deliveryFileItemController.addDeliveryFileItem(new DeliveryFileItem(Helper.UndefinedId, item.getStockItemId(), item.getAmount(), 0));
-                if (addedId <= Helper.UndefinedId) {
-                    Helper.showError("Failed to add item: " + item.getItemName());
-                } else {
-                    addedIds.add(addedId);
-                }
+                addedItems.add(new DeliveryFileItem(Helper.UndefinedId, item.getStockItemId(), item.getAmount(), 0));
             }
-        }
-        List<DeliveryFileItem> addedItems = deliveryFileItemController.getDeliveryFileItemsByIds(addedIds);
-        if (addedIds.isEmpty() || addedItems == null || addedItems.isEmpty()) {
-            Helper.showError("No items were added to the delivery file.");
-            return Helper.UndefinedId;
         }
         return deliveryFileController.addDeliveryFile(new DeliveryFile(Helper.UndefinedId, addedItems));
     }
@@ -116,23 +105,7 @@ public class TransportManager {
             Helper.showError("Cant delete delivery file with id=" + deliveryFileId + ", it does not exist");
             return false;
         }
-        List<DeliveryFileItem> items = deliveryFile.getDeliveryFileItems();
-        if (items != null && !items.isEmpty()) {
-            for (DeliveryFileItem item : items) {
-                if (!deliveryFileItemController.deleteDeliveryFileItem(item.getId())) {
-                    Helper.showError("Failed to delete delivery file item with id: " + item.getId());
-                    return false;
-                }
-            }
-            if (!deliveryFileController.deleteDeliveryFile(deliveryFileId)) {
-                Helper.showError("Failed to delete delivery file with id: " + deliveryFileId);
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
+        return deliveryFileController.deleteDeliveryFile(deliveryFileId);
     }
 
     /**
@@ -614,19 +587,6 @@ public class TransportManager {
         return deliveryFile;
     }
 
-    public static DeliveryFileItem getDeliveryFileItemById(int itemId) {
-        if (itemId <= Helper.UndefinedId) {
-            Helper.showError("Cant get delivery file item with id <= 0");
-            return null;
-        }
-        DeliveryFileItem deliveryFileItem = deliveryFileItemController.getDeliveryFileItemById(itemId);
-        if (deliveryFileItem == null) {
-            Helper.showError("Cant get delivery file item with id=" + itemId + ", it does not exist");
-            return null;
-        }
-        return deliveryFileItem;
-    }
-
     public static boolean StartTransport(Transport transport, LocalDateTime startDateTime) {
         if (transport.getStatus() == TransportStatusEnum.PENDING) {
             LocalDateTime plannedDateTime = transport.getPlannedDateTime();
@@ -702,20 +662,20 @@ public class TransportManager {
      * @return - an enum indicating the result of the visit
      */
     public static visitSiteEnum visitDestination(Transport transport, TransportRoute selectedRoute) {
-        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFileId());
-        if (deliveryFile == null) {
-            Helper.println("Delivery file not found.");
-            return visitSiteEnum.FAILED;
-        }
-        List<DeliveryFileItem> deliveryFileItems = deliveryFileItemController.getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
-        if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
-            Helper.println("No items in the delivery file.");
-            return visitSiteEnum.FAILED;
-        }
-        if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES) {
-            selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
-        }
-        selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
+//        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFileId());
+//        if (deliveryFile == null) {
+//            Helper.println("Delivery file not found.");
+//            return visitSiteEnum.FAILED;
+//        }
+//        List<DeliveryFileItem> deliveryFileItems = deliveryFileItemController.getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
+//        if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
+//            Helper.println("No items in the delivery file.");
+//            return visitSiteEnum.FAILED;
+//        }
+//        if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES) {
+//            selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
+//        }
+//        selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
         return visitSiteEnum.SUCCESS;
     }
 
@@ -826,10 +786,12 @@ public class TransportManager {
             Helper.println("New planned date and time cannot be null.");
             return false;
         }
-        if ((transport.getActualStartDatetime().isAfter(newPlannedDateTime) || transport.getActualStartDatetime().isEqual(newPlannedDateTime)) && transport.) {
+        if ((transport.getActualStartDatetime().isAfter(newPlannedDateTime) || transport.getActualStartDatetime().isEqual(newPlannedDateTime))
+            /*&& transport.*//*TODO complete*/) {
             Helper.println("New planned date and time cannot be before the actual start date and time." +
                     "Please set a new planned date and time after the actual start date and time.");
 
         }
+        return false;
     }
 }

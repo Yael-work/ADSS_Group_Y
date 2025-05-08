@@ -14,7 +14,6 @@ public class DBManager {
     private final ISiteController siteController;
     private final IDeliveryFileController deliveryFileController;
     private final ITruckController truckController;
-    private final IDeliveryFileItemController deliveryFileItemController;
     private final ITransportAreaController transportAreaController;
     private final IDriverController driverController;
     private final ISupplierController supplierController;
@@ -25,9 +24,8 @@ public class DBManager {
 
     private DBManager() {
         this.siteController = MockSiteController.getInstance();
-        this.deliveryFileController = MockDeliveryFileController.getInstance();
+        this.deliveryFileController = SqliteDeliveryFileController.getInstance();
         this.truckController = MockTruckController.getInstance();
-        this.deliveryFileItemController = SqliteDeliveryFileItemController.getInstance();
         this.transportAreaController = MockTransportAreaController.getInstance();
         this.driverController = SqliteDriverController.getInstance();
         this.supplierController = MockSupplierController.getInstance();
@@ -74,15 +72,6 @@ public class DBManager {
      */
     public final ITruckController getTruckController() {
         return truckController;
-    }
-
-    /**
-     * Returns the delivery file item controller.
-     *
-     * @return The delivery file item controller.
-     */
-    public final IDeliveryFileItemController getDeliveryFileItemController() {
-        return deliveryFileItemController;
     }
 
     /**
