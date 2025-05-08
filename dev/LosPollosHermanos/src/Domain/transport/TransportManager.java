@@ -738,9 +738,21 @@ public class TransportManager {
         return site;
     }
 
+    /**
+     * This method is used to update the transport issue.
+     *
+     * @param transport     - the transport object
+     * @param code          - the code indicating the type of issue
+     * @param selectedRoute - the selected transport route
+     * @param truckId       - the ID of the truck
+     * @param deliveryFile  - the delivery file object
+     * @param codeSite      - the code indicating the site type
+     * @return - true if the update was successful, false otherwise
+     */
     public static boolean UpdateTransportIssue(Transport transport, int code, TransportRoute selectedRoute, int truckId, DeliveryFile deliveryFile, int codeSite) {
         if (selectedRoute == null) {
             Helper.println("Selected route is null.");
+            return false;
         } else {
             if (codeSite == 0) {
                 if (code == 1) {
@@ -770,6 +782,12 @@ public class TransportManager {
         return false;
     }
 
+    /**
+     * This method is used to check if the transport is completed.
+     *
+     * @param transport - the transport object
+     * @return - true if the transport is completed, false otherwise
+     */
     public static boolean checkIfTransportCompleted(Transport transport) {
         boolean isCompleted = true;
         for (Integer route : transport.getTransportRouteIds()) {
@@ -793,6 +811,25 @@ public class TransportManager {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * This method is used to set a new planned date and time for a transport.
+     *
+     * @param transport          - the transport object
+     * @param newPlannedDateTime - the new planned date and time
+     * @return - true if the planned date and time were set successfully, false otherwise
+     */
+    public static boolean setNewPlannedDateTime(Transport transport, LocalDateTime newPlannedDateTime) {
+        if (newPlannedDateTime == null) {
+            Helper.println("New planned date and time cannot be null.");
+            return false;
+        }
+        if ((transport.getActualStartDatetime().isAfter(newPlannedDateTime) || transport.getActualStartDatetime().isEqual(newPlannedDateTime)) && transport.) {
+            Helper.println("New planned date and time cannot be before the actual start date and time." +
+                    "Please set a new planned date and time after the actual start date and time.");
+
         }
     }
 }
