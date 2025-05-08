@@ -7,7 +7,13 @@ public enum TransportStatusEnum {
     PENDING(1),
     STARTED(2),
     DONE(3),
-    DONE_WITH_ISSUES(4);
+    DONE_WITH_ISSUES(4),
+    CONTINUED_WITH_ISSUES(5),
+    SOURCE_COMPLETED(6),
+    DESTINATION_COMPLETED(7),
+    SOURCE_COMPLETED_WITH_ISSUES(8),
+    DESTINATION_COMPLETED_WITH_ISSUES(9); // optional for now
+
 
     private final int value;
 
