@@ -1,5 +1,6 @@
 package Models.DBModels.transport;
 
+import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
 import jakarta.persistence.*;
 
@@ -10,9 +11,9 @@ public class Driver extends BaseModel {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String personalId;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String phoneNumber;
     @Column(nullable = false)
     private String licenseType;
@@ -85,5 +86,24 @@ public class Driver extends BaseModel {
     public String toPrettyString() {
         return String.format("ID: %d, First Name: %s, Last Name: %s, Personal ID: %s, Phone Number: %s, License Type: %s",
                 getId(), firstName, lastName, personalId, phoneNumber, licenseType);
+    }
+
+    /**
+     * Copies values from other driver into the current driver object
+     *
+     * @param other driver object to copy from
+     */
+    @Override
+    public boolean copyFromOther(BaseModel other) {
+        if (!(other instanceof Driver otherDriver)) {
+            Helper.showError(String.format("%s::Other must be of type Driver", this.getClass().getName()));
+            return false;
+        }
+        this.firstName = otherDriver.firstName;
+        this.lastName = otherDriver.lastName;
+        this.personalId = otherDriver.personalId;
+        this.phoneNumber = otherDriver.phoneNumber;
+        this.licenseType = otherDriver.licenseType;
+        return true;
     }
 }

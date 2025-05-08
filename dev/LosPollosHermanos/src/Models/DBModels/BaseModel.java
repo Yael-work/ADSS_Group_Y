@@ -56,4 +56,19 @@ public abstract class BaseModel {
     public String toPrettyString() {
         return String.format("ID: %d, Model Name: %s", id, modelName);
     }
+
+    /**
+     * Copies the properties of another BaseModel into this one.
+     *
+     * @param other The other BaseModel to copy from.
+     * @return true if the copy was successful, false otherwise.
+     */
+    public boolean copyFromOther(BaseModel other) {
+        if (other == null) {
+            throw new IllegalArgumentException(String.format("%s::Other cannot be null", this.getClass().getName()));
+        }
+        this.id = other.id;
+        this.modelName = other.modelName;
+        return true;
+    }
 }

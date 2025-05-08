@@ -1,5 +1,6 @@
 package DB.implementations;
 
+import Auxiliary.Helper;
 import DB.interfaces.IBranchController;
 import Models.DBModels.transport.Branch;
 
@@ -28,22 +29,22 @@ public class MockBranchController implements IBranchController {
     }
 
     @Override
-    public boolean addBranch(Branch branch) {
+    public int addBranch(Branch branch) {
         if (branch == null) {
-            return false;
+            return Helper.UndefinedId;
         }
         branch.setId(currentId++);
         branches.add(branch);
-        return true;
+        return branch.getId();
     }
 
     @Override
-    public boolean updateBranch(Branch branch) {
-        if (branch == null || branch.getId() <= 0) {
+    public boolean updateBranch(Branch branch, int id) {
+        if (branch == null || id <= 0) {
             return false;
         }
         for (int i = 0; i < branches.size(); i++) {
-            if (branches.get(i).getId() == branch.getId()) {
+            if (branches.get(i).getId() == id) {
                 branches.set(i, branch);
                 return true;
             }

@@ -1,5 +1,6 @@
 package DB.implementations;
 
+import Auxiliary.Helper;
 import DB.interfaces.IDriverController;
 import Models.DBModels.transport.Driver;
 
@@ -28,13 +29,13 @@ public class MockDriverController implements IDriverController {
     }
 
     @Override
-    public boolean addDriver(Driver driver) {
+    public int addDriver(Driver driver) {
         if (driver == null) {
-            return false;
+            return Helper.UndefinedId;
         }
         driver.setId(currentId++);
         drivers.add(driver);
-        return true;
+        return driver.getId();
     }
 
     @Override

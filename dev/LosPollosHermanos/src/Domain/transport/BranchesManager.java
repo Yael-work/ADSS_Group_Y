@@ -64,7 +64,7 @@ public class BranchesManager {
             return false;
         }
         Branch b = new Branch(0, name, address, phone);
-        return branchController.addBranch(b);
+        return branchController.addBranch(b) != Helper.UndefinedId;
     }
 
     /**
@@ -108,7 +108,7 @@ public class BranchesManager {
         b.setSiteName(name);
         b.setAddress(address);
         b.setPhone(phone);
-        return branchController.updateBranch(b);
+        return branchController.updateBranch(b, id);
     }
 
     /**

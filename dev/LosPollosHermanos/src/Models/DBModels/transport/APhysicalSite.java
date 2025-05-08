@@ -2,7 +2,7 @@ package Models.DBModels.transport;
 
 import Models.DBModels.BaseModel;
 
-public class APhysicalSite extends BaseModel {
+public abstract class APhysicalSite extends BaseModel {
     public APhysicalSite(int id, String name) {
         super(id, name);
     }

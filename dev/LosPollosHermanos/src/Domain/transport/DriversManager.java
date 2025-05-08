@@ -41,7 +41,7 @@ public class DriversManager {
             return false;
         }
         d = new Driver(0, firstName, lastName, personalId, phoneNumber, licenseType);
-        return driverController.addDriver(d);
+        return driverController.addDriver(d) != Helper.UndefinedId;
     }
 
     /**
