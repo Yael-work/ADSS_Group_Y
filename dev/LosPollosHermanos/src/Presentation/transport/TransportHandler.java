@@ -755,7 +755,7 @@ public class TransportHandler {
                     if (TransportManager.setNewPlannedDateTime(transport, plannedDateTime)) {
                         Helper.println("Planned date and time updated successfully.");
                     } else {
-                        Helper.println("Failed to update planned date and time.");
+                        Helper.println("Failed to update planned date and time. Try again.");
                     }
                     break;
                 }

@@ -45,7 +45,6 @@ import Auxiliary.Helper;
 import DB.DBManager;
 import DB.interfaces.*;
 import DB.interfaces.IDeliveryFileController;
-import DB.interfaces.IDeliveryFileItemController;
 import DB.interfaces.ITransportController;
 import DB.interfaces.ITransportRouteController;
 import Domain.stock.StockManager;
@@ -787,11 +786,67 @@ public class TransportManager {
             return false;
         }
         if ((transport.getActualStartDatetime().isAfter(newPlannedDateTime) || transport.getActualStartDatetime().isEqual(newPlannedDateTime))
-            && !transport.getActualEndDatetime().isAfter(newPlannedDateTime)) {
+                && !transport.getActualEndDatetime().isAfter(newPlannedDateTime)) {
             Helper.println("The new planned date and time cannot be before the actual start date and time. " +
                     "Please set a new actual start date and time.");
-            LocalDateTime actualStartDateTime = Helper.
-
+            do {
+                Helper.print("Enter the new planned date and time (%s): "
+                        .formatted(Helper.DefaultDateTimeFormat));
+                String dateTimeStr = Helper.getUserInputString();
+                LocalDateTime actualNewStartDateTime = Helper.stringToDateTime(dateTimeStr);
+                while (actualNewStartDateTime == null) {
+                    Helper.print("Invalid date and time format. Please try again: ");
+                    dateTimeStr = Helper.getUserInputString();
+                    actualNewStartDateTime = Helper.stringToDateTime(dateTimeStr);
+                }
+                if (actualNewStartDateTime.isBefore(newPlannedDateTime) || actualNewStartDateTime.isAfter(transport.getActualEndDatetime())) {
+                    Helper.println("The new planned date and time cannot be before the actual start date and time. " +
+                            "Please set a new actual start date and time.");
+                } else {
+                    transport.setPlannedDateTime(actualNewStartDateTime);
+                    transport.setActualStartDatetime(actualNewStartDateTime);
+                    return true;
+                }
+            } while (true);
+        }
+        if (transport.getActualStartDatetime().isAfter(newPlannedDateTime)) {
+            transport.setPlannedDateTime(newPlannedDateTime);
+            return true;
+        }
+        if (transport.getActualStartDatetime().isBefore(newPlannedDateTime) &&
+                transport.getActualEndDatetime().isBefore(newPlannedDateTime)) {
+            Helper.println("The new planned date and time cannot be before the actual end date and time. " +
+                    "Please set a new actual start and end date ane time.");
+            do {
+                Helper.print("Enter the new start planned date and time (%s): "
+                        .formatted(Helper.DefaultDateTimeFormat));
+                String dateTimeStr = Helper.getUserInputString();
+                LocalDateTime actualNewStartDateTime = Helper.stringToDateTime(dateTimeStr);
+                while (actualNewStartDateTime == null) {
+                    Helper.print("Invalid date and time format. Please try again: ");
+                    dateTimeStr = Helper.getUserInputString();
+                    actualNewStartDateTime = Helper.stringToDateTime(dateTimeStr);
+                }
+                Helper.print("Enter the new end planned date and time (%s): "
+                        .formatted(Helper.DefaultDateTimeFormat));
+                dateTimeStr = Helper.getUserInputString();
+                LocalDateTime actualNewEndDateTime = Helper.stringToDateTime(dateTimeStr);
+                while (actualNewEndDateTime == null) {
+                    Helper.print("Invalid date and time format. Please try again: ");
+                    dateTimeStr = Helper.getUserInputString();
+                    actualNewEndDateTime = Helper.stringToDateTime(dateTimeStr);
+                }
+                if (transport.getActualStartDatetime().isBefore(newPlannedDateTime) ||
+                        transport.getActualEndDatetime().isBefore(newPlannedDateTime)) {
+                    Helper.println("The new planned date and time cannot be before the actual end date and time. " +
+                            "Please set a new actual start and end date and time.");
+                } else {
+                    transport.setPlannedDateTime(actualNewStartDateTime);
+                    transport.setActualStartDatetime(actualNewStartDateTime);
+                    transport.setActualEndDatetime(actualNewEndDateTime);
+                    return true;
+                }
+            } while (true);
         }
         return false;
     }
