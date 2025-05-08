@@ -10,9 +10,9 @@ public class Driver extends BaseModel {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String personalId;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String phoneNumber;
     @Column(nullable = false)
     private String licenseType;
@@ -87,7 +87,11 @@ public class Driver extends BaseModel {
                 getId(), firstName, lastName, personalId, phoneNumber, licenseType);
     }
 
-
+    /**
+     * Copies values from other driver into the current driver object
+     *
+     * @param other driver object to copy from
+     */
     public void copyFromOther(Driver other) {
         if (other == null) {
             throw new IllegalArgumentException("Driver to copy from cannot be null");

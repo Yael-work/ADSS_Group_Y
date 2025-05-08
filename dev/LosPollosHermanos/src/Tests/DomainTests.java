@@ -58,9 +58,13 @@ public class DomainTests {
     @UseTestingDatabase
     @Test
     public void testAddBranch_Success() {
+        Branch b = BranchesManager.getBranchByName("Main Office");
+        if (b != null) {
+            BranchesManager.deleteBranch(b.getId());
+        }
         boolean result = BranchesManager.addBranch("Main Office", "123 Street", "0500000000");
         assertTrue(result);
-        Branch b = BranchesManager.getBranchByName("Main Office");
+        b = BranchesManager.getBranchByName("Main Office");
         assertNotNull(b);
         assertEquals("Main Office", b.getSiteName());
     }
@@ -90,7 +94,7 @@ public class DomainTests {
         assertNull(BranchesManager.getBranchById(b.getId()));
     }
 
-    //@UseTestingDatabase
+    @UseTestingDatabase
     @Test
     public void testAddDriver_Success() {
         Driver d = DriversManager.getDriverByPersonalId("123456789");

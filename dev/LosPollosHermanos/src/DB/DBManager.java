@@ -1,7 +1,7 @@
 package DB;
 
 import DB.implementations.*;
-import DB.implementations.sqlite.SqliteDriverController;
+import DB.implementations.sqlite.*;
 import DB.interfaces.*;
 
 /**
@@ -32,7 +32,7 @@ public class DBManager {
         this.driverController = SqliteDriverController.getInstance();
         this.supplierController = MockSupplierController.getInstance();
         this.transportController = MockTransportController.getInstance();
-        this.branchController = MockBranchController.getInstance();
+        this.branchController = SqliteBranchController.getInstance();
         this.transportIssueLogController = MockTransportIssueLogController.getInstance();
         this.transportRouteController = MockTransportRouteController.getInstance();
     }

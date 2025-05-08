@@ -19,6 +19,6 @@
 
         <!-- Register your entities -->
         <mapping class="Models.DBModels.transport.Driver"/>
-
+        <mapping class="Models.DBModels.transport.Branch"/>
     </session-factory>
 </hibernate-configuration>

@@ -9,17 +9,18 @@ public interface IBranchController extends IController<Branch> {
      * Adds a new branch to the database.
      *
      * @param branch The branch to be added.
-     * @return true if the branch was added successfully, false otherwise.
+     * @return branch id if added successfully -1 otherwise
      */
-    boolean addBranch(Branch branch);
+    int addBranch(Branch branch);
 
     /**
      * Updates an existing branch in the database.
      *
-     * @param branch The branch to be updated.
+     * @param branch The updated branch structure.
+     * @param id     The ID of the branch to be updated.
      * @return true if the branch was updated successfully, false otherwise.
      */
-    boolean updateBranch(Branch branch);
+    boolean updateBranch(Branch branch, int id);
 
     /**
      * Deletes a branch from the database.
