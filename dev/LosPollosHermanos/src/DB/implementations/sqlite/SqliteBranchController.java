@@ -1,5 +1,6 @@
 package DB.implementations.sqlite;
 
+import Auxiliary.Helper;
 import DB.interfaces.IBranchController;
 import DB.util.HibernateUtil;
 import Models.DBModels.transport.Branch;
@@ -24,6 +25,9 @@ public class SqliteBranchController implements IBranchController {
             session.persist(branch);
             session.getTransaction().commit();
             return branch.getId();
+        } catch (Exception e) {
+            Helper.showError("Failed to add Branch", e);
+            return Helper.UndefinedId;
         }
     }
 
@@ -36,6 +40,9 @@ public class SqliteBranchController implements IBranchController {
             existing.copyFromOther(branch);
             session.getTransaction().commit();
             return true;
+        } catch (Exception e) {
+            Helper.showError("Failed to update Branch", e);
+            return false;
         }
     }
 
@@ -50,6 +57,9 @@ public class SqliteBranchController implements IBranchController {
                 return true;
             }
             return false;
+        } catch (Exception e) {
+            Helper.showError("Failed to delete Branch", e);
+            return false;
         }
     }
 
@@ -57,6 +67,9 @@ public class SqliteBranchController implements IBranchController {
     public Branch getBranchById(int id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(Branch.class, id);
+        } catch (Exception e) {
+            Helper.showError("Failed to get Branch by ID", e);
+            return null;
         }
     }
 
@@ -66,6 +79,9 @@ public class SqliteBranchController implements IBranchController {
             return session.createQuery("FROM Branch WHERE branchName = :name", Branch.class)
                     .setParameter("name", name)
                     .uniqueResult();
+        } catch (Exception e) {
+            Helper.showError("Failed to get Branch by name", e);
+            return null;
         }
     }
 
@@ -75,6 +91,9 @@ public class SqliteBranchController implements IBranchController {
             return session.createQuery("FROM Branch WHERE address = :address", Branch.class)
                     .setParameter("address", address)
                     .uniqueResult();
+        } catch (Exception e) {
+            Helper.showError("Failed to get Branch by address", e);
+            return null;
         }
     }
 
@@ -84,15 +103,24 @@ public class SqliteBranchController implements IBranchController {
             return session.createQuery("FROM Branch WHERE phone = :phone", Branch.class)
                     .setParameter("phone", phoneNumber)
                     .uniqueResult();
+        } catch (Exception e) {
+            Helper.showError("Failed to get Branch by phone number", e);
+            return null;
         }
     }
 
     @Override
     public ArrayList<Branch> getBranchesByIds(ArrayList<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return (ArrayList<Branch>) session.createQuery("FROM Branch WHERE id IN :ids", Branch.class)
                     .setParameterList("ids", ids)
                     .list();
+        } catch (Exception e) {
+            Helper.showError("Failed to get Branches by IDs", e);
+            return null;
         }
     }
 
@@ -100,6 +128,9 @@ public class SqliteBranchController implements IBranchController {
     public ArrayList<Branch> getAllRecords() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return (ArrayList<Branch>) session.createQuery("FROM Branch", Branch.class).list();
+        } catch (Exception e) {
+            Helper.showError("Failed to get all Branches", e);
+            return null;
         }
     }
 }

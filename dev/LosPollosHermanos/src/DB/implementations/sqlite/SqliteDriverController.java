@@ -1,5 +1,6 @@
 package DB.implementations.sqlite;
 
+import Auxiliary.Helper;
 import DB.util.HibernateUtil;
 import DB.interfaces.IDriverController;
 import Models.DBModels.transport.Driver;
@@ -24,6 +25,9 @@ public class SqliteDriverController implements IDriverController {
             session.persist(driver);
             session.getTransaction().commit();
             return driver.getId();
+        } catch (Exception e) {
+            Helper.showError("Failed to add Driver", e);
+            return Helper.UndefinedId;
         }
     }
 
@@ -36,6 +40,9 @@ public class SqliteDriverController implements IDriverController {
             existing.copyFromOther(driver);
             session.getTransaction().commit();
             return true;
+        } catch (Exception e) {
+            Helper.showError("Failed to update Driver", e);
+            return false;
         }
     }
 
@@ -50,6 +57,9 @@ public class SqliteDriverController implements IDriverController {
                 return true;
             }
             return false;
+        } catch (Exception e) {
+            Helper.showError("Failed to delete Driver", e);
+            return false;
         }
     }
 
@@ -57,6 +67,9 @@ public class SqliteDriverController implements IDriverController {
     public Driver getDriverById(int id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(Driver.class, id);
+        } catch (Exception e) {
+            Helper.showError("Failed to get Driver by ID", e);
+            return null;
         }
     }
 
@@ -67,6 +80,9 @@ public class SqliteDriverController implements IDriverController {
                     .setParameter("fn", firstName)
                     .setParameter("ln", lastName)
                     .uniqueResult();
+        } catch (Exception e) {
+            Helper.showError("Failed to get Driver by full name", e);
+            return null;
         }
     }
 
@@ -76,6 +92,9 @@ public class SqliteDriverController implements IDriverController {
             return session.createQuery("FROM Driver WHERE personalId = :pid", Driver.class)
                     .setParameter("pid", personalId)
                     .uniqueResult();
+        } catch (Exception e) {
+            Helper.showError("Failed to get Driver by personal ID", e);
+            return null;
         }
     }
 
@@ -85,6 +104,9 @@ public class SqliteDriverController implements IDriverController {
             return session.createQuery("FROM Driver WHERE phoneNumber = :ph", Driver.class)
                     .setParameter("ph", phoneNumber)
                     .uniqueResult();
+        } catch (Exception e) {
+            Helper.showError("Failed to get Driver by phone number", e);
+            return null;
         }
     }
 
@@ -92,6 +114,9 @@ public class SqliteDriverController implements IDriverController {
     public ArrayList<Driver> getAllRecords() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return new ArrayList<>(session.createQuery("FROM Driver", Driver.class).getResultList());
+        } catch (Exception e) {
+            Helper.showError("Failed to get all Drivers", e);
+            return null;
         }
     }
 }

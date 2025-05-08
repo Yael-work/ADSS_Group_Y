@@ -1,5 +1,7 @@
 package Models.DBModels.transport;
 
+import Auxiliary.Helper;
+import Models.DBModels.BaseModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -65,12 +67,14 @@ public class Branch extends APhysicalSite {
      *
      * @param other The other Branch object to copy from.
      */
-    public void copyFromOther(Branch other) {
-        if (other == null) {
-            throw new IllegalArgumentException("Other branch cannot be null");
+    public boolean copyFromOther(BaseModel other) {
+        if (!(other instanceof Branch otherBranch)) {
+            Helper.showError(String.format("%s::Other must be of type Branch", this.getClass().getName()));
+            return false;
         }
-        this.branchName = other.branchName;
-        this.address = other.address;
-        this.phone = other.phone;
+        this.branchName = otherBranch.branchName;
+        this.address = otherBranch.address;
+        this.phone = otherBranch.phone;
+        return true;
     }
 }

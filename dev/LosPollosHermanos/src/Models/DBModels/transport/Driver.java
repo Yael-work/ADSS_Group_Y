@@ -1,5 +1,6 @@
 package Models.DBModels.transport;
 
+import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
 import jakarta.persistence.*;
 
@@ -92,14 +93,17 @@ public class Driver extends BaseModel {
      *
      * @param other driver object to copy from
      */
-    public void copyFromOther(Driver other) {
-        if (other == null) {
-            throw new IllegalArgumentException("Driver to copy from cannot be null");
+    @Override
+    public boolean copyFromOther(BaseModel other) {
+        if (!(other instanceof Driver otherDriver)) {
+            Helper.showError(String.format("%s::Other must be of type Driver", this.getClass().getName()));
+            return false;
         }
-        this.firstName = other.firstName;
-        this.lastName = other.lastName;
-        this.personalId = other.personalId;
-        this.phoneNumber = other.phoneNumber;
-        this.licenseType = other.licenseType;
+        this.firstName = otherDriver.firstName;
+        this.lastName = otherDriver.lastName;
+        this.personalId = otherDriver.personalId;
+        this.phoneNumber = otherDriver.phoneNumber;
+        this.licenseType = otherDriver.licenseType;
+        return true;
     }
 }
