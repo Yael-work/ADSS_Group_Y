@@ -115,7 +115,7 @@ public class TransportManager {
      * @param items      - the list of items to be delivered
      * @return - the ID of the created transport route, or Helper.UndefinedId if failed
      */
-    private static int createTransportRoute(int branchId, int supplierId, List<StockItem> items) {
+    public static int createTransportRoute(int branchId, int supplierId, List<StockItem> items) {
         if (items == null || items.isEmpty()) {
             Helper.showError("No items to create a transport route.");
             return Helper.UndefinedId;
@@ -785,7 +785,7 @@ public class TransportManager {
             Helper.println("New planned date and time cannot be null.");
             return false;
         }
-        if ((transport.getActualStartDatetime().isAfter(newPlannedDateTime) || transport.getActualStartDatetime().isEqual(newPlannedDateTime))
+        if ((transport.getActualStartDatetime().isBefore(newPlannedDateTime) || transport.getActualStartDatetime().isEqual(newPlannedDateTime))
                 && !transport.getActualEndDatetime().isAfter(newPlannedDateTime)) {
             Helper.println("The new planned date and time cannot be before the actual start date and time. " +
                     "Please set a new actual start date and time.");
@@ -849,5 +849,79 @@ public class TransportManager {
             } while (true);
         }
         return false;
+    }
+
+    /**
+     * This method is used to cancel a transport.
+     *
+     * @param transport - the transport object
+     * @return - true if the transport was canceled successfully, false otherwise
+     */
+    public static boolean cancelTransport(Transport transport) {
+        if (transport.getStatus() == TransportStatusEnum.STARTED) {
+            Helper.println("Transport is already started. Cannot cancel.");
+            return false;
+        }
+        if (transport.getStatus() == TransportStatusEnum.DONE) {
+            Helper.println("Transport is already done. Cannot cancel.");
+            return false;
+        }
+        if (transport.getStatus() == TransportStatusEnum.DONE_WITH_ISSUES) {
+            Helper.println("Transport is already done with issues. Cannot cancel.");
+            return false;
+        }
+        transport.setStatus(TransportStatusEnum.CANCELED);
+        Helper.println("Transport canceled successfully.");
+        return true;
+    }
+
+    /**
+     * This method is used to set a new truck ID for transport.
+     *
+     * @param transport - the transport object
+     * @param truckId   - the new truck ID
+     * @return - true if the truck ID was set successfully, false otherwise
+     */
+    public static boolean setNewTruckId(Transport transport, int truckId) {
+        if (truckId <= Helper.UndefinedId) {
+            Helper.println("Invalid truck ID.");
+            return false;
+        }
+        Truck truck = TransportManager.getAvailableTrucksByDate(transport.getPlannedDateTime()).stream()
+                .filter(t -> t.getId() == truckId)
+                .findFirst()
+                .orElse(null);
+        if (truck == null) {
+            Helper.println("Truck not found or not available.");
+            return false;
+        }
+        transport.setTruckId(truckId);
+        Helper.println("Truck ID set successfully.");
+        return true;
+    }
+
+    /**
+     * This method is used to set a new driver ID for transport.
+     *
+     * @param transport - the transport object
+     * @param driverId  - the new driver ID
+     * @return - true if the driver ID was set successfully, false otherwise
+     */
+    public static boolean setNewDriverId(Transport transport, int driverId) {
+        if (driverId <= Helper.UndefinedId) {
+            Helper.println("Invalid driver ID.");
+            return false;
+        }
+        Driver driver = TransportManager.getAvailableDriversByDateAndLicense(transport.getPlannedDateTime(), Objects.requireNonNull(TrucksManager.getTruckById(transport.getTruckId())).getRequiredLicenseType()).stream()
+                .filter(d -> d.getId() == driverId)
+                .findFirst()
+                .orElse(null);
+        if (driver == null) {
+            Helper.println("Driver not found or not available.");
+            return false;
+        }
+        transport.setDriverId(driverId);
+        Helper.println("Driver ID set successfully.");
+        return true;
     }
 }
