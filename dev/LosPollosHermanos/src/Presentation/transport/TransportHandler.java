@@ -411,7 +411,7 @@ public class TransportHandler {
 
 
     /**
-     * This method is used to show a specific detailed transport by its ID.
+     * This method is used to show specific detailed transport by its ID.
      */
     private static void showSpecificDetailedTransport() {
         Helper.println("Showing specific detailed transport by ID");
@@ -821,7 +821,7 @@ public class TransportHandler {
                 }
                 case 5 -> {
                     Helper.println("Choose to add or edit or delete transport route IDs:");
-                    Helper.println("1. Add transport route ID");
+                    Helper.println("1. Add transport routes ID");
                     Helper.println("2. Edit transport route ID");
                     Helper.println("3. Delete transport route ID");
                     String userInput = Helper.getUserInputString();
@@ -848,22 +848,34 @@ public class TransportHandler {
                                 return;
                             }
                             Objects.requireNonNull(TransportManager.getTransportById(transportIdToAdd)).getTransportRouteIds().addAll(createdTransportRoutesIds);
-                            //need to think about that
+                            //Took time to think.
                         }
                         case "2" -> {
-                            Helper.print("Enter the transport route ID to edit: ");
-                            int routeId = Helper.getUserInputInteger();
-                            while (routeId == Helper.UndefinedUserInput) {
-                                Helper.print("Invalid transport route ID. Please try again: ");
-                                routeId = Helper.getUserInputInteger();
+                            // TODO NTH Edit transport route ID
+                        }
+                        case "3" -> {
+                            Helper.println("Enter the transport ID to delete: ");
+                            int transportIdToDelete = Helper.getUserInputInteger();
+                            while (transportIdToDelete == Helper.UndefinedUserInput) {
+                                Helper.println("Invalid transport ID. Please try again: ");
+                                transportIdToDelete = Helper.getUserInputInteger();
                             }
-                            Helper.println("Choose what to edit the transport route:");
-                            // TODO Tomorrow
-                            if (TransportManager.editTransportRoute(transport, routeId)) {
-                                Helper.println("Transport route ID updated successfully.");
+                            if (TransportManager.getTransportById(transportIdToDelete) == null) {
+                                Helper.println("Transport not found. Please try again.");
+                                return;
+                            }
+                            Helper.println("Enter the transport route ID to delete: ");
+                            int transportRouteIdToDelete = Helper.getUserInputInteger();
+                            while (transportRouteIdToDelete == Helper.UndefinedUserInput) {
+                                Helper.println("Invalid transport route ID. Please try again: ");
+                                transportRouteIdToDelete = Helper.getUserInputInteger();
+                            }
+                            if (TransportManager.deleteTransportRoute(transportIdToDelete, transportRouteIdToDelete)) {
+                                Helper.println("Transport route ID deleted successfully.");
                             } else {
-                                Helper.println("Failed to update transport route ID. Try again.");
+                                Helper.println("Failed to delete transport route ID. Try again.");
                             }
+
                         }
                         default -> {
                             Helper.println("Invalid input. Please choose 1, 2 or 3.");

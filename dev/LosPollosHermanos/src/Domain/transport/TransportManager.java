@@ -925,14 +925,49 @@ public class TransportManager {
         return true;
     }
 
-    /**
-     * This method is used to edit a transport route.
-     *
-     * @param transport - the transport object
-     * @param routeId   - the ID of the transport route
-     * @return - true if the transport route was edited successfully, false otherwise
-     */
-    public static boolean editTransportRoute(Transport transport, int routeId) {
-        return true; //TODO
+//    /**
+//     * This method is used to edit a transport route.
+//     *
+//     * @param transport - the transport object
+//     * @param routeId   - the ID of the transport route
+//     * @return - true if the transport route was edited successfully, false otherwise
+//     */
+//    public static boolean editTransportRoute(Transport transport, int routeId) {
+//        return true; //TODO
+//    }
+
+    public static boolean deleteTransportRoute(int transportIdToDelete, int transportRouteIdToDelete) {
+        if (transportIdToDelete <= Helper.UndefinedId || transportRouteIdToDelete <= Helper.UndefinedId) {
+            Helper.showError("Cant delete transport with id <= 0");
+            return false;
+        }
+        Transport transport = transportController.getTransportById(transportIdToDelete);
+        if (transport == null) {
+            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", it does not exist");
+            return false;
+        }
+        List<Integer> routes = transport.getTransportRouteIds();
+        if (routes == null || routes.isEmpty()) {
+            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", it does not exist");
+            return false;
+        }
+        if (!routes.contains(transportRouteIdToDelete)) {
+            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", it does not exist");
+            return false;
+        }
+        TransportRoute transportRoute = transportRouteController.getTransportRouteById(transportRouteIdToDelete);
+        if (transportRoute == null) {
+            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", it does not exist");
+            return false;
+        }
+        if (!transportRouteController.deleteTransportRoute(transportRouteIdToDelete)) {
+            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", failed to delete transport route");
+            return false;
+        }
+        if (!transport.getTransportRouteIds().remove((Integer) transportRouteIdToDelete)) {
+            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", failed to delete transport route");
+            return false;
+        }
+        return true;
     }
 }
