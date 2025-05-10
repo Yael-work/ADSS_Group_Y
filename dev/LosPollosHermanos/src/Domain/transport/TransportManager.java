@@ -41,6 +41,7 @@ import Auxiliary.Enums.Domain.CreateNewTransportRouteResultEnum;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Enums.Models.visitSiteEnum;
 import Auxiliary.Helper;
+import Auxiliary.Enums.Domain.UpdateNewPlannedDateTime;
 import DB.DBManager;
 import DB.interfaces.*;
 import DB.interfaces.IDeliveryFileController;
@@ -773,40 +774,22 @@ public class TransportManager {
     }
 
     /**
-     * This method is used to set a new planned date and time for a transport.
+     * This method is used to set a new planned date and time for transport.
      *
      * @param transport          - the transport object
      * @param newPlannedDateTime - the new planned date and time
      * @return - true if the planned date and time were set successfully, false otherwise
      */
-    public static boolean setNewPlannedDateTime(Transport transport, LocalDateTime newPlannedDateTime) {
+    public static UpdateNewPlannedDateTime setNewPlannedDateTime(Transport transport, LocalDateTime newPlannedDateTime) {
         if (newPlannedDateTime == null) {
             Helper.println("New planned date and time cannot be null.");
-            return false;
+            return UpdateNewPlannedDateTime.FAILED;
         }
         if ((transport.getActualStartDatetime().isBefore(newPlannedDateTime) || transport.getActualStartDatetime().isEqual(newPlannedDateTime))
-                && !transport.getActualEndDatetime().isAfter(newPlannedDateTime)) {
+                && transport.getActualEndDatetime().isAfter(newPlannedDateTime)) {
             Helper.println("The new planned date and time cannot be before the actual start date and time. " +
                     "Please set a new actual start date and time.");
-            do {
-                Helper.print("Enter the new planned date and time (%s): "
-                        .formatted(Helper.DefaultDateTimeFormat));
-                String dateTimeStr = Helper.getUserInputString();
-                LocalDateTime actualNewStartDateTime = Helper.stringToDateTime(dateTimeStr);
-                while (actualNewStartDateTime == null) {
-                    Helper.print("Invalid date and time format. Please try again: ");
-                    dateTimeStr = Helper.getUserInputString();
-                    actualNewStartDateTime = Helper.stringToDateTime(dateTimeStr);
-                }
-                if (actualNewStartDateTime.isBefore(newPlannedDateTime) || actualNewStartDateTime.isAfter(transport.getActualEndDatetime())) {
-                    Helper.println("The new planned date and time cannot be before the actual start date and time. " +
-                            "Please set a new actual start date and time.");
-                } else {
-                    transport.setPlannedDateTime(actualNewStartDateTime);
-                    transport.setActualStartDatetime(actualNewStartDateTime);
-                    return true;
-                }
-            } while (true);
+            return UpdateNewPlannedDateTime.MIDDLE;
         }
         if (transport.getActualStartDatetime().isAfter(newPlannedDateTime)) {
             transport.setPlannedDateTime(newPlannedDateTime);
@@ -851,7 +834,7 @@ public class TransportManager {
     }
 
     /**
-     * This method is used to cancel a transport.
+     * This method is used to cancel transport.
      *
      * @param transport - the transport object
      * @return - true if the transport was canceled successfully, false otherwise
@@ -935,38 +918,67 @@ public class TransportManager {
 //        return true; //TODO
 //    }
 
-    public static boolean deleteTransportRoute(int transportIdToDelete, int transportRouteIdToDelete) {
-        if (transportIdToDelete <= Helper.UndefinedId || transportRouteIdToDelete <= Helper.UndefinedId) {
+    public static boolean deleteTransportRoute(Transport transport, int transportRouteIdToDelete) {
+        if (transport == null || transportRouteIdToDelete <= Helper.UndefinedId) {
             Helper.showError("Cant delete transport with id <= 0");
-            return false;
-        }
-        Transport transport = transportController.getTransportById(transportIdToDelete);
-        if (transport == null) {
-            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", it does not exist");
             return false;
         }
         List<Integer> routes = transport.getTransportRouteIds();
         if (routes == null || routes.isEmpty()) {
-            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", it does not exist");
+            Helper.showError("Cant delete transport route with id=" + transportRouteIdToDelete + ", it does not exist");
             return false;
         }
         if (!routes.contains(transportRouteIdToDelete)) {
-            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", it does not exist");
+            Helper.showError("Cant delete transport route with id=" + transportRouteIdToDelete + ", it does not exist");
             return false;
         }
         TransportRoute transportRoute = transportRouteController.getTransportRouteById(transportRouteIdToDelete);
         if (transportRoute == null) {
-            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", it does not exist");
+            Helper.showError("Error retrieving transport route with id=" + transportRouteIdToDelete);
             return false;
         }
         if (!transportRouteController.deleteTransportRoute(transportRouteIdToDelete)) {
-            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", failed to delete transport route");
+            Helper.showError("Cant delete transport route with id=" + transportRouteIdToDelete + ", failed to delete transport route");
             return false;
         }
         if (!transport.getTransportRouteIds().remove((Integer) transportRouteIdToDelete)) {
-            Helper.showError("Cant delete transport with id=" + transportIdToDelete + ", failed to delete transport route");
+            Helper.showError("Cant delete transport route with id=" + transportRouteIdToDelete + ", failed to delete transport route");
             return false;
         }
         return true;
+    }
+
+    /**
+     * This method is used to set a new actual start date and time for transport.
+     *
+     * @param transport           - the transport object
+     * @param actualStartDateTime - the new actual start date and time
+     * @return - true if the actual start date and time were set successfully, false otherwise
+     */
+    public static boolean setNewActualStartDateTime(Transport transport, LocalDateTime actualStartDateTime) {
+        if (actualStartDateTime == null) {
+            Helper.println("New actual start date and time cannot be null.");
+            return false;
+        }
+        if (actualStartDateTime.isBefore(transport.getPlannedDateTime())) {
+            Helper.println("The new actual start date and time cannot be before the planned date and time.");
+            return false;
+        }
+        if(actualStartDateTime.isAfter(transport.getActualEndDatetime())) {
+            Helper.println("The new actual start date and time cannot be after the actual end date and time.");
+            return false;
+        }
+        transport.setActualStartDatetime(actualStartDateTime);
+        return true;
+    }
+
+    /**
+     * This method is used to set a new actual end date and time for transport.
+     *
+     * @param transport         - the transport object
+     * @param actualEndDateTime - the new actual end date and time
+     * @return - true if the actual end date and time were set successfully, false otherwise
+     */
+    public static boolean setNewActualEndDateTime(Transport transport, LocalDateTime actualEndDateTime) {
     }
 }
