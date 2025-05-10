@@ -229,6 +229,7 @@ public class DBTests {
     @Test
     public void testCreateTransportRoute() {
         //We assume that these function leave a correct creation of branch, supplier, delivery file
+        // so that a new delivery file is created, but an ALREADY EXISTING branch and supplier are used
         _testCreateBranch(true);
         _testCreateSupplier(true);
         testCreateDeliveryFile();
