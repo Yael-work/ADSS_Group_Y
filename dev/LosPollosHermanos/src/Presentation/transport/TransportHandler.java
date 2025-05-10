@@ -13,7 +13,6 @@ import Models.DTOs.transport.CreateNewTransportRoutesResult;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class TransportHandler {
 
@@ -133,13 +132,13 @@ public class TransportHandler {
     /**
      * This method is used to perform the actual transport creation process.
      *
-     * @param plannedDateTime           The planned date and time of transport.
-     * @param createdTransportRoutesIds The list of created transport routes IDs.
+     * @param plannedDateTime        The planned date and time of transport.
+     * @param createdTransportRoutes The list of created transport routes.
      * @return True if the transport creation was successful, false otherwise.
      */
     private static boolean performActualTransportCreation(LocalDateTime plannedDateTime,
-                                                          List<Integer> createdTransportRoutesIds) {
-        if (createdTransportRoutesIds == null || createdTransportRoutesIds.isEmpty()) {
+                                                          List<TransportRoute> createdTransportRoutes) {
+        if (createdTransportRoutes == null || createdTransportRoutes.isEmpty()) {
             Helper.println("No transport routes created. Cannot proceed with transport creation.");
             return false;
         }
@@ -151,8 +150,7 @@ public class TransportHandler {
             return false;
         }
         List<DeliveryFileItem> deliveryFileItems = new ArrayList<>();
-        for (int routeId : createdTransportRoutesIds) {
-            TransportRoute route = TransportManager.getTransportRouteById(routeId);
+        for (TransportRoute route : createdTransportRoutes) {
             if (route != null) {
                 DeliveryFile deliveryFile = route.getDeliveryFile();
                 if (deliveryFile != null) {
@@ -226,14 +224,14 @@ public class TransportHandler {
                 Helper.print("Invalid driver ID. Please try again: ");
                 driverId = Helper.getUserInputInteger();
             }
-            Driver d = DriversManager.getDriverById(driverId);
-            if (d == null) {
+            Driver selectedDriver = DriversManager.getDriverById(driverId);
+            if (selectedDriver == null) {
                 Helper.println("Driver not found. Please try again.");
             } else {
-                Helper.println("You have selected driver: " + d.toPrettyString());
+                Helper.println("You have selected driver: " + selectedDriver.toPrettyString());
                 Helper.println("Generating transport...");
-                int createdTransportId = TransportManager.createTransport(plannedDateTime, truckId,
-                        driverId, createdTransportRoutesIds);
+                int createdTransportId = TransportManager.createTransport(plannedDateTime, selectedTruck,
+                        selectedDriver, createdTransportRoutes);
                 Transport createdTransport = TransportManager.getTransportById(createdTransportId);
                 if (createdTransport == null) {
                     Helper.println("Failed to create transport.");
@@ -253,19 +251,19 @@ public class TransportHandler {
      * and the creation of transport routes.
      */
     private static void createTransportMainRoutine() {
-        List<Integer> createdTransportRoutesIds = new ArrayList<>();
+        List<TransportRoute> createdTransportRoutes = new ArrayList<>();
         Helper.println("Transport Creation:");
         LocalDateTime dateTime = getDateForTransport();
         if (dateTime == null) {
             Helper.println("Invalid date and time. Please try again.");
             return;
         }
-        HelperForCreateTransportRoutes(createdTransportRoutesIds);
-        if (createdTransportRoutesIds.isEmpty()) {
+        HelperForCreateTransportRoutes(createdTransportRoutes);
+        if (createdTransportRoutes.isEmpty()) {
             Helper.println("No transport routes created. Cannot proceed with transport creation.");
             return;
         }
-        if (performActualTransportCreation(dateTime, createdTransportRoutesIds)) {
+        if (performActualTransportCreation(dateTime, createdTransportRoutes)) {
             Helper.println("Transport created successfully.");
         } else {
             Helper.println("Failed to create transport.");
@@ -277,9 +275,9 @@ public class TransportHandler {
      * It handles the selection of branches and stock items,
      * and the creation of transport routes.
      */
-    private static void HelperForCreateTransportRoutes(List<Integer> createdTransportRoutesIds) {
+    private static void HelperForCreateTransportRoutes(List<TransportRoute> createdTransportRoutes) {
         ArrayList<Branch> branches = BranchesManager.getExistingBranches();
-        if (branches == null || branches.isEmpty()) {
+        if (branches.isEmpty()) {
             Helper.println("No branches available. Please create a branch first.");
             return;
         }
@@ -310,7 +308,7 @@ public class TransportHandler {
                 switch (routesCreationResult.getResultEnum()) {
                     case Success -> {
                         Helper.println("Transport routes created successfully for branch " + branchId);
-                        createdTransportRoutesIds.addAll(routesCreationResult.getCreatedTransportRoutesIds());
+                        createdTransportRoutes.addAll(routesCreationResult.getCreatedTransportRoutes());
                     }
                     case SomeItemsUnprovided -> {
                         Helper.println("Some items could not be provided by the suppliers for this branch");
@@ -331,12 +329,12 @@ public class TransportHandler {
                         }
                         if (proceedInput.equalsIgnoreCase("yes")) {
                             Helper.println("Transport routes created successfully for branch " + branchId);
-                            createdTransportRoutesIds.addAll(routesCreationResult.getCreatedTransportRoutesIds());
+                            createdTransportRoutes.addAll(routesCreationResult.getCreatedTransportRoutes());
                         } else {
                             Helper.println("Branch will not be added to the transport.");
-                            List<Integer> routesIds = routesCreationResult.getCreatedTransportRoutesIds();
-                            if (routesIds != null && !routesIds.isEmpty()) {
-                                if (!TransportManager.deleteTransportRoutes(routesIds)) {
+                            List<TransportRoute> routes = routesCreationResult.getCreatedTransportRoutes();
+                            if (routes != null && !routes.isEmpty()) {
+                                if (!TransportManager.deleteTransportRoutes(routes)) {
                                     Helper.println("Failed to delete created routes.");
                                 } else {
                                     Helper.println("Created routes deleted successfully.");
@@ -346,7 +344,7 @@ public class TransportHandler {
                     }
                     case UNDEFINED -> {
                         Helper.println("Failed to create transport routes for branch " + branchId);
-                        List<Integer> routesIds = routesCreationResult.getCreatedTransportRoutesIds();
+                        List<TransportRoute> routesIds = routesCreationResult.getCreatedTransportRoutes();
                         if (routesIds != null && !routesIds.isEmpty()) {
                             TransportManager.deleteTransportRoutes(routesIds);
                             Helper.println("Deleting created routes...");
@@ -446,9 +444,9 @@ public class TransportHandler {
         Helper.println("Truck details:\n" + truck.toPrettyString());
         Helper.println("Driver details:\n" + driver.toPrettyString());
         Helper.println("Displaying routes:");
-        for (int routeId : transport.getTransportRouteIds()) {
+        for (TransportRoute route : transport.getTransportRoutes()) {
             Helper.println("--------------------------------");
-            Helper.println(TransportManager.getDetailedTransportRouteString(routeId));
+            Helper.println(TransportManager.getDetailedTransportRouteString(route));
             Helper.println("--------------------------------");
         }
         Helper.println("-End of transport details-");
@@ -508,12 +506,11 @@ public class TransportHandler {
         }
         if (transport.getStatus() == TransportStatusEnum.STARTED) {
             Helper.println("Relevant sources to visit: ");
-            List<Integer> routes = transport.getTransportRouteIds();
+            List<TransportRoute> routes = transport.getTransportRoutes();
             TransportRoute selectedRoute = null;
-            for (Integer route : routes) {
-                TransportRoute transportRoute = TransportManager.getTransportRouteById(route);
+            for (TransportRoute transportRoute : routes) {
                 if (transportRoute == null) {
-                    Helper.println("Please try again later, error in route ID: " + route);
+                    Helper.println("Transport route not found. Please try again.");
                     return;
                 }
                 if (transportRoute.getStatus() == TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES
@@ -536,19 +533,13 @@ public class TransportHandler {
                     Helper.println("Invalid input. Please try again.");
                     continue;
                 }
-                for (Integer route : routes) {
-                    TransportRoute transportRoute = TransportManager.getTransportRouteById(route);
+                for (TransportRoute transportRoute : routes) {
                     if (transportRoute == null) {
-                        Helper.println("Please try again later, error in route ID: " + route);
+                        Helper.println("Transport route not found. Please try again.");
                         return;
                     }
                     APhysicalSite src = transportRoute.getSourceSite();
                     if (src != null && src.getId() == sourceID) {
-                        selectedRoute = TransportManager.getTransportRouteById(route);
-                        if (selectedRoute == null) {
-                            Helper.println("Route not found. Please try again.");
-                            return;
-                        }
                         Helper.println("Visiting source: " + src.toPrettyString());
                         flag = true;
                         break;
@@ -590,7 +581,7 @@ public class TransportHandler {
                         }
                         for (Truck availableTruck : availableTrucks) {
                             if (availableTruck.getId() == truckId) {
-                                transport.setTruckId(truckId);
+                                transport.setTruck(availableTruck);
                                 Helper.println("Truck changed successfully.");
                                 break;
                             }
@@ -674,13 +665,12 @@ public class TransportHandler {
         }
         if (transport.getStatus() == TransportStatusEnum.STARTED) {
             Helper.println("Relevant destinations to visit: ");
-            List<Integer> routes = transport.getTransportRouteIds();
+            List<TransportRoute> routes = transport.getTransportRoutes();
             TransportRoute selectedRoute = null;
-            for (Integer route : routes) {
-                TransportRoute transportRoute = TransportManager.getTransportRouteById(route);
+            for (TransportRoute transportRoute : routes) {
                 if (transportRoute == null) {
-                    Helper.println("Please try again later, error in route ID: " + route);
-                    return;
+                    Helper.println("Transport route not found. Please try again.");
+                    continue;
                 }
                 if (transportRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES
                         || transportRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED ||
@@ -702,19 +692,13 @@ public class TransportHandler {
                     Helper.println("Invalid input. Please try again.");
                     continue;
                 }
-                for (Integer route : routes) {
-                    TransportRoute tr = TransportManager.getTransportRouteById(route);
+                for (TransportRoute tr : routes) {
                     if (tr == null) {
-                        Helper.showError("Please try again later, error in route ID: " + route);
-                        return;
+                        Helper.showError("Transport route not found. Please try again.");
+                        continue;
                     }
                     APhysicalSite destination = tr.getDestinationSite();
                     if (destination != null && destination.getId() == destinationID) {
-                        selectedRoute = TransportManager.getTransportRouteById(route);
-                        if (selectedRoute == null) {
-                            Helper.println("Route not found. Please try again.");
-                            return;
-                        }
                         Helper.println("Visiting destination: " + destination.toPrettyString());
                         flag = true;
                         break;
@@ -870,7 +854,12 @@ public class TransportHandler {
                         Helper.print("Invalid truck ID. Please try again: ");
                         truckId = Helper.getUserInputInteger();
                     }
-                    if (TransportManager.setNewTruckId(transport, truckId)) {
+                    Truck selectedTruck = TrucksManager.getTruckById(truckId);
+                    if (selectedTruck == null) {
+                        Helper.println("Truck not found. Please try again.");
+                        continue;
+                    }
+                    if (TransportManager.setNewTruck(transport, selectedTruck)) {
                         Helper.println("Truck ID updated successfully.");
                     } else {
                         Helper.println("Failed to update truck ID. Try again.");
@@ -884,7 +873,12 @@ public class TransportHandler {
                         Helper.print("Invalid driver ID. Please try again: ");
                         driverId = Helper.getUserInputInteger();
                     }
-                    if (TransportManager.setNewDriverId(transport, driverId)) {
+                    Driver selectedDriver = DriversManager.getDriverById(driverId);
+                    if (selectedDriver == null) {
+                        Helper.println("Driver not found. Please try again.");
+                        continue;
+                    }
+                    if (TransportManager.setNewDriver(transport, selectedDriver)) {
                         Helper.println("Driver ID updated successfully.");
                     } else {
                         Helper.println("Failed to update driver ID. Try again.");
@@ -903,13 +897,13 @@ public class TransportHandler {
                     }
                     switch (userInput) {
                         case "1" -> {
-                            List<Integer> createdTransportRoutesIds = new ArrayList<>();
+                            List<TransportRoute> createdTransportRoutesIds = new ArrayList<>();
                             HelperForCreateTransportRoutes(createdTransportRoutesIds);
                             if (createdTransportRoutesIds.isEmpty()) {
                                 Helper.println("No transport routes created. Cannot proceed with adding new transport routes.");
                                 return;
                             }
-                            transport.getTransportRouteIds().addAll(createdTransportRoutesIds);
+                            transport.getTransportRoutes().addAll(createdTransportRoutesIds);
                             //Took time to think.
                         }
 //                        case "2" -> {

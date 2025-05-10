@@ -6,9 +6,11 @@ import Domain.transport.*;
 import Domain.suppliers.SuppliersManager;
 import Models.DBModels.BaseModel;
 import Models.DBModels.transport.Driver;
+import Models.DBModels.transport.TransportRoute;
 import Models.DBModels.transport.Truck;
 import Models.DTOs.StockItem;
 import Models.DTOs.transport.CreateNewTransportRoutesResult;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +114,7 @@ public class TransportPresentation {
         LocalDateTime plannedDateTime = LocalDateTime.now().plusDays(1);
         CreateNewTransportRoutesResult routesCreationResult =
                 TransportManager.createNewTransportRoutes(1, selectedItems);
-        List<Integer> createdTransportRoutesIds = new ArrayList<>(routesCreationResult.getCreatedTransportRoutesIds());
+        List<TransportRoute> createdTransportRoutesIds = new ArrayList<>(routesCreationResult.getCreatedTransportRoutes());
         List<Truck> trucks = TransportManager.getAvailableTrucksByDate(plannedDateTime);
         Truck selectedTruck = null;
         Driver selectedDriver = null;
@@ -131,8 +133,8 @@ public class TransportPresentation {
             Helper.showError("No available trucks or drivers found.");
             return false;
         }
-        int createdTransportId = TransportManager.createTransport(plannedDateTime,
-                selectedTruck.getId(), selectedDriver.getId(), createdTransportRoutesIds);
+        int createdTransportId = TransportManager.createTransport(plannedDateTime, selectedTruck, selectedDriver,
+                createdTransportRoutesIds);
 
         if (res1 && createdTransportId > 0) {
             mockDataLoaded = true;

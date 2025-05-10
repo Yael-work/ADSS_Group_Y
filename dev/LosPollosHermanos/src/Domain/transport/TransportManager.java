@@ -151,7 +151,7 @@ public class TransportManager {
      * @return - a list of created transport route IDs
      */
     public static CreateNewTransportRoutesResult createNewTransportRoutes(int branchId, List<StockItem> requiredItems) {
-        List<Integer> routes = new ArrayList<>();
+        List<TransportRoute> routes = new ArrayList<>();
         List<StockItem> items = new ArrayList<>(requiredItems);
         Map<Integer, List<StockItem>> suppliersAndItems = new HashMap<>();
         List<TransportArea> transportAreas = DBManager.getInstance().getTransportAreaController().getAllTransportAreasByBranchId(branchId);
@@ -196,7 +196,12 @@ public class TransportManager {
             List<StockItem> itemsAtSupplier = entry.getValue();
             int routeId = createTransportRoute(branchId, supplierId, itemsAtSupplier);
             if (routeId > Helper.UndefinedId) {
-                routes.add(routeId);
+                TransportRoute createdRoute = transportRouteController.getTransportRouteById(routeId);
+                if (createdRoute == null) {
+                    Helper.showError("Failed to create transport route with ID: " + routeId);
+                    continue;
+                }
+                routes.add(createdRoute);
             } else {
                 Helper.showError("Failed to create transport route for supplier: " + supplierId);
             }
@@ -211,19 +216,18 @@ public class TransportManager {
     /**
      * This method is used to delete transport routes.
      *
-     * @param routes - the list of transport routes IDs to be deleted
+     * @param routes - the list of transport routes to be deleted
      * @return - true if the transport routes were deleted successfully, false otherwise
      */
-    public static boolean deleteTransportRoutes(List<Integer> routes) {
+    public static boolean deleteTransportRoutes(List<TransportRoute> routes) {
         if (routes == null || routes.isEmpty()) {
             Helper.showError("Cant delete transport, it does not exist");
             return false;
         } else {
-            for (Integer routeId : routes) {
-                TransportRoute t = transportRouteController.getTransportRouteById(routeId);
+            for (TransportRoute t : routes) {
                 if (t == null) {
-                    Helper.showError("Cant delete transport with id=" + routeId + ", it does not exist");
-                    return false;
+                    Helper.showError("Cant delete transport it does not exist");
+                    continue;
                 }
                 if (t.getStatus() != TransportStatusEnum.PENDING) {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", it is not in pending status");
@@ -258,16 +262,12 @@ public class TransportManager {
             Helper.showError("Cant delete transport with id=" + transportId + ", it does not exist");
             return false;
         }
-        List<TransportRoute> routes = transportRouteController.getTransportRoutesByIds((ArrayList<Integer>) transport.getTransportRouteIds());
+        List<TransportRoute> routes = transport.getTransportRoutes();
         if (routes == null || routes.isEmpty()) {
             Helper.showError("Cant delete transport with id=" + transportId + ", it does not exist");
             return false;
         }
-        List<Integer> routeIds = new ArrayList<>();
-        for (TransportRoute route : routes) {
-            routeIds.add(route.getId());
-        }
-        if (!deleteTransportRoutes(routeIds)) {
+        if (!deleteTransportRoutes(routes)) {
             Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete transport routes");
             return false;
         }
@@ -345,19 +345,19 @@ public class TransportManager {
      * This method is used to create transport.
      *
      * @param plannedDateTime - the planned date and time for the transport
-     * @param truckId         - the ID of the truck
-     * @param driverId        - the ID of the driver
-     * @param transportRoutes - the list of transport route IDs
+     * @param truck           - the truck to be used for the transport
+     * @param driver          - the driver for the transport
+     * @param transportRoutes - the list of transport routes for the transport
      * @return - the ID of the created transport, or Helper.UndefinedId if failed
      */
-    public static int createTransport(LocalDateTime plannedDateTime, int truckId, int driverId, List<Integer> transportRoutes) {
-        if (plannedDateTime == null || truckId <= Helper.UndefinedId || driverId <= Helper.UndefinedId
-                || transportRoutes == null || transportRoutes.isEmpty()) {
+    public static int createTransport(LocalDateTime plannedDateTime, Truck truck, Driver driver, List<TransportRoute> transportRoutes) {
+        if (plannedDateTime == null || truck == null || driver == null || transportRoutes == null
+                || transportRoutes.isEmpty()) {
             Helper.showError("Invalid input for creating transport.");
             return Helper.UndefinedId;
         }
         Transport transport = new Transport(Helper.UndefinedId, plannedDateTime, TransportStatusEnum.PENDING,
-                truckId, driverId, transportRoutes, null, null, null);
+                truck, driver, transportRoutes, null, null, null);
         int transportId = transportController.addTransport(transport);
         if (transportId <= Helper.UndefinedId) {
             Helper.showError("Failed to create transport.");
@@ -368,8 +368,7 @@ public class TransportManager {
             }
             return Helper.UndefinedId;
         } else {
-            for (int routeId : transportRoutes) {
-                TransportRoute route = transportRouteController.getTransportRouteById(routeId);
+            for (TransportRoute route : transportRoutes) {
                 if (route != null) {
                     APhysicalSite srcSite = route.getSourceSite();
                     DeliveryFile deliveryFile = route.getDeliveryFile();
@@ -475,29 +474,24 @@ public class TransportManager {
     /**
      * This method is used to get a detailed string representation of a transport route.
      *
-     * @param routeId - the ID of the transport route
+     * @param route - the route object
      * @return - a detailed string representation of the transport route
      */
-    public static String getDetailedTransportRouteString(int routeId) {
-        if (routeId <= Helper.UndefinedId) {
-            Helper.showError("Cant get transport route with id <= 0");
-            return null;
-        }
-        TransportRoute route = transportRouteController.getTransportRouteById(routeId);
+    public static String getDetailedTransportRouteString(TransportRoute route) {
         if (route == null) {
-            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
+            Helper.showError("Cant get transport route it does not exist");
             return null;
         }
         String deleiveryFileDetailedString = getDetailedDeliveryFileString(route.getDeliveryFile());
 
         APhysicalSite sourceSite = route.getSourceSite();
         if (sourceSite == null) {
-            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
+            Helper.showError("Cant get transport route with id=" + route.getId() + ", it does not exist");
             return null;
         }
         APhysicalSite destinationSite = route.getDestinationSite();
         if (destinationSite == null) {
-            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
+            Helper.showError("Cant get transport route with id=" + route.getId() + ", it does not exist");
             return null;
         }
 
@@ -647,19 +641,15 @@ public class TransportManager {
         } else {
             if (codeSite == 0) {
                 if (code == 1) {
-                    if (transport.getTransportIssueLogIds().isEmpty()) {
-                        List<Integer> transportIssueLogIds = new ArrayList<>();
-                        TransportIssueLog transportIssueLog = new TransportIssueLog(1, transport.getTruckId(), truckId,
-                                selectedRoute.getId(), 0);
-                        transportIssueLogIds.add(transportIssueLog.getId());
-                        transport.setTransportIssueLogIds(transportIssueLogIds);
-                        transportController.updateTransport(transport, transport.getId());
-                    } else {
-                        TransportIssueLog transportIssueLog = new TransportIssueLog(transport.getTransportIssueLogIds().getLast() + 1, transport.getTruckId(), truckId,
-                                selectedRoute.getId(), 0);
-                        transport.getTransportIssueLogIds().add(transportIssueLog.getId());
-                        transportController.updateTransport(transport, transport.getId());
+                    Truck newTruck = truckId == transport.getTruckId() ? null : TrucksManager.getTruckById(truckId);
+                    if (newTruck == null) {
+                        Helper.showError("Truck with id " + truckId + " not found.");
+                        return false;
                     }
+                    TransportIssueLog transportIssueLog = new TransportIssueLog(1, transport.getTruck(),
+                            newTruck, selectedRoute, null);
+                    transport.getTransportIssueLogs().add(transportIssueLog);
+                    transportController.updateTransport(transport, transport.getId());
                 }
                 if (code == 2) {
                     selectedRoute.setDeliveryFile(deliveryFile);
@@ -685,14 +675,13 @@ public class TransportManager {
      */
     public static boolean checkIfTransportCompleted(Transport transport) {
         boolean isCompleted = true;
-        for (Integer route : transport.getTransportRouteIds()) {
-            TransportRoute transportRoute = transportRouteController.getTransportRouteById(route);
-            if (transportRoute == null) {
+        for (TransportRoute route : transport.getTransportRoutes()) {
+            if (route == null) {
                 Helper.println("Transport route not found.");
                 isCompleted = false;
                 break;
             }
-            if (transportRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED) {
+            if (route.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED) {
                 isCompleted = false;
                 transportController.updateTransport(transport, transport.getId());
                 break;
@@ -766,52 +755,36 @@ public class TransportManager {
     }
 
     /**
-     * This method is used to set a new truck ID for transport.
+     * This method is used to set a new truck for transport.
      *
      * @param transport - the transport object
-     * @param truckId   - the new truck ID
+     * @param truck     - the new truck
      * @return - true if the truck ID was set successfully, false otherwise
      */
-    public static boolean setNewTruckId(Transport transport, int truckId) {
-        if (truckId <= Helper.UndefinedId) {
-            Helper.println("Invalid truck ID.");
-            return false;
-        }
-        Truck truck = TransportManager.getAvailableTrucksByDate(transport.getPlannedDateTime()).stream()
-                .filter(t -> t.getId() == truckId)
-                .findFirst()
-                .orElse(null);
+    public static boolean setNewTruck(Transport transport, Truck truck) {
         if (truck == null) {
-            Helper.println("Truck not found or not available.");
+            Helper.println("Invalid truck");
             return false;
         }
-        transport.setTruckId(truckId);
+        transport.setTruck(truck);
         transportController.updateTransport(transport, transport.getId());
         Helper.println("Truck ID set successfully.");
         return true;
     }
 
     /**
-     * This method is used to set a new driver ID for transport.
+     * This method is used to set a new driver for transport.
      *
      * @param transport - the transport object
-     * @param driverId  - the new driver ID
+     * @param driver    - the new driver
      * @return - true if the driver ID was set successfully, false otherwise
      */
-    public static boolean setNewDriverId(Transport transport, int driverId) {
-        if (driverId <= Helper.UndefinedId) {
-            Helper.println("Invalid driver ID.");
-            return false;
-        }
-        Driver driver = TransportManager.getAvailableDriversByDateAndLicense(transport.getPlannedDateTime(), Objects.requireNonNull(TrucksManager.getTruckById(transport.getTruckId())).getRequiredLicenseType()).stream()
-                .filter(d -> d.getId() == driverId)
-                .findFirst()
-                .orElse(null);
+    public static boolean setNewDriver(Transport transport, Driver driver) {
         if (driver == null) {
             Helper.println("Driver not found or not available.");
             return false;
         }
-        transport.setDriverId(driverId);
+        transport.setDriver(driver);
         transportController.updateTransport(transport, transport.getId());
         Helper.println("Driver ID set successfully.");
         return true;
@@ -833,12 +806,12 @@ public class TransportManager {
             Helper.showError("Cant delete transport with id <= 0");
             return false;
         }
-        List<Integer> routes = transport.getTransportRouteIds();
+        List<TransportRoute> routes = transport.getTransportRoutes();
         if (routes == null || routes.isEmpty()) {
             Helper.showError("Cant delete transport route with id=" + transportRouteIdToDelete + ", it does not exist");
             return false;
         }
-        if (!routes.contains(transportRouteIdToDelete)) {
+        if (routes.stream().noneMatch(r -> r.getId() == transportRouteIdToDelete)) {
             Helper.showError("Cant delete transport route with id=" + transportRouteIdToDelete + ", it does not exist");
             return false;
         }
@@ -851,7 +824,7 @@ public class TransportManager {
             Helper.showError("Cant delete transport route with id=" + transportRouteIdToDelete + ", failed to delete transport route");
             return false;
         }
-        if (!transport.getTransportRouteIds().remove((Integer) transportRouteIdToDelete)) {
+        if (!transport.getTransportRoutes().removeIf(r -> r.getId() == transportRouteIdToDelete)) {
             Helper.showError("Cant delete transport route with id=" + transportRouteIdToDelete + ", failed to delete transport route");
             return false;
         }

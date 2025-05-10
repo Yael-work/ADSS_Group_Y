@@ -2,11 +2,12 @@ package DB.interfaces;
 
 import Models.DBModels.transport.Transport;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ITransportController extends IController<Transport> {
     /**
-     * Adds a new transport to the database.
+     * Adds new transport to the database.
      *
      * @param transport The transport to add.
      * @return The ID of the added transport, or Helper.UndefinedId if the operation failed.
@@ -39,18 +40,27 @@ public interface ITransportController extends IController<Transport> {
     Transport getTransportById(int id);
 
     /**
-     * Retrieves transport by its truck ID.
+     * Retrieves transports by its truck ID.
      *
      * @param id The ID of the truck to retrieve transports for.
      * @return A list of transports associated with the specified truck ID.
      */
-    ArrayList<Transport> getTransportsByTruckId(int id);
+    List<Transport> getTransportsByTruckId(int id);
 
     /**
-     * Retrieves transport by its driver ID.
+     * Retrieves transports by its driver ID.
      *
      * @param id The ID of the driver to retrieve transports for.
      * @return A list of transports associated with the specified driver ID.
      */
-    ArrayList<Transport> getTransportsByDriverId(int id);
+    List<Transport> getTransportsByDriverId(int id);
+
+    /**
+     * Retrieves transports by its date range.
+     *
+     * @param startDate The start date of the range.
+     * @param endDate   The end date of the range.
+     * @return A list of transports within the specified date range.
+     */
+    List<Transport> getTransportsByDateRange(LocalDateTime startDate, LocalDateTime endDate);
 }

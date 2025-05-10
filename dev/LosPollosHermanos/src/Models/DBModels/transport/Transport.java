@@ -3,32 +3,57 @@ package Models.DBModels.transport;
 import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
 import Auxiliary.Enums.Models.TransportStatusEnum;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Entity
+@Table(name = "transports")
 public class Transport extends BaseModel {
+    @Column(nullable = false)
     private LocalDateTime plannedDateTime;
+    @Column(nullable = false)
     private TransportStatusEnum status;
-    private int truckId;
-    private int driverId;
-    private List<Integer> transportRouteIds;
-    private List<Integer> transportIssueLogIds;
+    @Column()
     private LocalDateTime actualStartDatetime;
+    @Column()
     private LocalDateTime actualEndDatetime;
 
-    public Transport(int id, LocalDateTime plannedDateTime, TransportStatusEnum status, int truckId, int driverId,
-                     List<Integer> transportRouteIds, List<Integer> transportIssueLogIds,
+    @ManyToOne
+    @JoinColumn(name = "truck_id", referencedColumnName = "id", nullable = false)
+    private Truck truck;
+    @ManyToOne
+    @JoinColumn(name = "driver_id", referencedColumnName = "id", nullable = false)
+    private Driver driver;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "transport_routes_link", joinColumns = @JoinColumn(name = "transport_id"),
+            inverseJoinColumns = @JoinColumn(name = "route_id"))
+    private List<TransportRoute> transportRoutes;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "transport_issue_logs_link", joinColumns = @JoinColumn(name = "transport_id"),
+            inverseJoinColumns = @JoinColumn(name = "issue_log_id"))
+    private List<TransportIssueLog> transportIssueLogs;
+
+    public Transport(int id, LocalDateTime plannedDateTime, TransportStatusEnum status, Truck truck, Driver driver,
+                     List<TransportRoute> transportRoutes, List<TransportIssueLog> transportIssueLogs,
                      LocalDateTime actualStartDatetime, LocalDateTime actualEndDatetime) {
         super(id, Transport.class.getName());
         this.plannedDateTime = plannedDateTime;
         this.status = status;
-        this.truckId = truckId;
-        this.driverId = driverId;
-        this.transportIssueLogIds = transportIssueLogIds;
-        this.transportRouteIds = transportRouteIds;
         this.actualStartDatetime = actualStartDatetime;
         this.actualEndDatetime = actualEndDatetime;
+        this.truck = truck;
+        this.driver = driver;
+        this.transportRoutes = transportRoutes;
+        this.transportIssueLogs = transportIssueLogs;
+
+    }
+
+    public Transport() {
+        super(0, Transport.class.getName());
     }
 
     public LocalDateTime getPlannedDateTime() {
@@ -47,30 +72,6 @@ public class Transport extends BaseModel {
         this.status = status;
     }
 
-    public int getTruckId() {
-        return truckId;
-    }
-
-    public void setTruckId(int truckId) {
-        this.truckId = truckId;
-    }
-
-    public int getDriverId() {
-        return driverId;
-    }
-
-    public void setDriverId(int driverId) {
-        this.driverId = driverId;
-    }
-
-    public List<Integer> getTransportIssueLogIds() {
-        return transportIssueLogIds;
-    }
-
-    public void setTransportIssueLogIds(List<Integer> transportIssueLogIds) {
-        this.transportIssueLogIds = transportIssueLogIds;
-    }
-
     public LocalDateTime getActualStartDatetime() {
         return actualStartDatetime;
     }
@@ -87,45 +88,73 @@ public class Transport extends BaseModel {
         this.actualEndDatetime = actualEndDatetime;
     }
 
-    public void setTransportRouteIds(List<Integer> transportRouteIds) {
-        this.transportRouteIds = transportRouteIds;
+    public Truck getTruck() {
+        return truck;
     }
 
-    public List<Integer> getTransportRouteIds() {
-        return this.transportRouteIds;
+    public void setTruck(Truck truck) {
+        this.truck = truck;
     }
+
+    public Driver getDriver() {
+        return driver;
+    }
+
+    public void setDriver(Driver driver) {
+        this.driver = driver;
+    }
+
+    public List<TransportRoute> getTransportRoutes() {
+        return transportRoutes;
+    }
+
+    public void setTransportRoutes(List<TransportRoute> transportRoutes) {
+        this.transportRoutes = transportRoutes;
+    }
+
+    public List<TransportIssueLog> getTransportIssueLogs() {
+        return transportIssueLogs;
+    }
+
+    public void setTransportIssueLogs(List<TransportIssueLog> transportIssueLogs) {
+        this.transportIssueLogs = transportIssueLogs;
+    }
+
+    public int getTruckId() {
+        return truck != null ? truck.getId() : 0;
+    }
+
+    public int getDriverId() {
+        return driver != null ? driver.getId() : 0;
+    }
+
+    private List<Integer> getTransportRouteIds() {
+        return transportRoutes != null ? transportRoutes.stream().map(TransportRoute::getId).toList() : List.of();
+    }
+
+    private List<Integer> getTransportIssueLogIds() {
+        return transportIssueLogs != null ? transportIssueLogs.stream().map(TransportIssueLog::getId).toList() : List.of();
+    }
+
 
     @Override
     public String toString() {
-        return "Transport{" +
-                "plannedDateTime=" + plannedDateTime +
-                ", status=" + status +
-                ", truckId=" + truckId +
-                ", driverId=" + driverId +
-                ", transportRouteIds=" + transportRouteIds +
-                ", transportIssueLogIds=" + transportIssueLogIds +
-                ", actualStartDatetime=" + actualStartDatetime +
-                ", actualEndDatetime=" + actualEndDatetime +
-                "} " + super.toString();
+        return "Transport{" + "id=" + getId() + ", plannedDateTime=" + plannedDateTime + ", status=" + status + ", truckId=" + getTruckId() + ", driverId=" + getDriverId() + ", transportRouteIds=" + getTransportRouteIds() + ", transportIssueLogIds=" + getTransportIssueLogIds() + ", actualStartDatetime=" + actualStartDatetime + ", actualEndDatetime=" + actualEndDatetime + '}';
     }
 
     @Override
     public String toPrettyString() {
         return String.format("""
-                        ID: %d
-                        Planned DateTime: %s
-                        Status: %s
-                        Truck ID: %d
-                        Driver ID: %d
-                        Transport Route IDs: %s
-                        Transport Issue Log IDs: %s
-                        Actual Start DateTime: %s
-                        Actual End DateTime: %s
-                        """,
-                getId(), plannedDateTime, status, truckId, driverId,
-                transportRouteIds.toString(), transportIssueLogIds != null ? transportIssueLogIds.toString()
-                        : "[No issue logs]"
-                , actualStartDatetime, actualEndDatetime);
+                ID: %d
+                Planned DateTime: %s
+                Status: %s
+                Truck ID: %d
+                Driver ID: %d
+                Transport Route IDs: %s
+                Transport Issue Log IDs: %s
+                Actual Start DateTime: %s
+                Actual End DateTime: %s
+                """, getId(), plannedDateTime, status, getTruckId(), getDriverId(), getTransportRouteIds(), getTransportIssueLogIds(), actualStartDatetime, actualEndDatetime);
     }
 
     @Override
@@ -136,12 +165,12 @@ public class Transport extends BaseModel {
         }
         this.plannedDateTime = otherTransport.plannedDateTime;
         this.status = otherTransport.status;
-        this.truckId = otherTransport.truckId;
-        this.driverId = otherTransport.driverId;
-        this.transportRouteIds = otherTransport.transportRouteIds;
-        this.transportIssueLogIds = otherTransport.transportIssueLogIds;
         this.actualStartDatetime = otherTransport.actualStartDatetime;
         this.actualEndDatetime = otherTransport.actualEndDatetime;
+        this.truck = otherTransport.truck;
+        this.driver = otherTransport.driver;
+        this.transportRoutes = otherTransport.transportRoutes;
+        this.transportIssueLogs = otherTransport.transportIssueLogs;
         return true;
     }
 }

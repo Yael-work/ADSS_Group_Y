@@ -27,6 +27,7 @@
         <mapping class="Models.DBModels.transport.TransportArea"/>
         <mapping class="Models.DBModels.transport.Truck"/>
         <mapping class="Models.DBModels.transport.TransportIssueLog"/>
+        <mapping class="Models.DBModels.transport.Transport"/>
         <mapping class="Models.DBModels.suppliers.Supplier"/>
 
     </session-factory>
