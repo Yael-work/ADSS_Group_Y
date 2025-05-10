@@ -38,7 +38,6 @@ package Domain.transport;
  * */
 
 import Auxiliary.Enums.Domain.CreateNewTransportRouteResultEnum;
-import Auxiliary.Enums.Models.SiteTypeEnum;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Enums.Models.visitSiteEnum;
 import Auxiliary.Helper;
@@ -135,7 +134,7 @@ public class TransportManager {
             Helper.showError("Invalid supplier ID: " + supplierId);
             return Helper.UndefinedId;
         }
-        Site src = new Site(Helper.UndefinedId, SiteTypeEnum.SUPPLIER, supplierId, s.getSupplierAddress(),
+        Site src = new Site(Helper.UndefinedId, s, s.getSupplierAddress(),
                 SuppliersManager.getCurrentContactPhoneOfSupplier(supplierId),
                 SuppliersManager.getCurrentContactNameOfSupplier(supplierId), 0);
         int srcSiteId = siteController.addSite(src);
@@ -146,7 +145,7 @@ public class TransportManager {
             }
             return Helper.UndefinedId;
         }
-        Site dest = new Site(Helper.UndefinedId, SiteTypeEnum.BRANCH, branchId, b.getAddress(),
+        Site dest = new Site(Helper.UndefinedId, b, b.getAddress(),
                 BranchesManager.getCurrentContactPhoneOfBranch(branchId),
                 BranchesManager.getCurrentContactNameOfBranch(branchId), 0);
         int destSiteId = siteController.addSite(dest);
@@ -429,17 +428,17 @@ public class TransportManager {
                     Site srcSite = siteController.getSiteById(route.getSourceSiteId());
                     DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(route.getDeliveryFileId());
                     if (srcSite != null) {
-                        if (srcSite.getSiteType() == SiteTypeEnum.SUPPLIER) {
+                        if (srcSite.getPhysicalSite() instanceof Supplier supplier) {
                             List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
                             List<StockItem> items = new ArrayList<>();
                             List<ItemsAtSupplier> itemsAtSupplier =
-                                    SuppliersManager.mockGetSupplierItemsByStockItems(srcSite.getSiteObjectId(),
+                                    SuppliersManager.mockGetSupplierItemsByStockItems(supplier.getId(),
                                             StockManager.mockGetStockItemsByIds(
                                                     deliveryFileItems.stream()
                                                             .map(DeliveryFileItem::getStockItemId)
                                                             .collect(Collectors.toList())));
-                            if (!SuppliersManager.mockReserveItemsOfSupplier(srcSite.getSiteObjectId(), itemsAtSupplier)) {
-                                Helper.showError("Failed to reserve items for supplier: " + srcSite.getSiteObjectId());
+                            if (!SuppliersManager.mockReserveItemsOfSupplier(supplier.getId(), itemsAtSupplier)) {
+                                Helper.showError("Failed to reserve items for supplier: " + supplier.getId());
                             }
                         }
                     }

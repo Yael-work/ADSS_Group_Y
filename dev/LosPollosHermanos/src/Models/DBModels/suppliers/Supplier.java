@@ -1,11 +1,19 @@
 package Models.DBModels.suppliers;
 
 import Models.DBModels.transport.APhysicalSite;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 //@mohamed TODO complete the class
+@Entity
+@Table(name = "suppliers")
 public class Supplier extends APhysicalSite {
+    @Column(nullable = false)
     private String supplierName;
+    @Column(nullable = false)
     private String supplierAddress;
+    @Column(nullable = false)
     private String supplierPhone;
 
     public Supplier(int id, String supplierName, String supplierAddress, String supplierPhone) {
@@ -13,6 +21,10 @@ public class Supplier extends APhysicalSite {
         this.supplierName = supplierName;
         this.supplierAddress = supplierAddress;
         this.supplierPhone = supplierPhone;
+    }
+
+    public Supplier() {
+        super(0, Supplier.class.getName());
     }
 
     @Override

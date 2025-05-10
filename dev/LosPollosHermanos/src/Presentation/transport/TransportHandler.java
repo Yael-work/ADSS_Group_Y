@@ -525,7 +525,7 @@ public class TransportHandler {
                     Helper.println("Source not found. Please try again.");
                     return;
                 }
-                Helper.println("Source ID: " + soruceSite.getSiteObjectId() + ", Address: " + soruceSite.getSiteAddress());
+                Helper.println("Source ID: " + soruceSite.getPhysicalSite().getId() + ", Address: " + soruceSite.getSiteAddress());
             }
             Helper.println("Enter the ID of the source you want to visit: ");
             boolean flag = false;
@@ -537,7 +537,7 @@ public class TransportHandler {
                 }
                 for (Integer route : routes) {
                     Site source = TransportManager.getSiteById(Objects.requireNonNull(TransportManager.getTransportRouteById(route)).getSourceSiteId());
-                    if (source != null && source.getSiteObjectId() == sourceID) {
+                    if (source != null && source.getPhysicalSite().getId() == sourceID) {
                         selectedRoute = TransportManager.getTransportRouteById(route);
                         if (selectedRoute == null) {
                             Helper.println("Route not found. Please try again.");
@@ -686,7 +686,7 @@ public class TransportHandler {
                     Helper.println("Destination not found. Please try again.");
                     return;
                 }
-                Helper.println("Destination ID: " + destinationSite.getSiteObjectId() + ", Address: " + destinationSite.getSiteAddress());
+                Helper.println("Destination ID: " + destinationSite.getPhysicalSite().getId() + ", Address: " + destinationSite.getSiteAddress());
             }
             Helper.println("Enter the ID of the destination you want to visit: ");
             boolean flag = false;
@@ -698,7 +698,7 @@ public class TransportHandler {
                 }
                 for (Integer route : routes) {
                     Site destination = TransportManager.getSiteById(Objects.requireNonNull(TransportManager.getTransportRouteById(route)).getDestinationSiteId());
-                    if (destination != null && destination.getSiteObjectId() == destinationID) {
+                    if (destination != null && destination.getPhysicalSite().getId() == destinationID) {
                         selectedRoute = TransportManager.getTransportRouteById(route);
                         if (selectedRoute == null) {
                             Helper.println("Route not found. Please try again.");

@@ -1,49 +1,49 @@
 package Models.DBModels.transport;
 
 import Models.DBModels.BaseModel;
-import Auxiliary.Enums.Models.SiteTypeEnum;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "sites")
 public class Site extends BaseModel {
-    private SiteTypeEnum siteType;
-    private int siteObjectId;
+    @OneToOne
+    @JoinColumn(name = "site_object_id")
+    private APhysicalSite physicalSite;
+    @Column(nullable = false)
     private String siteAddress;
+    @Column(nullable = false)
     private String contactPhone;
+    @Column(nullable = false)
     private String contactName;
+    @Column()
     private double recordedWeightAtSite; //optional
 
-    public Site(int id, SiteTypeEnum siteType, int siteObjectId, String siteAddress,
+    public Site(int id, APhysicalSite physicalSite, String siteAddress,
                 String contactPhone, String contactName, double recordedWeightAtSite) {
         super(id, Site.class.getName());
-        if (siteObjectId <= 0) {
-            throw new IllegalArgumentException(String.format("%s::SiteObjectId cannot be less than or equal to 0",
-                    this.getClass().getName()));
+        if (physicalSite == null) {
+            throw new IllegalArgumentException(String.format("%s::physicalSite cannot be null", this.getClass().getName()));
         }
-        this.siteType = siteType;
-        this.siteObjectId = siteObjectId;
+        this.physicalSite = physicalSite;
         this.siteAddress = siteAddress;
         this.contactName = contactName;
         this.contactPhone = contactPhone;
         this.recordedWeightAtSite = recordedWeightAtSite;
     }
 
-    public SiteTypeEnum getSiteType() {
-        return siteType;
+    public Site() {
+        super(0, Site.class.getName());
     }
 
-    public void setSiteType(SiteTypeEnum siteType) {
-        this.siteType = siteType;
+    public APhysicalSite getPhysicalSite() {
+        return physicalSite;
     }
 
-    public int getSiteObjectId() {
-        return siteObjectId;
-    }
-
-    public void setSiteObjectId(int siteObjectId) {
-        if (siteObjectId <= 0) {
-            throw new IllegalArgumentException(String.format("%s::SiteObjectId cannot be less than or equal to 0",
-                    this.getClass().getName()));
+    public void setPhysicalSite(APhysicalSite physicalSite) {
+        if (physicalSite == null) {
+            throw new IllegalArgumentException(String.format("%s::physicalSite cannot be null", this.getClass().getName()));
         }
-        this.siteObjectId = siteObjectId;
+        this.physicalSite = physicalSite;
     }
 
     public String getSiteAddress() {
@@ -81,8 +81,7 @@ public class Site extends BaseModel {
     @Override
     public String toString() {
         return "Site{" +
-                "siteType=" + siteType +
-                ", siteObjectId=" + siteObjectId +
+                "physicalSite=" + physicalSite +
                 ", siteAddress='" + siteAddress + '\'' +
                 ", contactPhone='" + contactPhone + '\'' +
                 ", contactName='" + contactName + '\'' +
@@ -94,13 +93,12 @@ public class Site extends BaseModel {
     public String toPrettyString() {
         return """
                 Site ID: %d
-                Site Type: %s
-                Site Object ID: %d
+                Site object: %s
                 Site Address: %s
                 Contact Phone: %s
                 Contact Name: %s
                 Recorded Weight At Site: %.2f
-                """.formatted(getId(), siteType, siteObjectId, siteAddress, contactPhone,
+                """.formatted(getId(), physicalSite, siteAddress, contactPhone,
                 contactName, recordedWeightAtSite);
     }
 
