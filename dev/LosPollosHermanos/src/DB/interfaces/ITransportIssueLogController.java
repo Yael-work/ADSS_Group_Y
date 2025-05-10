@@ -2,13 +2,14 @@ package DB.interfaces;
 
 import Models.DBModels.transport.TransportIssueLog;
 
-public interface ITransportIssueLogController extends IController<TransportIssueLog>{
+public interface ITransportIssueLogController extends IController<TransportIssueLog> {
     /**
      * Adds a transport issue log to the database.
      *
      * @param transportIssueLog The transport issue log to add.
+     * @return The ID of the added transport issue log, or -1 if the operation failed.
      */
-    boolean addTransportIssueLog(TransportIssueLog transportIssueLog);
+    int addTransportIssueLog(TransportIssueLog transportIssueLog);
 
     /**
      * Updates a transport issue log in the database.

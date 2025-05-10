@@ -28,13 +28,13 @@ public class MockTransportIssueLogController implements ITransportIssueLogContro
     }
 
     @Override
-    public boolean addTransportIssueLog(TransportIssueLog transportIssueLog) {
+    public int addTransportIssueLog(TransportIssueLog transportIssueLog) {
         if (transportIssueLog == null) {
-            return false;
+            return -1;
         }
         transportIssueLog.setId(idCounter++);
         transportIssueLogs.add(transportIssueLog);
-        return true;
+        return transportIssueLog.getId();
     }
 
     @Override

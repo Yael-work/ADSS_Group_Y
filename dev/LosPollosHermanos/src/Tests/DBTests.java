@@ -13,6 +13,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,13 +24,18 @@ public class DBTests {
     @UseTestingDatabase
     @Test
     public void testCreateDriver() {
-        List<Driver> drivers = DBManager.getInstance().getDriverController().getDriverByFullName("John", "Doe");
-        if (drivers != null) {
-            for (Driver driver : drivers) {
-                DBManager.getInstance().getDriverController().deleteDriver(driver.getId());
+        _testCreateDriver(false);
+    }
+
+    private int _testCreateDriver(boolean quitIfExisting) {
+        Driver driver = DBManager.getInstance().getDriverController().getDriveByPersonalId("123456789");
+        if (driver != null) {
+            if (quitIfExisting) {
+                return driver.getId();
             }
+            DBManager.getInstance().getDriverController().deleteDriver(driver.getId());
         }
-        Driver driver = new Driver(0, "John", "Doe", "123456789", "555-1234",
+        driver = new Driver(0, "John", "Doe", "123456789", "555-1234",
                 LicenseTypeEnum.B);
         int addedId = DBManager.getInstance().getDriverController().addDriver(driver);
         Driver retrievedDriver = DBManager.getInstance().getDriverController().getDriverById(addedId);
@@ -39,6 +45,7 @@ public class DBTests {
         assertEquals("555-1234", retrievedDriver.getPhoneNumber());
         assertEquals("123456789", retrievedDriver.getPersonalId());
         assertEquals(LicenseTypeEnum.B, retrievedDriver.getLicenseType());
+        return addedId;
     }
 
     @UseTestingDatabase
@@ -90,21 +97,27 @@ public class DBTests {
         assertNull(retrievedDriver);
     }
 
+    /**
+     * Some tests rely on this test! make sure that at least 3 items are added to the delivery file!!!
+     */
     @UseTestingDatabase
     @Test
     public void testCreateDeliveryFile() {
         DeliveryFileItem item1 = new DeliveryFileItem(0, 101, 5.0, 0.0);
         DeliveryFileItem item2 = new DeliveryFileItem(0, 102, 7.0, 0.0);
+        DeliveryFileItem item3 = new DeliveryFileItem(0, 200, 13.0, 0.0);
         int addedId = DBManager.getInstance().getDeliveryFileController().addDeliveryFile(new DeliveryFile(0,
-                List.of(item1, item2)));
+                List.of(item1, item2, item3)));
         DeliveryFile deliveryFile = DBManager.getInstance().getDeliveryFileController().getDeliveryFileById(addedId);
         assertNotNull(deliveryFile);
         List<DeliveryFileItem> items = deliveryFile.getDeliveryFileItems();
         assertNotNull(items);
         assertNotNull(items.get(0));
         assertNotNull(items.get(1));
+        assertNotNull(items.get(2));
         assertEquals(5.0, items.get(0).getAmount());
         assertEquals(7.0, items.get(1).getAmount());
+        assertEquals(13.0, items.get(2).getAmount());
     }
 
     @UseTestingDatabase
@@ -465,18 +478,26 @@ public class DBTests {
     @UseTestingDatabase
     @Test
     public void testCreateTruck() {
-        Truck truck = DBManager.getInstance().getTruckController().getTruckByPlate("ABC123");
+        _testCreateTruck(false);
+    }
+
+    private int _testCreateTruck(boolean quitIfExists) {
+        Truck truck = DBManager.getInstance().getTruckController().getTruckByPlate("Truck1");
         if (truck != null) {
+            if (quitIfExists) {
+                return truck.getId();
+            }
             DBManager.getInstance().getTruckController().deleteTruck(truck.getId());
         }
-        truck = new Truck(0, "ABC123", 1000.0, 2000.0, LicenseTypeEnum.C, "Model X");
+        truck = new Truck(0, "Truck1", 1000.0, 2000.0, LicenseTypeEnum.C, "Model X");
         int addedId = DBManager.getInstance().getTruckController().addTruck(truck);
         Truck retrievedTruck = DBManager.getInstance().getTruckController().getTruckById(addedId);
         assertNotNull(retrievedTruck);
-        assertEquals("ABC123", retrievedTruck.getPlate());
+        assertEquals("Truck1", retrievedTruck.getPlate());
         assertEquals(1000.0, retrievedTruck.getNetWeight());
         assertEquals(2000.0, retrievedTruck.getMaxWeight());
         assertEquals(LicenseTypeEnum.C, retrievedTruck.getRequiredLicenseType());
+        return addedId;
     }
 
     @UseTestingDatabase
@@ -523,5 +544,92 @@ public class DBTests {
         assertTrue(result);
         retrievedTruck = DBManager.getInstance().getTruckController().getTruckById(addedId);
         assertNull(retrievedTruck);
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testCreateTransportIssueLog() {
+        _testCreateTransportIssueLog();
+    }
+
+    private int _testCreateTransportIssueLog() {
+        // first we must create a route
+        int transportRouteId = _testCreateTransportRoute();
+        int createdTruckId = _testCreateTruck(true);
+        Truck truck = DBManager.getInstance().getTruckController().getTruckById(createdTruckId);
+        assertNotNull(truck, "Truck not found");
+        TransportRoute transportRoute = DBManager.getInstance().getTransportRouteController().getTransportRouteById(transportRouteId);
+        assertNotNull(transportRoute, "Transport route not found");
+        List<DeliveryFileItem> items = transportRoute.getDeliveryFile().getDeliveryFileItems();
+
+        //simulate unloading some items:
+        assertTrue(items.size() >= 3, "Delivery file items size mismatch!!");
+
+        // we must create new file items!
+        List<DeliveryFileItem> unloadedItems = Stream.of(items.get(0), items.get(1)).map(DeliveryFileItem::new).toList();
+        DeliveryFile unloadedDeliveryFile = new DeliveryFile(0, unloadedItems);
+        int addedDeliveryFile = DBManager.getInstance().getDeliveryFileController().addDeliveryFile(unloadedDeliveryFile);
+        assertTrue(addedDeliveryFile > 0, "Failed to add delivery file");
+        unloadedDeliveryFile = DBManager.getInstance().getDeliveryFileController().getDeliveryFileById(addedDeliveryFile);
+        assertNotNull(unloadedDeliveryFile, "Unloaded delivery file not found");
+
+        TransportIssueLog issueLog = new TransportIssueLog(0, truck, null, transportRoute, unloadedDeliveryFile);
+        int addedId = DBManager.getInstance().getTransportIssueLogController().addTransportIssueLog(issueLog);
+        assertTrue(addedId > 0, "Failed to add transport issue log");
+        TransportIssueLog retrievedIssueLog = DBManager.getInstance().getTransportIssueLogController().getTransportIssueLogById(addedId);
+        assertNotNull(retrievedIssueLog, "Transport issue log not found");
+        assertEquals(truck.getId(), retrievedIssueLog.getCurrentTruck().getId(), "Current truck ID mismatch");
+        assertEquals(transportRoute.getId(), retrievedIssueLog.getRelatedTransportRoute().getId(),
+                "Related transport route ID mismatch");
+        assertEquals(unloadedDeliveryFile.getId(), retrievedIssueLog.getDeliveryFileOfUnloadedItems().getId(),
+                "Delivery file ID mismatch");
+        assertEquals(2, retrievedIssueLog.getDeliveryFileOfUnloadedItems().getDeliveryFileItems().size(),
+                "Delivery file items size mismatch");
+        for (DeliveryFileItem item : retrievedIssueLog.getDeliveryFileOfUnloadedItems().getDeliveryFileItems()) {
+            assertTrue(unloadedItems.stream().anyMatch(i -> i.getId() == item.getId()
+                            && i.getAmount() == item.getAmount() && i.getStockItemId() == item.getStockItemId()),
+                    "Unloaded item ID mismatch");
+        }
+        return addedId;
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testDeleteTransportIssueLog() {
+        int transportIssueLogId = _testCreateTransportIssueLog();
+
+        TransportIssueLog issueLog = DBManager.getInstance().getTransportIssueLogController().getTransportIssueLogById(transportIssueLogId);
+        assertNotNull(issueLog, "Transport issue log not found");
+        boolean result = DBManager.getInstance().getTransportIssueLogController().deleteTransportIssueLog(transportIssueLogId);
+        assertTrue(result, "Failed to delete transport issue log");
+        issueLog = DBManager.getInstance().getTransportIssueLogController().getTransportIssueLogById(transportIssueLogId);
+        assertNull(issueLog, "Transport issue log still exists after deletion");
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testUpdateTransportIssueLog() {
+        Truck newTruck = DBManager.getInstance().getTruckController().getTruckByPlate("tempNewTruck");
+        if (newTruck != null) {
+            DBManager.getInstance().getTruckController().deleteTruck(newTruck.getId());
+        }
+
+        int transportIssueLogId = _testCreateTransportIssueLog();
+
+        TransportIssueLog issueLog = DBManager.getInstance().getTransportIssueLogController().getTransportIssueLogById(transportIssueLogId);
+        assertNotNull(issueLog, "Transport issue log not found");
+
+        newTruck = new Truck(0, "tempNewTruck", 1200.0, 2200.0, LicenseTypeEnum.C, "Model Y");
+        int newTruckId = DBManager.getInstance().getTruckController().addTruck(newTruck);
+        assertTrue(newTruckId > 0, "Failed to add new truck");
+        newTruck = DBManager.getInstance().getTruckController().getTruckById(newTruckId);
+        assertNotNull(newTruck, "New truck not found");
+
+        issueLog.setNewTruck(newTruck);
+        boolean result = DBManager.getInstance().getTransportIssueLogController().updateTransportIssueLog(issueLog, transportIssueLogId);
+        assertTrue(result, "Failed to update transport issue log");
+        TransportIssueLog updatedIssueLog = DBManager.getInstance().getTransportIssueLogController().getTransportIssueLogById(transportIssueLogId);
+        assertNotNull(updatedIssueLog, "Updated transport issue log not found");
+        assertEquals(newTruck.getId(), updatedIssueLog.getNewTruck().getId(), "New truck ID mismatch");
     }
 }

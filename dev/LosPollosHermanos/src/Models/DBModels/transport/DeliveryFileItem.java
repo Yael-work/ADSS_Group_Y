@@ -27,6 +27,12 @@ public class DeliveryFileItem extends BaseModel {
         this.amountPickedUp = amountPickedUp;
     }
 
+    public DeliveryFileItem(DeliveryFileItem fileItem) {
+        super(0, DeliveryFileItem.class.getName());
+        this.copyFromOther(fileItem);
+    }
+
+
     public void setDeliveryFile(DeliveryFile deliveryFile) {
         this.deliveryFile = deliveryFile;
     }

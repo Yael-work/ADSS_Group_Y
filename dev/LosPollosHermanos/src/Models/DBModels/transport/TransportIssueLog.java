@@ -1,70 +1,90 @@
 package Models.DBModels.transport;
 
 import Models.DBModels.BaseModel;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "transport_issue_logs")
 public class TransportIssueLog extends BaseModel {
-    private int currentTruckId;
-    private int newTruckId;
-    private int transportRouteId;
-    private int unloadedItemsDeliveryFileId;
+    @ManyToOne
+    @JoinColumn(name = "current_truck_id", referencedColumnName = "id", nullable = false)
+    private Truck currentTruck;
 
-    public TransportIssueLog(int id, int currentTruckId, int newTruckId, int transportRouteId, int unloadedItemsDeliveryFileId) {
+    @ManyToOne
+    @JoinColumn(name = "new_truck_id", referencedColumnName = "id")
+    private Truck newTruck;
+
+
+    @ManyToOne
+    @JoinColumn(name = "related_transport_route_id", referencedColumnName = "id", nullable = false)
+    private TransportRoute relatedTransportRoute;
+
+    @OneToOne
+    @JoinColumn(name = "delivery_file_of_unloaded_items_id", referencedColumnName = "id")
+    private DeliveryFile deliveryFileOfUnloadedItems;
+
+    public TransportIssueLog(int id, Truck currentTruck, Truck newTruck, TransportRoute relatedTransportRoute,
+                             DeliveryFile deliveryFileOfUnloadedItems) {
         super(id, TransportIssueLog.class.getName());
-        this.currentTruckId = currentTruckId;
-        this.newTruckId = newTruckId;
-        this.transportRouteId = transportRouteId;
-        this.unloadedItemsDeliveryFileId = unloadedItemsDeliveryFileId;
+        this.currentTruck = currentTruck;
+        this.newTruck = newTruck;
+        this.relatedTransportRoute = relatedTransportRoute;
+        this.deliveryFileOfUnloadedItems = deliveryFileOfUnloadedItems;
     }
 
-    public int getCurrentTruckId() {
-        return currentTruckId;
+    public TransportIssueLog() {
+        super(0, TransportIssueLog.class.getName());
     }
 
-    public void setCurrentTruckId(int currentTruckId) {
-        this.currentTruckId = currentTruckId;
+    public Truck getCurrentTruck() {
+        return currentTruck;
     }
 
-    public int getNewTruckId() {
-        return newTruckId;
+    public void setCurrentTruck(Truck currentTruck) {
+        this.currentTruck = currentTruck;
     }
 
-    public void setNewTruckId(int newTruckId) {
-        this.newTruckId = newTruckId;
+    public Truck getNewTruck() {
+        return newTruck;
     }
 
-    public int getTransportRouteId() {
-        return transportRouteId;
+    public void setNewTruck(Truck newTruck) {
+        this.newTruck = newTruck;
     }
 
-    public void setTransportRouteId(int transportRouteId) {
-        this.transportRouteId = transportRouteId;
+    public TransportRoute getRelatedTransportRoute() {
+        return relatedTransportRoute;
     }
 
-    public int getUnloadedItemsDeliveryFileId() {
-        return unloadedItemsDeliveryFileId;
+    public void setRelatedTransportRoute(TransportRoute relatedTransportRoute) {
+        this.relatedTransportRoute = relatedTransportRoute;
     }
 
-    public void setUnloadedItemsDeliveryFileId(int unloadedItemsDeliveryFileId) {
-        this.unloadedItemsDeliveryFileId = unloadedItemsDeliveryFileId;
+    public DeliveryFile getDeliveryFileOfUnloadedItems() {
+        return deliveryFileOfUnloadedItems;
+    }
+
+    public void setDeliveryFileOfUnloadedItems(DeliveryFile deliveryFileOfUnloadedItems) {
+        this.deliveryFileOfUnloadedItems = deliveryFileOfUnloadedItems;
     }
 
     @Override
     public String toString() {
         return "TransportIssueLog{" +
-                "currentTruckId=" + currentTruckId +
-                ", newTruckId=" + newTruckId +
-                ", transportRouteId=" + transportRouteId +
-                ", unloadedItemsDeliveryFileId=" + unloadedItemsDeliveryFileId +
-                "} " + super.toString();
+                "currentTruck=" + currentTruck +
+                ", newTruck=" + newTruck +
+                ", relatedTransportRoute=" + relatedTransportRoute +
+                ", deliveryFileOfUnloadedItems=" + deliveryFileOfUnloadedItems +
+                '}';
     }
 
     @Override
     public boolean copyFromOther(BaseModel other) {
         if (other instanceof TransportIssueLog otherTransportIssueLog) {
-            this.currentTruckId = otherTransportIssueLog.currentTruckId;
-            this.newTruckId = otherTransportIssueLog.newTruckId;
-            this.transportRouteId = otherTransportIssueLog.transportRouteId;
-            this.unloadedItemsDeliveryFileId = otherTransportIssueLog.unloadedItemsDeliveryFileId;
+            this.setCurrentTruck(otherTransportIssueLog.getCurrentTruck());
+            this.setNewTruck(otherTransportIssueLog.getNewTruck());
+            this.setRelatedTransportRoute(otherTransportIssueLog.getRelatedTransportRoute());
+            this.setDeliveryFileOfUnloadedItems(otherTransportIssueLog.getDeliveryFileOfUnloadedItems());
             return true;
         }
         return false;

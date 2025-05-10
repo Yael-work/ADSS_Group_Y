@@ -29,8 +29,8 @@ public class DBManager {
         this.supplierController = SqliteSupplierController.getInstance();
         this.branchController = SqliteBranchController.getInstance();
         this.transportRouteController = SqliteTransportRouteController.getInstance();
+        this.transportIssueLogController = SqliteTransportIssueLogController.getInstance();
         this.transportController = MockTransportController.getInstance();
-        this.transportIssueLogController = MockTransportIssueLogController.getInstance();
     }
 
     /**
