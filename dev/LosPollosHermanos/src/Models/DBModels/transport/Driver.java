@@ -1,5 +1,6 @@
 package Models.DBModels.transport;
 
+import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
 import jakarta.persistence.*;
@@ -16,9 +17,9 @@ public class Driver extends BaseModel {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
     @Column(nullable = false)
-    private String licenseType;
+    private LicenseTypeEnum licenseType;
 
-    public Driver(int id, String firstName, String lastName, String personalId, String phoneNumber, String licenseType) {
+    public Driver(int id, String firstName, String lastName, String personalId, String phoneNumber, LicenseTypeEnum licenseType) {
         super(id, Driver.class.getName());
         this.firstName = firstName;
         this.lastName = lastName;
@@ -63,11 +64,11 @@ public class Driver extends BaseModel {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getLicenseType() {
+    public LicenseTypeEnum getLicenseType() {
         return licenseType;
     }
 
-    public void setLicenseType(String licenseType) {
+    public void setLicenseType(LicenseTypeEnum licenseType) {
         this.licenseType = licenseType;
     }
 

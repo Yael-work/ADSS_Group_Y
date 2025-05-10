@@ -38,6 +38,7 @@ package Domain.transport;
  * */
 
 import Auxiliary.Enums.Domain.CreateNewTransportRouteResultEnum;
+import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Enums.Models.visitSiteEnum;
 import Auxiliary.Helper;
@@ -334,7 +335,8 @@ public class TransportManager {
         // Filter out busy drivers
         return availableDrivers.stream()
                 .filter(driver -> !busyDriverIds.contains(driver.getId())
-                        && Helper.isLicenseTypeValidPerTruck(driver.getLicenseType(), truckLicenseType))
+                        && Helper.isLicenseTypeValidPerTruck(driver.getLicenseType(),
+                        LicenseTypeEnum.stringToEnum(truckLicenseType)))
                 .collect(Collectors.toList());
     }
 

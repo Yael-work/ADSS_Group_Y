@@ -1,5 +1,6 @@
 package Auxiliary;
 
+import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Models.DBModels.BaseModel;
 
 import java.time.LocalDateTime;
@@ -249,15 +250,13 @@ public class Helper {
      * @param licenseType - The license type to be checked.
      * @return - true if the license type is valid, false otherwise.
      */
-    public static boolean isLicenseTypeValid(String licenseType) {
+    public static boolean isLicenseTypeValid(LicenseTypeEnum licenseType) {
         return licenseType != null
-                && !licenseType.trim().isEmpty()
                 && (
-                licenseType.equalsIgnoreCase("B")
-                        || licenseType.equalsIgnoreCase("C")
-                        || licenseType.equalsIgnoreCase("C1")
-                        || licenseType.equalsIgnoreCase("C+E")
-        );
+                licenseType.equals(LicenseTypeEnum.B)
+                        || licenseType.equals(LicenseTypeEnum.C)
+                        || licenseType.equals(LicenseTypeEnum.C1)
+                        || licenseType.equals(LicenseTypeEnum.CPlusE));
     }
 
 
@@ -269,21 +268,21 @@ public class Helper {
      * @param requiredLicenseType - The required license type for the truck.
      * @return - true if the license type is valid for the truck, false otherwise.
      */
-    public static boolean isLicenseTypeValidPerTruck(String driverLicenseType, String requiredLicenseType) {
+    public static boolean isLicenseTypeValidPerTruck(LicenseTypeEnum driverLicenseType, LicenseTypeEnum requiredLicenseType) {
         if (!isLicenseTypeValid(driverLicenseType) || !isLicenseTypeValid(requiredLicenseType)) {
             return false;
         }
         switch (driverLicenseType) {
-            case "C+E" -> {
-                return requiredLicenseType.equals("C+E") || requiredLicenseType.equals("C")
-                        || requiredLicenseType.equals("C1") || requiredLicenseType.equals("B");
+            case CPlusE -> {
+                return requiredLicenseType.equals(LicenseTypeEnum.CPlusE) || requiredLicenseType.equals(LicenseTypeEnum.C)
+                        || requiredLicenseType.equals(LicenseTypeEnum.C1) || requiredLicenseType.equals(LicenseTypeEnum.B);
             }
-            case "C" -> {
-                return requiredLicenseType.equals("C") || requiredLicenseType.equals("C1")
-                        || requiredLicenseType.equals("B");
+            case C -> {
+                return requiredLicenseType.equals(LicenseTypeEnum.C) || requiredLicenseType.equals(LicenseTypeEnum.C1)
+                        || requiredLicenseType.equals(LicenseTypeEnum.B);
             }
-            case "C1" -> {
-                return requiredLicenseType.equals("C1") || requiredLicenseType.equals("B");
+            case LicenseTypeEnum.C1 -> {
+                return requiredLicenseType.equals(LicenseTypeEnum.C1) || requiredLicenseType.equals(LicenseTypeEnum.B);
             }
             default -> {
                 return false;

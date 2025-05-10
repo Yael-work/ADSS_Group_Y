@@ -75,12 +75,11 @@ public class SqliteDriverController implements IDriverController {
     }
 
     @Override
-    public Driver getDriverByFullName(String firstName, String lastName) {
+    public List<Driver> getDriverByFullName(String firstName, String lastName) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("FROM Driver WHERE firstName = :fn AND lastName = :ln", Driver.class)
                     .setParameter("fn", firstName)
-                    .setParameter("ln", lastName)
-                    .uniqueResult();
+                    .setParameter("ln", lastName).list();
         } catch (Exception e) {
             Helper.showError("Failed to get Driver by full name", e);
             return null;

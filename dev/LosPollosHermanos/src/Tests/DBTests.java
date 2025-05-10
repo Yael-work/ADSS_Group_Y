@@ -1,12 +1,15 @@
 package Tests;
 
+import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import DB.DBManager;
 import Models.DBModels.suppliers.Supplier;
 import Models.DBModels.transport.*;
 import Tests.losPollosAnnotations.UseTestingDatabase;
 import Tests.losPollosAnnotations.UseTestingDatabaseExtension;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
@@ -14,7 +17,78 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(UseTestingDatabaseExtension.class)
+@TestMethodOrder(MethodOrderer.Random.class)
 public class DBTests {
+
+    @UseTestingDatabase
+    @Test
+    public void testCreateDriver() {
+        List<Driver> drivers = DBManager.getInstance().getDriverController().getDriverByFullName("John", "Doe");
+        if (drivers != null) {
+            for (Driver driver : drivers) {
+                DBManager.getInstance().getDriverController().deleteDriver(driver.getId());
+            }
+        }
+        Driver driver = new Driver(0, "John", "Doe", "123456789", "555-1234",
+                LicenseTypeEnum.B);
+        int addedId = DBManager.getInstance().getDriverController().addDriver(driver);
+        Driver retrievedDriver = DBManager.getInstance().getDriverController().getDriverById(addedId);
+        assertNotNull(retrievedDriver);
+        assertEquals("John", retrievedDriver.getFirstName());
+        assertEquals("Doe", retrievedDriver.getLastName());
+        assertEquals("555-1234", retrievedDriver.getPhoneNumber());
+        assertEquals("123456789", retrievedDriver.getPersonalId());
+        assertEquals(LicenseTypeEnum.B, retrievedDriver.getLicenseType());
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testUpdateDriver() {
+        Driver driver = DBManager.getInstance().getDriverController().getDriveByPersonalId("987654321");
+        if (driver != null) {
+            DBManager.getInstance().getDriverController().deleteDriver(driver.getId());
+        }
+        driver = DBManager.getInstance().getDriverController().getDriveByPersonalId("123456789");
+        if (driver != null) {
+            DBManager.getInstance().getDriverController().deleteDriver(driver.getId());
+        }
+        driver = new Driver(0, "John", "Doe", "123456789", "555-1234",
+                LicenseTypeEnum.B);
+        int addedId = DBManager.getInstance().getDriverController().addDriver(driver);
+        Driver retrievedDriver = DBManager.getInstance().getDriverController().getDriverById(addedId);
+        assertNotNull(retrievedDriver);
+
+        retrievedDriver.setFirstName("Updated");
+        retrievedDriver.setLastName("Driver");
+        retrievedDriver.setPhoneNumber("555-5678");
+        retrievedDriver.setPersonalId("987654321");
+        boolean result = DBManager.getInstance().getDriverController().updateDriver(retrievedDriver, addedId);
+        assertTrue(result);
+        assertEquals("Updated", retrievedDriver.getFirstName());
+        assertEquals("Driver", retrievedDriver.getLastName());
+        assertEquals("987654321", retrievedDriver.getPersonalId());
+        assertEquals("555-5678", retrievedDriver.getPhoneNumber());
+
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testDeleteDriver() {
+        Driver driver = DBManager.getInstance().getDriverController().getDriveByPersonalId("123456789");
+        if (driver != null) {
+            DBManager.getInstance().getDriverController().deleteDriver(driver.getId());
+        }
+        driver = new Driver(0, "John", "Doe", "123456789", "555-1234",
+                LicenseTypeEnum.B);
+        int addedId = DBManager.getInstance().getDriverController().addDriver(driver);
+        Driver retrievedDriver = DBManager.getInstance().getDriverController().getDriverById(addedId);
+        assertNotNull(retrievedDriver);
+
+        boolean result = DBManager.getInstance().getDriverController().deleteDriver(addedId);
+        assertTrue(result);
+        retrievedDriver = DBManager.getInstance().getDriverController().getDriverById(addedId);
+        assertNull(retrievedDriver);
+    }
 
     @UseTestingDatabase
     @Test

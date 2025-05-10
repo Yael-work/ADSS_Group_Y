@@ -2,6 +2,8 @@ package DB.interfaces;
 
 import Models.DBModels.transport.Driver;
 
+import java.util.List;
+
 public interface IDriverController extends IController<Driver> {
     /**
      * Adds a new driver to the database.
@@ -42,7 +44,7 @@ public interface IDriverController extends IController<Driver> {
      * @param lastName  The last name of the driver to be retrieved.
      * @return The driver with the specified full name, or null if not found.
      */
-    Driver getDriverByFullName(String firstName, String lastName);
+    List<Driver> getDriverByFullName(String firstName, String lastName);
 
     /**
      * Retrieves a driver from the database by its personal ID.

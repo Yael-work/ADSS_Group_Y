@@ -1,7 +1,11 @@
 package Models.DBModels.transport;
 
 import Models.DBModels.BaseModel;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "trucks")
 public class Truck extends BaseModel {
     private String plate;
     private double netWeight;

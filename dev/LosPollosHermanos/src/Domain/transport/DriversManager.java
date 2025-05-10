@@ -1,5 +1,6 @@
 package Domain.transport;
 
+import Auxiliary.Enums.Models.LicenseTypeEnum;
 import DB.DBManager;
 import DB.interfaces.IDriverController;
 import Models.DBModels.transport.Driver;
@@ -35,12 +36,13 @@ public class DriversManager {
             Helper.showError("Driver with this phone number already exists");
             return false;
         }
-        d = driverController.getDriverByFullName(firstName, lastName);
-        if (d != null) {
-            Helper.showError("Driver with this name already exists");
-            return false;
-        }
-        d = new Driver(0, firstName, lastName, personalId, phoneNumber, licenseType);
+        /*It is possible for multiple people to have the same name - it is not unique - commenting our for now...*/
+//        d = driverController.getDriverByFullName(firstName, lastName);
+//        if (d != null) {
+//            Helper.showError("Driver with this name already exists");
+//            return false;
+//        }
+        d = new Driver(0, firstName, lastName, personalId, phoneNumber, LicenseTypeEnum.stringToEnum(licenseType));
         return driverController.addDriver(d) != Helper.UndefinedId;
     }
 
@@ -72,7 +74,7 @@ public class DriversManager {
                 d.setPhoneNumber(some);
                 break;
             case 5:
-                d.setLicenseType(some);
+                d.setLicenseType(LicenseTypeEnum.stringToEnum(some));
                 break;
             default:
                 Helper.showError("Invalid choice");
