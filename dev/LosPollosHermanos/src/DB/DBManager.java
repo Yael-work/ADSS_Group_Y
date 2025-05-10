@@ -30,7 +30,7 @@ public class DBManager {
         this.transportController = MockTransportController.getInstance();
         this.branchController = SqliteBranchController.getInstance();
         this.transportIssueLogController = MockTransportIssueLogController.getInstance();
-        this.transportRouteController = MockTransportRouteController.getInstance();
+        this.transportRouteController = SqliteTransportRouteController.getInstance();
     }
 
     /**

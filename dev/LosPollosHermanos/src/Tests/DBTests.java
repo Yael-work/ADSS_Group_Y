@@ -1,6 +1,7 @@
 package Tests;
 
 import DB.DBManager;
+import Models.DBModels.suppliers.Supplier;
 import Models.DBModels.transport.Branch;
 import Models.DBModels.transport.DeliveryFile;
 import Models.DBModels.transport.DeliveryFileItem;
@@ -114,16 +115,60 @@ public class DBTests {
 
     @UseTestingDatabase
     @Test
-    public void testEditBranch() {
-        Branch branch = DBManager.getInstance().getBranchController().getBranchByName("Branch 1");
+    public void testUpdateBranch() {
+        Branch branch = DBManager.getInstance().getBranchController().getBranchByName("Branch 2");
         if (branch != null) {
             DBManager.getInstance().getBranchController().deleteBranch(branch.getId());
         }
-        branch = new Branch(0, "Branch 1", "123 Main St", "555-1234");
+        branch = new Branch(0, "Branch 2", "123 Main Sta", "555-12341");
         int addedId = DBManager.getInstance().getBranchController().addBranch(branch);
         Branch retrievedBranch = DBManager.getInstance().getBranchController().getBranchById(addedId);
         assertNotNull(retrievedBranch);
 
+        retrievedBranch.setSiteName("Updated Branch");
+        retrievedBranch.setSitePhone("555-5678111000");
+        boolean result = DBManager.getInstance().getBranchController().updateBranch(retrievedBranch, addedId);
+        assertTrue(result);
+        assertEquals("Updated Branch", retrievedBranch.getSiteName());
+        assertEquals("123 Main Sta", retrievedBranch.getSiteAddress());
+        assertEquals("555-5678111000", retrievedBranch.getSitePhone());
+    }
 
+    @UseTestingDatabase
+    @Test
+    public void testCreateSupplier() {
+        Supplier supplier = DBManager.getInstance().getSupplierController().getSupplierByName("Supplier 1");
+        if (supplier != null) {
+            DBManager.getInstance().getSupplierController().deleteSupplier(supplier.getId());
+        }
+        supplier = new Supplier(0, "Supplier 1", "123 Main St test1234", "555-1234666");
+        int addedId = DBManager.getInstance().getSupplierController().addSupplier(supplier);
+        Supplier retrievedSupplier = DBManager.getInstance().getSupplierController().getSupplierById(addedId);
+        assertNotNull(retrievedSupplier);
+        assertEquals("Supplier 1", retrievedSupplier.getSiteName());
+        assertEquals("123 Main St test1234", retrievedSupplier.getSiteAddress());
+        assertEquals("555-1234666", retrievedSupplier.getSitePhone());
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testUpdateSupplier() {
+        Supplier supplier = DBManager.getInstance().getSupplierController().getSupplierByName("Supplier 2");
+        if (supplier != null) {
+            DBManager.getInstance().getSupplierController().deleteSupplier(supplier.getId());
+        }
+        supplier = new Supplier(0, "Supplier 2", "123 Main St test1234", "555-1234666");
+        int addedId = DBManager.getInstance().getSupplierController().addSupplier(supplier);
+        Supplier retrievedSupplier = DBManager.getInstance().getSupplierController().getSupplierById(addedId);
+        assertNotNull(retrievedSupplier);
+
+        retrievedSupplier.setSiteName("Updated Supplier");
+        retrievedSupplier.setSiteAddress("456 Elm St");
+        retrievedSupplier.setSitePhone("555-5678");
+        boolean result = DBManager.getInstance().getSupplierController().updateSupplier(retrievedSupplier, addedId);
+        assertTrue(result);
+        assertEquals("Updated Supplier", retrievedSupplier.getSiteName());
+        assertEquals("456 Elm St", retrievedSupplier.getSiteAddress());
+        assertEquals("555-5678", retrievedSupplier.getSitePhone());
     }
 }

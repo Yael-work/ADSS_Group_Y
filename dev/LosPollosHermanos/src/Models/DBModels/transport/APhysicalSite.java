@@ -41,7 +41,7 @@ public abstract class APhysicalSite extends BaseModel {
     }
 
     public void setSiteName(String siteName) {
-        siteName = siteName;
+        this.siteName = siteName;
     }
 
     public String getSiteAddress() {

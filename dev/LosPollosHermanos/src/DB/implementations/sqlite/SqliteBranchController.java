@@ -76,7 +76,7 @@ public class SqliteBranchController implements IBranchController {
     @Override
     public Branch getBranchByName(String name) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Branch WHERE branchName = :name", Branch.class)
+            return session.createQuery("FROM Branch WHERE siteName = :name", Branch.class)
                     .setParameter("name", name)
                     .uniqueResult();
         } catch (Exception e) {
@@ -88,7 +88,7 @@ public class SqliteBranchController implements IBranchController {
     @Override
     public Branch getBranchByAddress(String address) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Branch WHERE address = :address", Branch.class)
+            return session.createQuery("FROM Branch WHERE siteAddress = :address", Branch.class)
                     .setParameter("address", address)
                     .uniqueResult();
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class SqliteBranchController implements IBranchController {
     @Override
     public Branch getBranchByPhoneNumber(String phoneNumber) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Branch WHERE phone = :phone", Branch.class)
+            return session.createQuery("FROM Branch WHERE sitePhone = :phone", Branch.class)
                     .setParameter("phone", phoneNumber)
                     .uniqueResult();
         } catch (Exception e) {

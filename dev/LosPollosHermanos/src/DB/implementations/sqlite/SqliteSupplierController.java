@@ -30,7 +30,7 @@ public class SqliteSupplierController implements ISupplierController {
             session.getTransaction().commit();
             return supplier.getId();
         } catch (Exception e) {
-            Helper.showError("Failed to add Driver", e);
+            Helper.showError("Failed to add %s".formatted(Supplier.class), e);
             return Helper.UndefinedId;
         }
     }
@@ -45,7 +45,7 @@ public class SqliteSupplierController implements ISupplierController {
             session.getTransaction().commit();
             return true;
         } catch (Exception e) {
-            Helper.showError("Failed to update Driver", e);
+            Helper.showError("Failed to add %s".formatted(Supplier.class), e);
             return false;
         }
     }
@@ -60,7 +60,7 @@ public class SqliteSupplierController implements ISupplierController {
             session.getTransaction().commit();
             return true;
         } catch (Exception e) {
-            Helper.showError("Failed to delete Driver", e);
+            Helper.showError("Failed to add %s".formatted(Supplier.class), e);
             return false;
         }
     }
@@ -78,7 +78,7 @@ public class SqliteSupplierController implements ISupplierController {
     @Override
     public Supplier getSupplierByName(String name) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Supplier WHERE supplierName = :name", Supplier.class)
+            return session.createQuery("FROM Supplier WHERE siteName = :name", Supplier.class)
                     .setParameter("name", name)
                     .uniqueResult();
         } catch (Exception e) {
