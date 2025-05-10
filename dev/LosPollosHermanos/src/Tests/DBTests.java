@@ -3,10 +3,7 @@ package Tests;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import DB.DBManager;
 import Models.DBModels.suppliers.Supplier;
-import Models.DBModels.transport.Branch;
-import Models.DBModels.transport.DeliveryFile;
-import Models.DBModels.transport.DeliveryFileItem;
-import Models.DBModels.transport.TransportRoute;
+import Models.DBModels.transport.*;
 import Tests.losPollosAnnotations.UseTestingDatabase;
 import Tests.losPollosAnnotations.UseTestingDatabaseExtension;
 import org.junit.jupiter.api.Test;
@@ -103,11 +100,11 @@ public class DBTests {
         _testCreateBranch(false);
     }
 
-    private void _testCreateBranch(boolean quitIfExisting) {
+    private int _testCreateBranch(boolean quitIfExisting) {
         Branch branch = DBManager.getInstance().getBranchController().getBranchByName("Branch 1");
         if (branch != null) {
             if (quitIfExisting) {
-                return;
+                return branch.getId();
             }
             DBManager.getInstance().getBranchController().deleteBranch(branch.getId());
         }
@@ -119,6 +116,7 @@ public class DBTests {
         assertEquals("Branch 1", retrievedBranch.getSiteName());
         assertEquals("123 Main St", retrievedBranch.getSiteAddress());
         assertEquals("555-1234", retrievedBranch.getSitePhone());
+        return addedId;
     }
 
 
@@ -167,11 +165,11 @@ public class DBTests {
         _testCreateSupplier(false);
     }
 
-    private void _testCreateSupplier(boolean quitIfExisting) {
+    private int _testCreateSupplier(boolean quitIfExisting) {
         Supplier supplier = DBManager.getInstance().getSupplierController().getSupplierByName("Supplier 1");
         if (supplier != null) {
             if (quitIfExisting) {
-                return;
+                return supplier.getId();
             }
             DBManager.getInstance().getSupplierController().deleteSupplier(supplier.getId());
         }
@@ -182,6 +180,7 @@ public class DBTests {
         assertEquals("Supplier 1", retrievedSupplier.getSiteName());
         assertEquals("123 Main St test1234", retrievedSupplier.getSiteAddress());
         assertEquals("555-1234666", retrievedSupplier.getSitePhone());
+        return addedId;
     }
 
 
@@ -315,5 +314,77 @@ public class DBTests {
         assertTrue(result, "Failed to delete transport route");
         transportRoute = DBManager.getInstance().getTransportRouteController().getTransportRouteById(transportRouteId);
         assertNull(transportRoute, "Transport route still exists after deletion");
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testCreateTransportArea() {
+        _testCreateTransportArea(false);
+    }
+
+    private int _testCreateTransportArea(boolean quitIfExists) {
+        TransportArea area = DBManager.getInstance().getTransportAreaController().getTransportAreaByAreaName("Area1");
+        if (area != null) {
+            if (quitIfExists) {
+                return area.getId();
+            }
+            DBManager.getInstance().getTransportAreaController().deleteTransportArea(area.getId());
+        }
+
+        // first we must create a branch and a supplier
+        int branchId = _testCreateBranch(true);
+        int supplierId = _testCreateSupplier(true);
+        Branch existingBranch = DBManager.getInstance().getBranchController().getBranchById(branchId);
+        assertNotNull(existingBranch, "Branch not found");
+        Supplier existingSupplier = DBManager.getInstance().getSupplierController().getSupplierById(supplierId);
+        assertNotNull(existingSupplier, "Supplier not found");
+
+        area = new TransportArea(0, "Area1", List.of(existingSupplier), List.of(existingBranch));
+        int createdAreaId = DBManager.getInstance().getTransportAreaController().addTransportArea(area);
+        assertTrue(createdAreaId > 0, "Failed to create transport area");
+        TransportArea createdArea = DBManager.getInstance().getTransportAreaController().getTransportAreaById(createdAreaId);
+        assertNotNull(createdArea, "Created transport area not found");
+        assertEquals("Area1", createdArea.getAreaName(), "Transport area name mismatch");
+        assertEquals(1, createdArea.getSuppliers().size(), "Transport area suppliers size mismatch");
+        assertEquals(1, createdArea.getBranches().size(), "Transport area branches size mismatch");
+        assertEquals(existingSupplier.getId(), createdArea.getSuppliers().getFirst().getId(),
+                "Transport area supplier ID mismatch");
+        assertEquals(existingBranch.getId(), createdArea.getBranches().getFirst().getId(),
+                "Transport area branch ID mismatch");
+        return createdAreaId;
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testUpdateTransportArea() {
+        TransportArea transportArea = DBManager.getInstance().getTransportAreaController().getTransportAreaByAreaName("Updated Area");
+        if (transportArea != null) {
+            DBManager.getInstance().getTransportAreaController().deleteTransportArea(transportArea.getId());
+        }
+        // first we must create a route
+        int transportAreaId = _testCreateTransportArea(true);
+
+        transportArea = DBManager.getInstance().getTransportAreaController().getTransportAreaById(transportAreaId);
+        assertNotNull(transportArea, "Transport area not found");
+        transportArea.setAreaName("Updated Area");
+        boolean result = DBManager.getInstance().getTransportAreaController().updateTransportArea(transportArea, transportAreaId);
+        assertTrue(result, "Failed to update transport area");
+        TransportArea updatedTransportArea = DBManager.getInstance().getTransportAreaController().getTransportAreaById(transportAreaId);
+        assertNotNull(updatedTransportArea, "Updated transport area not found");
+        assertEquals("Updated Area", updatedTransportArea.getAreaName(), "Transport area name mismatch");
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testDeleteTransportArea() {
+        // first we must create a route
+        int transportAreaId = _testCreateTransportArea(true);
+
+        TransportArea transportArea = DBManager.getInstance().getTransportAreaController().getTransportAreaById(transportAreaId);
+        assertNotNull(transportArea, "Transport area not found");
+        boolean result = DBManager.getInstance().getTransportAreaController().deleteTransportArea(transportAreaId);
+        assertTrue(result, "Failed to delete transport area");
+        transportArea = DBManager.getInstance().getTransportAreaController().getTransportAreaById(transportAreaId);
+        assertNull(transportArea, "Transport area still exists after deletion");
     }
 }

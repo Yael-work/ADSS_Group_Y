@@ -2,7 +2,7 @@ package DB.interfaces;
 
 import Models.DBModels.transport.Branch;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface IBranchController extends IController<Branch> {
     /**
@@ -68,6 +68,6 @@ public interface IBranchController extends IController<Branch> {
      * @param ids The list of IDs of the branches to be retrieved.
      * @return A list of branches with the specified IDs, or an empty list if none found.
      */
-    ArrayList<Branch> getBranchesByIds(ArrayList<Integer> ids);
+    List<Branch> getBranchesByIds(List<Integer> ids);
 
 }

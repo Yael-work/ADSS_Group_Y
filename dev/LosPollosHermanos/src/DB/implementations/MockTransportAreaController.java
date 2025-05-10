@@ -1,5 +1,6 @@
 package DB.implementations;
 
+import Auxiliary.Helper;
 import DB.interfaces.ITransportAreaController;
 import Models.DBModels.transport.TransportArea;
 
@@ -29,14 +30,14 @@ public class MockTransportAreaController implements ITransportAreaController {
     }
 
     @Override
-    public boolean addTransportArea(TransportArea transportArea) {
+    public int addTransportArea(TransportArea transportArea) {
         if (transportArea == null) {
-            return false; // Invalid transport area
+            return Helper.UndefinedId;
         }
         // Assign a unique ID to the transport area
         transportArea.setId(idCounter++);
         transportAreas.add(transportArea);
-        return true; // Successfully added
+        return transportArea.getId(); // Return the assigned ID
     }
 
     @Override
@@ -90,7 +91,7 @@ public class MockTransportAreaController implements ITransportAreaController {
     @Override
     public List<TransportArea> getAllTransportAreasByBranchId(int branchId) {
         return transportAreas.stream()
-                .filter(area -> area.getBranchesIds().contains(branchId))
+                .filter(area -> area.getBranches().contains(branchId))
                 .toList(); // Filter transport areas by branch ID
     }
 

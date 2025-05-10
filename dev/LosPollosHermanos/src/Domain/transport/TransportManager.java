@@ -157,7 +157,7 @@ public class TransportManager {
         if (transportAreas != null && !transportAreas.isEmpty()) {
             Set<Supplier> suppliers = new HashSet<>();
             for (TransportArea area : transportAreas) {
-                suppliers.addAll(SuppliersManager.getSuppliersByIds(area.getSuppliersIds()));
+                suppliers.addAll(area.getSuppliers());
             }
             if (!suppliers.isEmpty()) {
                 for (Supplier s : suppliers) {

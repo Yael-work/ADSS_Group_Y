@@ -9,9 +9,9 @@ public interface ITransportAreaController extends IController<TransportArea> {
      * Adds a transport area to the database.
      *
      * @param transportArea The transport area to add.
-     * @return True if the transport area was added successfully, false otherwise.
+     * @return The ID of the added transport area, or -1 if the addition failed.
      */
-    boolean addTransportArea(TransportArea transportArea);
+    int addTransportArea(TransportArea transportArea);
 
     /**
      * Retrieves a transport area from the database by its ID.
@@ -24,7 +24,8 @@ public interface ITransportAreaController extends IController<TransportArea> {
     /**
      * Updates a transport area in the database.
      *
-     * @param transportArea The transport area to update.
+     * @param transportArea The transport area to updated object.
+     * @param id            The ID of the transport area to update.
      * @return True if the transport area was updated successfully, false otherwise.
      */
     boolean updateTransportArea(TransportArea transportArea, int id);

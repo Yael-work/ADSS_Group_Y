@@ -111,12 +111,12 @@ public class SqliteBranchController implements IBranchController {
     }
 
     @Override
-    public ArrayList<Branch> getBranchesByIds(ArrayList<Integer> ids) {
+    public List<Branch> getBranchesByIds(List<Integer> ids) {
         if (ids == null || ids.isEmpty()) {
             return new ArrayList<>();
         }
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return (ArrayList<Branch>) session.createQuery("FROM Branch WHERE id IN :ids", Branch.class)
+            return session.createQuery("FROM Branch WHERE id IN :ids", Branch.class)
                     .setParameterList("ids", ids)
                     .list();
         } catch (Exception e) {

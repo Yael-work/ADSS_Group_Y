@@ -4,6 +4,9 @@ import Auxiliary.Enums.Domain.UpdateTransportAreaEnum;
 import Auxiliary.Helper;
 import DB.DBManager;
 import DB.interfaces.ITransportAreaController;
+import Domain.suppliers.SuppliersManager;
+import Models.DBModels.suppliers.Supplier;
+import Models.DBModels.transport.Branch;
 import Models.DBModels.transport.TransportArea;
 
 import java.util.ArrayList;
@@ -36,8 +39,10 @@ public class TransportAreasManager {
             Helper.showError("Cant add transport area with empty suppliers IDs");
             return false;
         }
-        area = new TransportArea(Helper.UndefinedId, areaName, suppliersIDs, branchesIDs);
-        return transportAreaController.addTransportArea(area);
+        List<Branch> branches = BranchesManager.getBranchesByIds(branchesIDs);
+        List<Supplier> suppliers = SuppliersManager.getSuppliersByIds(suppliersIDs);
+        area = new TransportArea(Helper.UndefinedId, areaName, suppliers, branches);
+        return transportAreaController.addTransportArea(area) > 0;
     }
 
     /**
@@ -129,48 +134,56 @@ public class TransportAreasManager {
         switch (updateType) {
             case Update_Name -> area.setAreaName(AreaName);
             case Add_Suppliers -> {
-                ArrayList<Integer> addLst = new ArrayList<>(area.getSuppliersIds());
+                List<Supplier> addLst = new ArrayList<>(area.getSuppliers());
                 for (int supplierID : suppliersIDs) {
-                    if (!area.getSuppliersIds().contains(supplierID)) {
-                        addLst.add(supplierID);
+                    if (addLst.stream().noneMatch(supplier -> supplier.getId() == supplierID)) {
+                        Supplier supplierToAdd = SuppliersManager.getSupplierById(supplierID);
+                        if (supplierToAdd == null) {
+                            Helper.showError(String.format("Cant add supplier with id=%d, it does not exist", supplierID));
+                        } else {
+                            addLst.add(supplierToAdd);
+                        }
                     }
                 }
-                area.setSuppliersIds(addLst);
+                area.setSuppliers(addLst);
             }
             case Remove_Suppliers -> {
-                ArrayList<Integer> removeLst = new ArrayList<>(area.getSuppliersIds());
+                List<Supplier> removeLst = new ArrayList<>(area.getSuppliers());
                 for (int supplierID : suppliersIDs) {
-                    if (area.getSuppliersIds().contains(supplierID)) {
-                        removeLst.remove((Integer) supplierID);
-                    }
+                    removeLst.stream().filter(supplier -> supplier.getId() == supplierID)
+                            .findFirst().ifPresent(removeLst::remove);
                 }
                 if (removeLst.isEmpty()) {
                     Helper.showError("Cant remove all suppliers from transport area, there must be at least one supplier.");
                     return false;
                 }
-                area.setSuppliersIds(removeLst);
+                area.setSuppliers(removeLst);
             }
             case Add_Branches -> {
-                ArrayList<Integer> addLst = new ArrayList<>(area.getBranchesIds());
+                List<Branch> addLst = new ArrayList<>(area.getBranches());
                 for (int branchID : branchesIDs) {
-                    if (!area.getBranchesIds().contains(branchID)) {
-                        addLst.add(branchID);
+                    if (addLst.stream().noneMatch(branch -> branch.getId() == branchID)) {
+                        Branch branchToAdd = BranchesManager.getBranchById(branchID);
+                        if (branchToAdd == null) {
+                            Helper.showError(String.format("Cant add branch with id=%d, it does not exist", branchID));
+                        } else {
+                            addLst.add(branchToAdd);
+                        }
                     }
                 }
-                area.setBranchesIds(addLst);
+                area.setBranches(addLst);
             }
             case Remove_Branches -> {
-                ArrayList<Integer> removeLst = new ArrayList<>(area.getBranchesIds());
+                List<Branch> removeLst = new ArrayList<>(area.getBranches());
                 for (int branchID : branchesIDs) {
-                    if (area.getBranchesIds().contains(branchID)) {
-                        removeLst.remove((Integer) branchID);
-                    }
+                    removeLst.stream().filter(branch -> branch.getId() == branchID)
+                            .findFirst().ifPresent(removeLst::remove);
                 }
                 if (removeLst.isEmpty()) {
                     Helper.showError("Cant remove all branches from transport area, there must be at least one branch.");
                     return false;
                 }
-                area.setBranchesIds(removeLst);
+                area.setBranches(removeLst);
             }
             default -> {
                 Helper.showError("Cant update transport area with undefined update type");

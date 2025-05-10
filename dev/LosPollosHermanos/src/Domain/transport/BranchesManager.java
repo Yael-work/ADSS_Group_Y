@@ -6,6 +6,7 @@ import Models.DBModels.transport.Branch;
 import Auxiliary.Helper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BranchesManager {
     private static final IBranchController branchController = DBManager.getInstance().getBranchController();
@@ -180,5 +181,15 @@ public class BranchesManager {
             return null;
         }
         return b;
+    }
+
+    /**
+     * Retrieves all branches by their IDs.
+     *
+     * @param ids - a list of branch IDs to be retrieved
+     * @return - a list of Branch objects with the specified IDs
+     **/
+    public static List<Branch> getBranchesByIds(List<Integer> ids) {
+        return branchController.getBranchesByIds(ids);
     }
 }

@@ -1,36 +1,59 @@
 package Models.DBModels.transport;
 
 import Models.DBModels.BaseModel;
+import Models.DBModels.suppliers.Supplier;
+import jakarta.persistence.*;
 
 import java.util.List;
 
+@Entity
+@Table(name = "transport_areas")
 public class TransportArea extends BaseModel {
+    @Column(nullable = false, unique = true, length = 100)
     private String areaName;
-    private List<Integer> suppliersIds; // FK IDs
-    private List<Integer> branchesIds; // FK IDs
+
+    @ManyToMany
+    @JoinTable(
+            name = "area_suppliers",
+            joinColumns = @JoinColumn(name = "area_id"),
+            inverseJoinColumns = @JoinColumn(name = "supplier_id")
+    )
+    private List<Supplier> suppliers;
+
+    @ManyToMany
+    @JoinTable(
+            name = "area_branches",
+            joinColumns = @JoinColumn(name = "area_id"),
+            inverseJoinColumns = @JoinColumn(name = "branch_id")
+    )
+    private List<Branch> branches;
 
 
-    public TransportArea(int id, String areaName, List<Integer> suppliersIds, List<Integer> branchesIds) {
+    public TransportArea(int id, String areaName, List<Supplier> suppliers, List<Branch> branches) {
         super(id, TransportArea.class.getName());
         this.areaName = areaName;
-        this.suppliersIds = suppliersIds;
-        this.branchesIds = branchesIds;
+        this.suppliers = suppliers;
+        this.branches = branches;
     }
 
-    public List<Integer> getSuppliersIds() {
-        return suppliersIds;
+    public TransportArea() {
+        super(0, TransportArea.class.getName());
     }
 
-    public void setSuppliersIds(List<Integer> suppliersIds) {
-        this.suppliersIds = suppliersIds;
+    public List<Supplier> getSuppliers() {
+        return suppliers;
     }
 
-    public List<Integer> getBranchesIds() {
-        return branchesIds;
+    public void setSuppliers(List<Supplier> suppliers) {
+        this.suppliers = suppliers;
     }
 
-    public void setBranchesIds(List<Integer> branchesIds) {
-        this.branchesIds = branchesIds;
+    public List<Branch> getBranches() {
+        return branches;
+    }
+
+    public void setBranches(List<Branch> branches) {
+        this.branches = branches;
     }
 
     public String getAreaName() {
@@ -43,19 +66,21 @@ public class TransportArea extends BaseModel {
 
     @Override
     public String toString() {
-        return "TransportArea{" +
-                "areaName='" + areaName + '\'' +
-                ", suppliersIds=" + suppliersIds +
-                ", branchesIds=" + branchesIds +
-                "} " + super.toString();
+        String sb = "TransportArea{" +
+                "id=" + getId() +
+                ", areaName='" + areaName + '\'' +
+                ", suppliers" + suppliers.stream().map(Supplier::toPrettyString).toList() +
+                ", branches" + branches.stream().map(Branch::toPrettyString).toList() +
+                '}' + super.toString();
+        return sb;
     }
 
     @Override
     public boolean copyFromOther(BaseModel other) {
         if (other instanceof TransportArea otherTransportArea) {
             this.areaName = otherTransportArea.areaName;
-            this.suppliersIds = otherTransportArea.suppliersIds;
-            this.branchesIds = otherTransportArea.branchesIds;
+            this.suppliers = otherTransportArea.suppliers;
+            this.branches = otherTransportArea.branches;
             return true;
         }
         return false;

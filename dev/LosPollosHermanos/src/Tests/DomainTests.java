@@ -149,7 +149,7 @@ public class DomainTests {
                 .orElse(null);
         assert area != null;
         assertEquals(areaName, area.getAreaName());
-        assertEquals(branches, area.getBranchesIds());
-        assertEquals(suppliers, area.getSuppliersIds());
+        assertEquals(branches, area.getBranches());
+        assertEquals(suppliers, area.getSuppliers());
     }
 }

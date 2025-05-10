@@ -120,7 +120,7 @@ public class MockBranchController implements IBranchController {
     }
 
     @Override
-    public ArrayList<Branch> getBranchesByIds(ArrayList<Integer> ids) {
+    public List<Branch> getBranchesByIds(List<Integer> ids) {
         ArrayList<Branch> result = new ArrayList<>();
         if (ids == null || ids.isEmpty()) {
             return result;
