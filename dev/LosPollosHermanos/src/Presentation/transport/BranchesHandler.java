@@ -122,8 +122,8 @@ public class BranchesHandler {
             } while (newValue == null || newValue.isEmpty());
 
             if (!BranchesManager.updateBranch(b.getId(), choice == UpdateBranchEnum.Name ? newValue : b.getSiteName(),
-                    choice == UpdateBranchEnum.Address ? newValue : b.getAddress(),
-                    choice == UpdateBranchEnum.Phone ? newValue : b.getPhone())) {
+                    choice == UpdateBranchEnum.Address ? newValue : b.getSiteAddress(),
+                    choice == UpdateBranchEnum.Phone ? newValue : b.getSitePhone())) {
                 Helper.println(String.format("Error updating branch with id %d", b.getId()));
             }
 

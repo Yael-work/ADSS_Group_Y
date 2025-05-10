@@ -1,5 +1,6 @@
 package DB.implementations;
 
+import Auxiliary.Helper;
 import DB.interfaces.ISupplierController;
 import Models.DBModels.suppliers.Supplier;
 
@@ -29,13 +30,13 @@ public class MockSupplierController implements ISupplierController {
 
 
     @Override
-    public boolean addSupplier(Supplier supplier) {
+    public int addSupplier(Supplier supplier) {
         if (supplier == null) {
-            return false;
+            return Helper.UndefinedId;
         }
         supplier.setId(idCounter++);
         suppliers.add(supplier);
-        return true;
+        return supplier.getId();
     }
 
     @Override

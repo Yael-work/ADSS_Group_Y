@@ -11,7 +11,6 @@ import DB.interfaces.*;
  */
 public class DBManager {
     static DBManager instance = null;
-    private final ISiteController siteController;
     private final IDeliveryFileController deliveryFileController;
     private final ITruckController truckController;
     private final ITransportAreaController transportAreaController;
@@ -23,12 +22,11 @@ public class DBManager {
     private final ITransportRouteController transportRouteController;
 
     private DBManager() {
-        this.siteController = MockSiteController.getInstance();
         this.deliveryFileController = SqliteDeliveryFileController.getInstance();
         this.truckController = MockTruckController.getInstance();
         this.transportAreaController = MockTransportAreaController.getInstance();
         this.driverController = SqliteDriverController.getInstance();
-        this.supplierController = MockSupplierController.getInstance();
+        this.supplierController = SqliteSupplierController.getInstance();
         this.transportController = MockTransportController.getInstance();
         this.branchController = SqliteBranchController.getInstance();
         this.transportIssueLogController = MockTransportIssueLogController.getInstance();
@@ -45,15 +43,6 @@ public class DBManager {
             instance = new DBManager();
         }
         return instance;
-    }
-
-    /**
-     * Returns the site controller.
-     *
-     * @return The site controller.
-     */
-    public final ISiteController getSiteController() {
-        return siteController;
     }
 
     /**

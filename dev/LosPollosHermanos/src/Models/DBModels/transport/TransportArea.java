@@ -49,4 +49,15 @@ public class TransportArea extends BaseModel {
                 ", branchesIds=" + branchesIds +
                 "} " + super.toString();
     }
+
+    @Override
+    public boolean copyFromOther(BaseModel other) {
+        if (other instanceof TransportArea otherTransportArea) {
+            this.areaName = otherTransportArea.areaName;
+            this.suppliersIds = otherTransportArea.suppliersIds;
+            this.branchesIds = otherTransportArea.branchesIds;
+            return true;
+        }
+        return false;
+    }
 }

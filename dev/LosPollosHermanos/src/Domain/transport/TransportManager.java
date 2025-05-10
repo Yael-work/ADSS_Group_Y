@@ -63,7 +63,6 @@ public class TransportManager {
     private static final ITransportController transportController = DBManager.getInstance().getTransportController();
     private static final IDeliveryFileController deliveryFileController = DBManager.getInstance().getDeliveryFileController();
     private static final ITransportRouteController transportRouteController = DBManager.getInstance().getTransportRouteController();
-    private static final ISiteController siteController = DBManager.getInstance().getSiteController();
 
     /**
      * This method is used to create a delivery file.
@@ -134,34 +133,20 @@ public class TransportManager {
             Helper.showError("Invalid supplier ID: " + supplierId);
             return Helper.UndefinedId;
         }
-        Site src = new Site(Helper.UndefinedId, s, s.getSupplierAddress(),
-                SuppliersManager.getCurrentContactPhoneOfSupplier(supplierId),
-                SuppliersManager.getCurrentContactNameOfSupplier(supplierId), 0);
-        int srcSiteId = siteController.addSite(src);
-        if (srcSiteId <= Helper.UndefinedId) {
-            Helper.showError("Failed to add source site.");
-            if (!deleteDeliveryFile(deliveryFileId)) {
-                Helper.showError("Failed to delete delivery file");
-            }
-            return Helper.UndefinedId;
-        }
-        Site dest = new Site(Helper.UndefinedId, b, b.getAddress(),
-                BranchesManager.getCurrentContactPhoneOfBranch(branchId),
-                BranchesManager.getCurrentContactNameOfBranch(branchId), 0);
-        int destSiteId = siteController.addSite(dest);
-        if (destSiteId <= Helper.UndefinedId) {
-            Helper.showError("Failed to add destination site.");
-            if (!deleteDeliveryFile(deliveryFileId)) {
-                Helper.showError("Failed to delete delivery file");
-            }
-            if (!deleteSite(srcSiteId)) {
-                Helper.showError("Failed to delete source site");
-            }
+
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(deliveryFileId);
+        if (deliveryFile == null) {
+            Helper.showError("Failed to get delivery file by ID: " + deliveryFileId);
             return Helper.UndefinedId;
         }
 
-        TransportRoute transportRoute = new TransportRoute(Helper.UndefinedId, TransportStatusEnum.PENDING,
-                deliveryFileId, srcSiteId, destSiteId);
+        TransportRoute transportRoute = new TransportRoute(Helper.UndefinedId,
+                TransportStatusEnum.PENDING,
+                deliveryFile, s, b,
+                SuppliersManager.getCurrentContactNameOfSupplier(supplierId),
+                SuppliersManager.getCurrentContactPhoneOfSupplier(supplierId),
+                BranchesManager.getCurrentContactNameOfBranch(branchId),
+                BranchesManager.getCurrentContactPhoneOfBranch(branchId), 0);
         return transportRouteController.addTransportRoute(transportRoute);
     }
 
@@ -229,31 +214,6 @@ public class TransportManager {
                 items);
     }
 
-    /**
-     * This method is used to delete a site
-     *
-     * @param siteId - the ID of the delivery file to be deleted
-     * @return - true if the delivery file was deleted successfully, false otherwise
-     */
-    private static boolean deleteSite(int siteId) {
-        if (siteId <= 0) {
-            Helper.showError("Cant delete site with id <= 0");
-            return false;
-        }
-        Site site = DBManager.getInstance().getSiteController().getSiteById(siteId);
-        if (site == null) {
-            Helper.showError("Cant delete site with id=" + siteId + ", it does not exist");
-            return false;
-        } else {
-            if (!DBManager.getInstance().getSiteController().deleteSite(siteId)) {
-                Helper.showError("Cant delete site with id=" + siteId + ", failed to delete site");
-                return false;
-            } else {
-                return true;
-            }
-        }
-    }
-
 
     /**
      * This method is used to delete transport routes.
@@ -276,16 +236,8 @@ public class TransportManager {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", it is not in pending status");
                     return false;
                 }
-                if (!deleteDeliveryFile(t.getDeliveryFileId())) {
+                if (!deleteDeliveryFile(t.getDeliveryFile().getId())) {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete delivery file");
-                    return false;
-                }
-                if (!deleteSite(t.getSourceSiteId())) {
-                    Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete source site");
-                    return false;
-                }
-                if (!deleteSite(t.getDestinationSiteId())) {
-                    Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete destination site");
                     return false;
                 }
                 if (!transportRouteController.deleteTransportRoute(t.getId())) {
@@ -425,12 +377,11 @@ public class TransportManager {
             for (int routeId : transportRoutes) {
                 TransportRoute route = transportRouteController.getTransportRouteById(routeId);
                 if (route != null) {
-                    Site srcSite = siteController.getSiteById(route.getSourceSiteId());
-                    DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(route.getDeliveryFileId());
+                    APhysicalSite srcSite = route.getSourceSite();
+                    DeliveryFile deliveryFile = route.getDeliveryFile();
                     if (srcSite != null) {
-                        if (srcSite.getPhysicalSite() instanceof Supplier supplier) {
+                        if (srcSite instanceof Supplier supplier) {
                             List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
-                            List<StockItem> items = new ArrayList<>();
                             List<ItemsAtSupplier> itemsAtSupplier =
                                     SuppliersManager.mockGetSupplierItemsByStockItems(supplier.getId(),
                                             StockManager.mockGetStockItemsByIds(
@@ -480,29 +431,24 @@ public class TransportManager {
     /**
      * This method is used to get a detailed string representation of a delivery file.
      *
-     * @param deliveryFileId - the ID of the delivery file
+     * @param deliveryFile - the delivery file object
      * @return - a detailed string representation of the delivery file
      */
-    private static String getDetailedDeliveryFileString(int deliveryFileId) {
-        if (deliveryFileId <= Helper.UndefinedId) {
-            Helper.showError("Cant get delivery file with id <= 0");
-            return null;
-        }
-        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(deliveryFileId);
+    private static String getDetailedDeliveryFileString(DeliveryFile deliveryFile) {
         if (deliveryFile == null) {
-            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
+            Helper.showError("Delivery file not found.");
             return null;
         }
         List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
         if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
-            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
+            Helper.showError("No items in the delivery file.");
             return null;
         }
         List<StockItem> items = StockManager.mockGetStockItemsByIds(deliveryFileItems.stream()
                 .map(DeliveryFileItem::getStockItemId)
                 .collect(Collectors.toList()));
         if (items.isEmpty()) {
-            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
+            Helper.showError("No items found for the delivery file.");
             return null;
         }
         StringBuilder sb = new StringBuilder();
@@ -538,14 +484,14 @@ public class TransportManager {
             Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
             return null;
         }
-        String deleiveryFileDetailedString = getDetailedDeliveryFileString(route.getDeliveryFileId());
+        String deleiveryFileDetailedString = getDetailedDeliveryFileString(route.getDeliveryFile());
 
-        Site sourceSite = siteController.getSiteById(route.getSourceSiteId());
+        APhysicalSite sourceSite = route.getSourceSite();
         if (sourceSite == null) {
-            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
+            Helper.showError("source site not found for transport route with id=" + routeId);
             return null;
         }
-        Site destinationSite = siteController.getSiteById(route.getDestinationSiteId());
+        APhysicalSite destinationSite = route.getDestinationSite();
         if (destinationSite == null) {
             Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
             return null;
@@ -619,7 +565,7 @@ public class TransportManager {
      * @return - an enum indicating the result of the visit
      */
     public static visitSiteEnum visitSource(Transport transport, TransportRoute selectedRoute) {
-        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFileId());
+        DeliveryFile deliveryFile = selectedRoute.getDeliveryFile();
         if (deliveryFile == null) {
             Helper.println("Delivery file not found.");
             return visitSiteEnum.FAILED;
@@ -678,25 +624,6 @@ public class TransportManager {
     }
 
     /**
-     * This method is used to get a site by ID.
-     *
-     * @param SiteId - the ID of the site
-     * @return - the site object, or null if not found
-     */
-    public static Site getSiteById(int SiteId) {
-        if (SiteId <= Helper.UndefinedId) {
-            Helper.showError("Cant get site with id <= 0");
-            return null;
-        }
-        Site site = siteController.getSiteById(SiteId);
-        if (site == null) {
-            Helper.showError("Cant get site with id=" + SiteId + ", it does not exist");
-            return null;
-        }
-        return site;
-    }
-
-    /**
      * This method is used to update the transport issue.
      *
      * @param transport     - the transport object
@@ -726,7 +653,7 @@ public class TransportManager {
                     transport.getTransportIssueLogIds().add(transportIssueLog.getId());
                 }
                 if (code == 2) {
-                    selectedRoute.setDeliveryFileId(deliveryFile.getId());
+                    selectedRoute.setDeliveryFile(deliveryFile);
                 }
                 selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
                 transport.setStatus(TransportStatusEnum.CONTINUED_WITH_ISSUES);

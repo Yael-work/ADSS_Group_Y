@@ -1,6 +1,7 @@
 package Tests;
 
 import DB.DBManager;
+import Models.DBModels.transport.Branch;
 import Models.DBModels.transport.DeliveryFile;
 import Models.DBModels.transport.DeliveryFileItem;
 import Tests.losPollosAnnotations.UseTestingDatabase;
@@ -91,5 +92,38 @@ public class DBTests {
         assertTrue(result);
         deliveryFile = DBManager.getInstance().getDeliveryFileController().getDeliveryFileById(addedId);
         assertNull(deliveryFile);
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testCreateBranch() {
+        Branch branch = DBManager.getInstance().getBranchController().getBranchByName("Branch 1");
+        if (branch != null) {
+            DBManager.getInstance().getBranchController().deleteBranch(branch.getId());
+        }
+        branch = new Branch(0, "Branch 1", "123 Main St", "555-1234");
+        int addedId = DBManager.getInstance().getBranchController().addBranch(branch);
+        Branch retrievedBranch = DBManager.getInstance().getBranchController().getBranchById(addedId);
+        assertNotNull(retrievedBranch);
+
+        assertEquals("Branch 1", retrievedBranch.getSiteName());
+        assertEquals("123 Main St", retrievedBranch.getSiteAddress());
+        assertEquals("555-1234", retrievedBranch.getSitePhone());
+    }
+
+
+    @UseTestingDatabase
+    @Test
+    public void testEditBranch() {
+        Branch branch = DBManager.getInstance().getBranchController().getBranchByName("Branch 1");
+        if (branch != null) {
+            DBManager.getInstance().getBranchController().deleteBranch(branch.getId());
+        }
+        branch = new Branch(0, "Branch 1", "123 Main St", "555-1234");
+        int addedId = DBManager.getInstance().getBranchController().addBranch(branch);
+        Branch retrievedBranch = DBManager.getInstance().getBranchController().getBranchById(addedId);
+        assertNotNull(retrievedBranch);
+
+
     }
 }

@@ -80,7 +80,7 @@ public class DeliveryFileItem extends BaseModel {
     @Override
     public boolean copyFromOther(BaseModel other) {
         if (!(other instanceof DeliveryFileItem otherDeliveryFileItem)) {
-            Helper.showError(String.format("%s::Other must be of type DeliveryFileItem", this.getClass().getName()));
+            Helper.showError(String.format("%s::Other must be of type %s", this.getClass().getName(), this.getClass().getName()));
             return false;
         }
         this.stockItemId = otherDeliveryFileItem.stockItemId;

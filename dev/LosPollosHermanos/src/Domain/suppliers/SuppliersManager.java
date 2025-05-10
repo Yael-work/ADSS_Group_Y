@@ -41,7 +41,7 @@ public class SuppliersManager {
             Helper.showError("Supplier with this name already exists");
         }
         s = new Supplier(Helper.UndefinedUserInput, name, address, phone);
-        return supplierController.addSupplier(s);
+        return supplierController.addSupplier(s) != Helper.UndefinedId;
     }
 
 
@@ -114,7 +114,7 @@ public class SuppliersManager {
     public static String getCurrentContactPhoneOfSupplier(int supplierId) {
         Supplier supplier = getSupplierById(supplierId);
         if (supplier != null) {
-            return supplier.getSupplierPhone();
+            return supplier.getSitePhone();
         }
         return null;
     }

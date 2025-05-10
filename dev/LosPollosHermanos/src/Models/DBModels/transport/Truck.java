@@ -81,4 +81,17 @@ public class Truck extends BaseModel {
                 ", model='" + model + '\'' +
                 "} ";
     }
+
+    @Override
+    public boolean copyFromOther(BaseModel other) {
+        if (other instanceof Truck otherTruck) {
+            this.plate = otherTruck.plate;
+            this.netWeight = otherTruck.netWeight;
+            this.maxWeight = otherTruck.maxWeight;
+            this.requiredLicenseType = otherTruck.requiredLicenseType;
+            this.model = otherTruck.model;
+            return true;
+        }
+        return false;
+    }
 }

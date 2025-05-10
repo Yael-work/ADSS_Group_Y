@@ -96,7 +96,7 @@ public class Driver extends BaseModel {
     @Override
     public boolean copyFromOther(BaseModel other) {
         if (!(other instanceof Driver otherDriver)) {
-            Helper.showError(String.format("%s::Other must be of type Driver", this.getClass().getName()));
+            Helper.showError(String.format("%s::Other must be of type %s", this.getClass().getName(), this.getClass().getName()));
             return false;
         }
         this.firstName = otherDriver.firstName;

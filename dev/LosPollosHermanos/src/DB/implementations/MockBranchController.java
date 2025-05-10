@@ -98,7 +98,7 @@ public class MockBranchController implements IBranchController {
             return null;
         }
         for (Branch branch : branches) {
-            if (branch.getAddress().equalsIgnoreCase(address)) {
+            if (branch.getSiteAddress().equalsIgnoreCase(address)) {
                 return branch;
             }
         }
@@ -111,7 +111,7 @@ public class MockBranchController implements IBranchController {
             return null;
         }
         for (Branch branch : branches) {
-            if (branch.getPhone().equalsIgnoreCase(phoneNumber)) {
+            if (branch.getSitePhone().equalsIgnoreCase(phoneNumber)) {
                 return branch;
             }
         }

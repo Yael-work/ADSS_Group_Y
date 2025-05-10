@@ -1,5 +1,6 @@
 package Models.DBModels.transport;
 
+import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 
@@ -125,5 +126,22 @@ public class Transport extends BaseModel {
                 transportRouteIds.toString(), transportIssueLogIds != null ? transportIssueLogIds.toString()
                         : "[No issue logs]"
                 , actualStartDatetime, actualEndDatetime);
+    }
+
+    @Override
+    public boolean copyFromOther(BaseModel other) {
+        if (!(other instanceof Transport otherTransport)) {
+            Helper.showError(String.format("%s::Other must be of type %s", this.getClass().getName(), this.getClass().getName()));
+            return false;
+        }
+        this.plannedDateTime = otherTransport.plannedDateTime;
+        this.status = otherTransport.status;
+        this.truckId = otherTransport.truckId;
+        this.driverId = otherTransport.driverId;
+        this.transportRouteIds = otherTransport.transportRouteIds;
+        this.transportIssueLogIds = otherTransport.transportIssueLogIds;
+        this.actualStartDatetime = otherTransport.actualStartDatetime;
+        this.actualEndDatetime = otherTransport.actualEndDatetime;
+        return true;
     }
 }

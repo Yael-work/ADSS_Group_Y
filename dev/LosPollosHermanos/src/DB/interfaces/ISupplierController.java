@@ -5,14 +5,14 @@ import Models.DBModels.suppliers.Supplier;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface ISupplierController extends IController<Supplier>{
+public interface ISupplierController extends IController<Supplier> {
     /**
      * Adds a supplier to the database.
      *
      * @param supplier The supplier to add.
-     * @return True if the supplier was added successfully, false otherwise.
+     * @return The ID of the newly added supplier, or Helper.UndefinedId if the operation failed.
      */
-    boolean addSupplier(Supplier supplier);
+    int addSupplier(Supplier supplier);
 
     /**
      * Updates a supplier in the database.

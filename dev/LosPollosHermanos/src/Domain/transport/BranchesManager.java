@@ -106,8 +106,8 @@ public class BranchesManager {
             return false;
         }
         b.setSiteName(name);
-        b.setAddress(address);
-        b.setPhone(phone);
+        b.setSiteAddress(address);
+        b.setSitePhone(phone);
         return branchController.updateBranch(b, id);
     }
 
@@ -139,7 +139,7 @@ public class BranchesManager {
             Helper.showError("Branch with this ID does not exist");
             return null;
         }
-        return b.getPhone();
+        return b.getSitePhone();
     }
 
 

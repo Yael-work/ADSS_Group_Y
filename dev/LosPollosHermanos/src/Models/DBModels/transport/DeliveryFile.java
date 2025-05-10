@@ -54,4 +54,13 @@ public class DeliveryFile extends BaseModel {
         sb.append(super.toString());
         return sb.toString();
     }
+
+    @Override
+    public boolean copyFromOther(BaseModel other) {
+        if (other instanceof DeliveryFile otherDeliveryFile) {
+            this.setDeliveryFileItems(otherDeliveryFile.getDeliveryFileItems());
+            return true;
+        }
+        return false;
+    }
 }

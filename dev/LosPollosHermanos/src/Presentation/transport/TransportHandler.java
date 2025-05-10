@@ -153,7 +153,7 @@ public class TransportHandler {
         for (int routeId : createdTransportRoutesIds) {
             TransportRoute route = TransportManager.getTransportRouteById(routeId);
             if (route != null) {
-                DeliveryFile deliveryFile = TransportManager.getDeliveryFileById(route.getDeliveryFileId());
+                DeliveryFile deliveryFile = route.getDeliveryFile();
                 if (deliveryFile != null) {
                     for (DeliveryFileItem item : deliveryFile.getDeliveryFileItems()) {
                         if (item != null) {
@@ -520,12 +520,12 @@ public class TransportHandler {
                         || transportRoute.getStatus() == TransportStatusEnum.DESTINATION_COMPLETED) {
                     continue;
                 }
-                Site soruceSite = TransportManager.getSiteById(transportRoute.getSourceSiteId());
-                if (soruceSite == null) {
+                APhysicalSite sourceSite = transportRoute.getSourceSite();
+                if (sourceSite == null) {
                     Helper.println("Source not found. Please try again.");
                     return;
                 }
-                Helper.println("Source ID: " + soruceSite.getPhysicalSite().getId() + ", Address: " + soruceSite.getSiteAddress());
+                Helper.println("Source ID: " + sourceSite.getId() + ", Address: " + transportRoute.getSourceSite());
             }
             Helper.println("Enter the ID of the source you want to visit: ");
             boolean flag = false;
@@ -536,14 +536,19 @@ public class TransportHandler {
                     continue;
                 }
                 for (Integer route : routes) {
-                    Site source = TransportManager.getSiteById(Objects.requireNonNull(TransportManager.getTransportRouteById(route)).getSourceSiteId());
-                    if (source != null && source.getPhysicalSite().getId() == sourceID) {
+                    TransportRoute transportRoute = TransportManager.getTransportRouteById(route);
+                    if (transportRoute == null) {
+                        Helper.println("Please try again later, error in route ID: " + route);
+                        return;
+                    }
+                    APhysicalSite src = transportRoute.getSourceSite();
+                    if (src != null && src.getId() == sourceID) {
                         selectedRoute = TransportManager.getTransportRouteById(route);
                         if (selectedRoute == null) {
                             Helper.println("Route not found. Please try again.");
                             return;
                         }
-                        Helper.println("Visiting source: " + source.toPrettyString());
+                        Helper.println("Visiting source: " + src.toPrettyString());
                         flag = true;
                         break;
                     }
@@ -597,7 +602,7 @@ public class TransportHandler {
                         }
                     } else if (answer.equals("2")) {
                         Helper.println("Choose which items to discard:");
-                        DeliveryFile deliveryFile = TransportManager.getDeliveryFileById(selectedRoute.getDeliveryFileId());
+                        DeliveryFile deliveryFile = selectedRoute.getDeliveryFile();
                         if (deliveryFile == null) {
                             Helper.println("Delivery file not found. Please try again.");
                             return;
@@ -681,12 +686,12 @@ public class TransportHandler {
                         transportRoute.getStatus() == TransportStatusEnum.DESTINATION_COMPLETED) {
                     continue;
                 }
-                Site destinationSite = TransportManager.getSiteById(transportRoute.getDestinationSiteId());
+                APhysicalSite destinationSite = transportRoute.getDestinationSite();
                 if (destinationSite == null) {
-                    Helper.println("Destination not found. Please try again.");
+                    Helper.showError("Destination not found. Please try again.");
                     return;
                 }
-                Helper.println("Destination ID: " + destinationSite.getPhysicalSite().getId() + ", Address: " + destinationSite.getSiteAddress());
+                Helper.println("Destination ID: " + destinationSite.getId() + ", Address: " + destinationSite.getSiteAddress());
             }
             Helper.println("Enter the ID of the destination you want to visit: ");
             boolean flag = false;
@@ -697,8 +702,13 @@ public class TransportHandler {
                     continue;
                 }
                 for (Integer route : routes) {
-                    Site destination = TransportManager.getSiteById(Objects.requireNonNull(TransportManager.getTransportRouteById(route)).getDestinationSiteId());
-                    if (destination != null && destination.getPhysicalSite().getId() == destinationID) {
+                    TransportRoute tr = TransportManager.getTransportRouteById(route);
+                    if (tr == null) {
+                        Helper.showError("Please try again later, error in route ID: " + route);
+                        return;
+                    }
+                    APhysicalSite destination = tr.getDestinationSite();
+                    if (destination != null && destination.getId() == destinationID) {
                         selectedRoute = TransportManager.getTransportRouteById(route);
                         if (selectedRoute == null) {
                             Helper.println("Route not found. Please try again.");

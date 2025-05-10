@@ -57,4 +57,16 @@ public class TransportIssueLog extends BaseModel {
                 ", unloadedItemsDeliveryFileId=" + unloadedItemsDeliveryFileId +
                 "} " + super.toString();
     }
+
+    @Override
+    public boolean copyFromOther(BaseModel other) {
+        if (other instanceof TransportIssueLog otherTransportIssueLog) {
+            this.currentTruckId = otherTransportIssueLog.currentTruckId;
+            this.newTruckId = otherTransportIssueLog.newTruckId;
+            this.transportRouteId = otherTransportIssueLog.transportRouteId;
+            this.unloadedItemsDeliveryFileId = otherTransportIssueLog.unloadedItemsDeliveryFileId;
+            return true;
+        }
+        return false;
+    }
 }

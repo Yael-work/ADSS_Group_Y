@@ -1,5 +1,7 @@
 package Models.DBModels.suppliers;
 
+import Auxiliary.Helper;
+import Models.DBModels.BaseModel;
 import Models.DBModels.transport.APhysicalSite;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,57 +11,39 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "suppliers")
 public class Supplier extends APhysicalSite {
-    @Column(nullable = false)
-    private String supplierName;
-    @Column(nullable = false)
-    private String supplierAddress;
-    @Column(nullable = false)
-    private String supplierPhone;
 
     public Supplier(int id, String supplierName, String supplierAddress, String supplierPhone) {
-        super(id, Supplier.class.getName());
-        this.supplierName = supplierName;
-        this.supplierAddress = supplierAddress;
-        this.supplierPhone = supplierPhone;
+        super(id, Supplier.class.getName(), supplierName, supplierAddress, supplierPhone);
     }
 
     public Supplier() {
-        super(0, Supplier.class.getName());
-    }
-
-    @Override
-    public String getSiteName() {
-        return supplierName;
-    }
-
-    @Override
-    public void setSiteName(String supplierName) {
-        this.supplierName = supplierName;
-    }
-
-    public String getSupplierAddress() {
-        return supplierAddress;
-    }
-
-    public void setSupplierAddress(String supplierAddress) {
-        this.supplierAddress = supplierAddress;
-    }
-
-    public String getSupplierPhone() {
-        return supplierPhone;
-    }
-
-    public void setSupplierPhone(String supplierPhone) {
-        this.supplierPhone = supplierPhone;
+        super(0, Supplier.class.getName(), "", "", "");
     }
 
     @Override
     public String toString() {
         return "Supplier{" +
-                "supplierName='" + supplierName + '\'' +
-                ", supplierAddress='" + supplierAddress + '\'' +
-                ", supplierPhone='" + supplierPhone + '\'' +
-                "} " + super.toString();
+                "supplierName='" + getSiteName() + '\'' +
+                ", supplierAddress='" + getSiteAddress() + '\'' +
+                ", supplierPhone='" + getSitePhone() + '\'' +
+                '}' + super.toString();
+    }
+
+    @Override
+    public String toPrettyString() {
+        return String.format("Supplier Name: %s, Supplier Address: %s, Supplier Phone: %s", getSiteName(), getSiteAddress(), getSitePhone());
+    }
+
+    @Override
+    public boolean copyFromOther(BaseModel other) {
+        if (!(other instanceof Supplier otherSupplier)) {
+            Helper.showError(String.format("%s::Other must be of type %s", this.getClass().getName(), this.getClass().getName()));
+            return false;
+        }
+        this.setSiteName(otherSupplier.getSiteName());
+        this.setSiteAddress(otherSupplier.getSiteAddress());
+        this.setSitePhone(otherSupplier.getSitePhone());
+        return true;
     }
 
 }
