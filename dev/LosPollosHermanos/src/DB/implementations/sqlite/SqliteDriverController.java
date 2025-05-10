@@ -12,6 +12,10 @@ import java.util.List;
 public class SqliteDriverController implements IDriverController {
     private static SqliteDriverController instance;
 
+    private SqliteDriverController() {
+        // Private constructor to prevent instantiation
+    }
+
     public static SqliteDriverController getInstance() {
         if (instance == null) {
             instance = new SqliteDriverController();
