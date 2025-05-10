@@ -924,4 +924,15 @@ public class TransportManager {
         Helper.println("Driver ID set successfully.");
         return true;
     }
+
+    /**
+     * This method is used to edit a transport route.
+     *
+     * @param transport - the transport object
+     * @param routeId   - the ID of the transport route
+     * @return - true if the transport route was edited successfully, false otherwise
+     */
+    public static boolean editTransportRoute(Transport transport, int routeId) {
+        return true; //TODO
+    }
 }

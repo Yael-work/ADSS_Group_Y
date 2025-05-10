@@ -817,91 +817,38 @@ public class TransportHandler {
                     }
                     switch (userInput) {
                         case "1" -> {
-                            Integer createdTransportRouteId;
-                            Helper.print("Enter the new transport route ID: ");
+                            Helper.println("Enter the transport ID you want to add: ");
                             int routeId = Helper.getUserInputInteger();
                             while (routeId == Helper.UndefinedUserInput) {
                                 Helper.print("Invalid transport route ID. Please try again: ");
                                 routeId = Helper.getUserInputInteger();
                             }
-                            ArrayList<Branch> branches = BranchesManager.getExistingBranches();
-                            if (branches == null || branches.isEmpty()) {
-                                Helper.println("No branches available. Please create a branch first.");
+                            if (TransportManager.getTransportById(routeId) == null) {
+                                Helper.println("Transport route not found. Please try again.");
                                 return;
                             }
-                            String userInput1;
-                            do {
-                                for (Branch branch : branches) {
-                                    Helper.println(String.format("Branch ID: %d, Branch Name: %s", branch.getId(), branch.getSiteName()));
-                                }
-                                Helper.print("Select the current branch to create transport for, " +
-                                        "or write 'continue' to proceed with the transport creation: ");
-                                userInput1 = Helper.getUserInputString();
-                                if (userInput1 != null && !userInput1.equalsIgnoreCase("continue")) {
-                                    int branchId = getBranchIdForTransport(userInput1, branches);
-                                    if (branchId == Helper.UndefinedId) {
-                                        continue;
-                                    }
-                                    userInput1 = null;
-                                    List<StockItem> selectedItems = getStockItemsUserSelectionOfBranchForTransport(branchId);
-                                    Helper.println("The items you selected for this transport are:");
-                                    for (StockItem selectedItem : selectedItems) {
-                                        Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
-                                                selectedItem.getStockItemId(), selectedItem.getItemName(), selectedItem.getAmount()));
-                                    }
-                                    Helper.println("Generating routes from suppliers to branch...");
-                                    CreateNewTransportRoutesResult routesCreationResult =
-                                            TransportManager.createNewTransportRoutes(branchId, selectedItems);
-                                    switch (routesCreationResult.getResultEnum()) {
-                                        case Success -> {
-                                            Helper.println("Transport routes created successfully for branch " + branchId);
-                                            createdTransportRouteId = routesCreationResult.getCreatedTransportRoutesIds().getFirst();
-                                            transport.getTransportRouteIds().add(createdTransportRouteId);
-                                        }
-                                        case SomeItemsUnprovided -> {
-                                            Helper.println("Some items could not be provided by the suppliers for this branch");
-                                            Helper.println("Please check the following items:");
-                                            for (StockItem unprovidedItem : routesCreationResult.getUnprovidedItems()) {
-                                                Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
-                                                        unprovidedItem.getStockItemId(),
-                                                        unprovidedItem.getItemName(), unprovidedItem.getAmount()));
-                                            }
-                                            Helper.print("Would you like to add this branch with the unprovided items to the transport? " +
-                                                    "(yes/no): ");
-                                            String proceedInput = Helper.getUserInputString();
-                                            while (proceedInput == null
-                                                    || (!proceedInput.equalsIgnoreCase("yes")
-                                                    && !proceedInput.equalsIgnoreCase("no"))) {
-                                                Helper.print("Invalid input. Please enter 'yes' or 'no': ");
-                                                proceedInput = Helper.getUserInputString();
-                                            }
-                                            if (proceedInput.equalsIgnoreCase("yes")) {
-                                                Helper.println("Transport routes created successfully for branch " + branchId);
-                                                createdTransportRouteId = routesCreationResult.getCreatedTransportRoutesIds().getFirst();
-                                                transport.getTransportRouteIds().add(createdTransportRouteId);
-                                            } else {
-                                                Helper.println("Branch will not be added to the transport.");
-                                                List<Integer> routesIds = routesCreationResult.getCreatedTransportRoutesIds();
-                                                if (routesIds != null && !routesIds.isEmpty()) {
-                                                    if (!TransportManager.deleteTransportRoutes(routesIds)) {
-                                                        Helper.println("Failed to delete created routes.");
-                                                    } else {
-                                                        Helper.println("Created routes deleted successfully.");
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        case UNDEFINED -> {
-                                            Helper.println("Failed to create transport routes for branch " + branchId);
-                                            List<Integer> routesIds = routesCreationResult.getCreatedTransportRoutesIds();
-                                            if (routesIds != null && !routesIds.isEmpty()) {
-                                                TransportManager.deleteTransportById(routesIds.getFirst());
-                                                Helper.println("Deleting created routes...");
-                                            }
-                                        }
-                                    }
-                                }
-                            } while (userInput1 != null && !userInput1.equalsIgnoreCase("continue"));
+                            else{
+
+                            }
+                            //need to think about that
+                        }
+                        case "2" -> {
+                            Helper.print("Enter the transport route ID to edit: ");
+                            int routeId = Helper.getUserInputInteger();
+                            while (routeId == Helper.UndefinedUserInput) {
+                                Helper.print("Invalid transport route ID. Please try again: ");
+                                routeId = Helper.getUserInputInteger();
+                            }
+                            Helper.println("Choose what to edit the transport route:");
+                            // TODO Tomorrow
+                            if (TransportManager.editTransportRoute(transport, routeId)) {
+                                Helper.println("Transport route ID updated successfully.");
+                            } else {
+                                Helper.println("Failed to update transport route ID. Try again.");
+                            }
+                        }
+                        default -> {
+                            Helper.println("Invalid input. Please choose 1, 2 or 3.");
                         }
                     }
                 }
@@ -932,7 +879,7 @@ public class TransportHandler {
             Helper.println("7. Start transport");
             Helper.println("8. Visit source");
             Helper.println("9. Visit destination");
-            // Helper.println("10. Edit Unstarted Transport"); TODO NTH
+            Helper.println("10. Edit Unstarted Transport");
             Helper.println("11. Back to main menu");
 
             do {
