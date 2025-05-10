@@ -255,7 +255,28 @@ public class TransportHandler {
         List<Integer> createdTransportRoutesIds = new ArrayList<>();
         Helper.println("Transport Creation:");
         LocalDateTime dateTime = getDateForTransport();
+        if (dateTime == null) {
+            Helper.println("Invalid date and time. Please try again.");
+            return;
+        }
+        HelperForCreateTransportRoutes(createdTransportRoutesIds);
+        if (createdTransportRoutesIds.isEmpty()) {
+            Helper.println("No transport routes created. Cannot proceed with transport creation.");
+            return;
+        }
+        if (performActualTransportCreation(dateTime, createdTransportRoutesIds)) {
+            Helper.println("Transport created successfully.");
+        } else {
+            Helper.println("Failed to create transport.");
+        }
+    }
 
+    /**
+     * This method is used to create a new transport route.
+     * It handles the selection of branches and stock items,
+     * and the creation of transport routes.
+     */
+    private static void HelperForCreateTransportRoutes(List<Integer> createdTransportRoutesIds) {
         ArrayList<Branch> branches = BranchesManager.getExistingBranches();
         if (branches == null || branches.isEmpty()) {
             Helper.println("No branches available. Please create a branch first.");
@@ -326,21 +347,14 @@ public class TransportHandler {
                         Helper.println("Failed to create transport routes for branch " + branchId);
                         List<Integer> routesIds = routesCreationResult.getCreatedTransportRoutesIds();
                         if (routesIds != null && !routesIds.isEmpty()) {
-                            TransportManager.deleteTransportById(routesIds.getFirst());
+                            TransportManager.deleteTransportRoutes(routesIds);
                             Helper.println("Deleting created routes...");
                         }
                     }
                 }
             }
         } while (userInput == null || !userInput.equalsIgnoreCase("continue"));
-
-        if (performActualTransportCreation(dateTime, createdTransportRoutesIds)) {
-            Helper.println("Transport created successfully.");
-        } else {
-            Helper.println("Failed to create transport.");
-        }
     }
-
 
     /**
      * This method is used to delete transport by its ID.
@@ -817,19 +831,23 @@ public class TransportHandler {
                     }
                     switch (userInput) {
                         case "1" -> {
-                            Helper.println("Enter the transport ID you want to add: ");
-                            int routeId = Helper.getUserInputInteger();
-                            while (routeId == Helper.UndefinedUserInput) {
-                                Helper.print("Invalid transport route ID. Please try again: ");
-                                routeId = Helper.getUserInputInteger();
+                            Helper.println("Enter the transport ID to add: ");
+                            int transportIdToAdd = Helper.getUserInputInteger();
+                            while (transportIdToAdd == Helper.UndefinedUserInput) {
+                                Helper.println("Invalid transport ID. Please try again: ");
+                                transportIdToAdd = Helper.getUserInputInteger();
                             }
-                            if (TransportManager.getTransportById(routeId) == null) {
-                                Helper.println("Transport route not found. Please try again.");
+                            if (TransportManager.getTransportById(transportIdToAdd) == null) {
+                                Helper.println("Transport not found. Please try again.");
                                 return;
                             }
-                            else{
-
+                            List<Integer> createdTransportRoutesIds = new ArrayList<>();
+                            HelperForCreateTransportRoutes(createdTransportRoutesIds);
+                            if (createdTransportRoutesIds.isEmpty()) {
+                                Helper.println("No transport routes created. Cannot proceed with adding new transport routes.");
+                                return;
                             }
+                            Objects.requireNonNull(TransportManager.getTransportById(transportIdToAdd)).getTransportRouteIds().addAll(createdTransportRoutesIds);
                             //need to think about that
                         }
                         case "2" -> {
