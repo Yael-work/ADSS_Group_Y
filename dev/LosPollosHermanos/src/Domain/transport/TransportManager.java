@@ -896,4 +896,23 @@ public class TransportManager {
         transportController.updateTransport(transport, transport.getId());
         return true;
     }
+
+    /**
+     * This method is used to get a driver by ID.
+     *
+     * @param driverId - the ID of the driver
+     * @return - the driver object, or null if not found
+     */
+    public static Driver getDriverById(int driverId) {
+        if (driverId <= Helper.UndefinedId) {
+            Helper.showError("Cant get driver with id <= 0");
+            return null;
+        }
+        Driver driver = DriversManager.getDriverById(driverId);
+        if (driver == null) {
+            Helper.showError("Cant get driver with id=" + driverId + ", it does not exist");
+            return null;
+        }
+        return driver;
+    }
 }

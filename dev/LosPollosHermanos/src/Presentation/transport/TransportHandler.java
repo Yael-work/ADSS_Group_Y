@@ -981,6 +981,54 @@ public class TransportHandler {
     }
 
     /**
+     * This method is used to print the next drive for the driver.
+     */
+    private static void printNextDriveForDriver() {
+        Helper.print("Please enter the driver ID: ");
+        int driverId = Helper.getUserInputInteger();
+        while (driverId == Helper.UndefinedUserInput) {
+            Helper.print("Invalid driver ID. Please try again: ");
+            driverId = Helper.getUserInputInteger();
+        }
+        Driver driver = TransportManager.getDriverById(driverId);
+        if (driver == null) {
+            Helper.println("Driver not found. Please try again.");
+            return;
+        }
+        List<Transport> transports = TransportManager.getAllTransports();
+        for (Transport transport : transports) {
+            if (transport.getDriverId() == driverId && transport.getStatus() == TransportStatusEnum.PENDING) {
+                Helper.println("Next drive for driver ID " + driverId + ": " + transport.toPrettyString());
+                return;
+            }
+        }
+        Helper.println("No next drive found for driver ID " + driverId);
+    }
+
+    /**
+     * This method is used to print the transport drives for the driver.
+     */
+    private static void printTransportDrivesForDriver() {
+        Helper.print("Please enter the driver ID: ");
+        int driverId = Helper.getUserInputInteger();
+        while (driverId == Helper.UndefinedUserInput) {
+            Helper.print("Invalid driver ID. Please try again: ");
+            driverId = Helper.getUserInputInteger();
+        }
+        Driver driver = TransportManager.getDriverById(driverId);
+        if (driver == null) {
+            Helper.println("Driver not found. Please try again.");
+            return;
+        }
+        List<Transport> transports = TransportManager.getAllTransports();
+        for (Transport transport : transports) {
+            if (transport.getDriverId() == driverId) {
+                Helper.println(transport.toPrettyString());
+            }
+        }
+    }
+
+    /**
      * This method is used to handle the transport management menu.
      */
     public static void handleTransports() {
@@ -990,8 +1038,8 @@ public class TransportHandler {
             Helper.println("\nManage Transports:");
             Helper.println("1. Show all transports");
             Helper.println("2. Show specific detailed transport by ID");
-            // Helper.println("3. Print transport drives for driver - by Transport ID"); TODO NTH
-            // Helper.println("4. Print the next drive for driver"); TODO NTH
+            Helper.println("3. Print transport drives for driver - by Transport ID");
+            Helper.println("4. Print the next drive for driver");
             Helper.println("5. Delete transport by ID");
             Helper.println("6. Create transport");
             Helper.println("7. Start transport");
@@ -1013,10 +1061,10 @@ public class TransportHandler {
                     showSpecificDetailedTransport();
                     break;
                 case 3:
-                    // TODO NTH Print transport drives for driver - by Transport ID
+                    printTransportDrivesForDriver();
                     break;
                 case 4:
-                    // TODO NTH  Print the next drive for driver
+                    printNextDriveForDriver();
                     break;
                 case 5:
                     deleteTransportById();
