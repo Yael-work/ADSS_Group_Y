@@ -1,5 +1,6 @@
 package Domain.transport;
 
+import Models.DBModels.transport.TransportArea;
 import Models.DBModels.transport.Truck;
 import DB.DBManager;
 import DB.interfaces.ITruckController;
@@ -32,7 +33,7 @@ public class TrucksManager {
      * @param value - the field to be updated (1: plate, 2: net weight, 3: max weight, 4: required license type, 5: model)
      * @return true if the update was successful, false otherwise
      */
-    public static boolean updateTruck(String some , int id, int value) {
+    public static boolean updateTruck(String some, int id, int value) {
         Truck t = truckController.getTruckById(id);
         if (t == null) {
             Helper.showError("Truck with this ID does not exist");
@@ -82,7 +83,16 @@ public class TrucksManager {
      * @return - an ArrayList of Truck objects representing all trucks in the system
      */
     public static ArrayList<Truck> getAllTrucks() {
-        return truckController.getAllRecords();
+        ArrayList<Truck> trucks = new ArrayList<>();
+        for (Integer id : truckController.getAllIds()) {
+            Truck truck = truckController.getTruckById(id);
+            if (truck == null) {
+                Helper.showError(String.format("Cant get transport area with id=%d, it does not exist", id));
+            } else {
+                trucks.add(truck);
+            }
+        }
+        return trucks;
     }
 
     /**

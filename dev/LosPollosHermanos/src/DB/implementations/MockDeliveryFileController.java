@@ -84,7 +84,11 @@ public class MockDeliveryFileController implements IDeliveryFileController {
     }
 
     @Override
-    public ArrayList<DeliveryFile> getAllRecords() {
-        return new ArrayList<>(files);
+    public List<Integer> getAllIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (DeliveryFile deliveryFile : files) {
+            ids.add(deliveryFile.getId());
+        }
+        return ids;
     }
 }

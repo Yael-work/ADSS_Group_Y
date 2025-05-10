@@ -7,6 +7,7 @@ import Models.DBModels.transport.Branch;
 import org.hibernate.Session;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SqliteBranchController implements IBranchController {
     private static SqliteBranchController instance;
@@ -125,12 +126,12 @@ public class SqliteBranchController implements IBranchController {
     }
 
     @Override
-    public ArrayList<Branch> getAllRecords() {
+    public List<Integer> getAllIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return (ArrayList<Branch>) session.createQuery("FROM Branch", Branch.class).list();
+            return session.createQuery("SELECT id FROM Branch", Integer.class).list();
         } catch (Exception e) {
-            Helper.showError("Failed to get all Branches", e);
-            return null;
+            Helper.showError("Failed to get all Branch IDs", e);
+            return new ArrayList<>();
         }
     }
 }

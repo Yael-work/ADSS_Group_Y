@@ -4,6 +4,7 @@ import DB.interfaces.ITransportIssueLogController;
 import Models.DBModels.transport.TransportIssueLog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockTransportIssueLogController implements ITransportIssueLogController {
     private static MockTransportIssueLogController instance = null;
@@ -78,7 +79,11 @@ public class MockTransportIssueLogController implements ITransportIssueLogContro
     }
 
     @Override
-    public final ArrayList<TransportIssueLog> getAllRecords() {
-        return new ArrayList<>(transportIssueLogs);
+    public List<Integer> getAllIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (TransportIssueLog transportIssueLog : transportIssueLogs) {
+            ids.add(transportIssueLog.getId());
+        }
+        return ids;
     }
 }

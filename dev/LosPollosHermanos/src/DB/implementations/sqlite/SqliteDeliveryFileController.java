@@ -101,14 +101,14 @@ public class SqliteDeliveryFileController implements IDeliveryFileController {
             return null;
         }
     }
-
     @Override
-    public ArrayList<DeliveryFile> getAllRecords() {
+    public List<Integer> getAllIds() {
         try (var session = HibernateUtil.getSessionFactory().openSession()) {
-            return new ArrayList<>(session.createQuery("FROM DeliveryFile", DeliveryFile.class).list());
+            var query = session.createQuery("SELECT id FROM DeliveryFile", Integer.class);
+            return query.getResultList();
         } catch (Exception e) {
-            Helper.showError("Failed to get all DeliveryFiles", e);
-            return null;
+            Helper.showError("Failed to get all DeliveryFile IDs", e);
+            return new ArrayList<>();
         }
     }
 }

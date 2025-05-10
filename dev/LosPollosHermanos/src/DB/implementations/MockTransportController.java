@@ -4,6 +4,7 @@ import Auxiliary.Helper;
 import DB.interfaces.ITransportController;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import Models.DBModels.transport.Transport;
 
@@ -109,7 +110,11 @@ public class MockTransportController implements ITransportController {
     }
 
     @Override
-    public final ArrayList<Transport> getAllRecords() {
-        return new ArrayList<>(transports);
+    public List<Integer> getAllIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (Transport transport : transports) {
+            ids.add(transport.getId());
+        }
+        return ids;
     }
 }

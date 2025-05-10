@@ -70,7 +70,16 @@ public class TransportAreasManager {
      * @return - a list of all transport areas
      */
     public static ArrayList<TransportArea> getAllTransportAreas() {
-        return transportAreaController.getAllRecords();
+        ArrayList<TransportArea> areas = new ArrayList<>();
+        for (Integer id : transportAreaController.getAllIds()) {
+            TransportArea area = transportAreaController.getTransportAreaById(id);
+            if (area == null) {
+                Helper.showError(String.format("Cant get transport area with id=%d, it does not exist", id));
+            } else {
+                areas.add(area);
+            }
+        }
+        return areas;
     }
 
 

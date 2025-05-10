@@ -73,7 +73,16 @@ public class BranchesManager {
      * @return - an ArrayList of Branch objects representing all branches in the system
      */
     public static ArrayList<Branch> getExistingBranches() {
-        return branchController.getAllRecords();
+        ArrayList<Branch> branches = new ArrayList<>();
+        for (Integer id : branchController.getAllIds()) {
+            Branch branch = branchController.getBranchById(id);
+            if (branch == null) {
+                Helper.showError(String.format("Cant get branch with id=%d, it does not exist", id));
+            } else {
+                branches.add(branch);
+            }
+        }
+        return branches;
     }
 
     /**

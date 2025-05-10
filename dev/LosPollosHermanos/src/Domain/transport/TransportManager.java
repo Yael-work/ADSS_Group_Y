@@ -287,7 +287,7 @@ public class TransportManager {
      */
     public static List<Truck> getAvailableTrucksByDate(LocalDateTime targetDateTime) {
         List<Truck> availableTrucks = TrucksManager.getAllTrucks();
-        List<Transport> transports = transportController.getAllRecords();
+        List<Transport> transports = getAllTransports();
         // Extract the target date (without time)
         LocalDate targetDate = targetDateTime.toLocalDate();
 
@@ -317,7 +317,7 @@ public class TransportManager {
      */
     public static List<Driver> getAvailableDriversByDateAndLicense(LocalDateTime targetDateTime, String truckLicenseType) {
         List<Driver> availableDrivers = DriversManager.getAllDrivers();
-        List<Transport> transports = transportController.getAllRecords();
+        List<Transport> transports = getAllTransports();
         // Extract the target date (without time)
         LocalDate targetDate = targetDateTime.toLocalDate();
 
@@ -417,7 +417,16 @@ public class TransportManager {
      * @return - a list of all transports
      */
     public static List<Transport> getAllTransports() {
-        return transportController.getAllRecords();
+        ArrayList<Transport> transports = new ArrayList<>();
+        for (Integer id : transportController.getAllIds()) {
+            Transport transport = transportController.getTransportById(id);
+            if (transport == null) {
+                Helper.showError(String.format("Cant get transport with id=%d, it does not exist", id));
+            } else {
+                transports.add(transport);
+            }
+        }
+        return transports;
     }
 
 

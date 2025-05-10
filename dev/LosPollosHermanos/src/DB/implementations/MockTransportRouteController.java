@@ -5,6 +5,7 @@ import DB.interfaces.ITransportRouteController;
 import Models.DBModels.transport.TransportRoute;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockTransportRouteController implements ITransportRouteController {
     private static MockTransportRouteController instance = null;
@@ -95,7 +96,11 @@ public class MockTransportRouteController implements ITransportRouteController {
     }
 
     @Override
-    public ArrayList<TransportRoute> getAllRecords() {
-        return new ArrayList<>(transportRoutes);
+    public List<Integer> getAllIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (TransportRoute transportRoute : transportRoutes) {
+            ids.add(transportRoute.getId());
+        }
+        return ids;
     }
 }

@@ -5,6 +5,7 @@ import DB.interfaces.IDriverController;
 import Models.DBModels.transport.Driver;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockDriverController implements IDriverController {
     private static MockDriverController instance = null;
@@ -119,7 +120,11 @@ public class MockDriverController implements IDriverController {
     }
 
     @Override
-    public final ArrayList<Driver> getAllRecords() {
-        return new ArrayList<>(drivers);
+    public List<Integer> getAllIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (Driver driver : drivers) {
+            ids.add(driver.getId());
+        }
+        return ids;
     }
 }

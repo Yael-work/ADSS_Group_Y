@@ -117,7 +117,16 @@ public class DriversManager {
      * @return - an ArrayList of Driver objects representing all drivers in the system
      */
     public static ArrayList<Driver> getAllDrivers() {
-        return driverController.getAllRecords();
+        ArrayList<Driver> drivers = new ArrayList<>();
+        for (Integer id : driverController.getAllIds()) {
+            Driver driver = driverController.getDriverById(id);
+            if (driver == null) {
+                Helper.showError(String.format("Cant get driver with id=%d, it does not exist", id));
+            } else {
+                drivers.add(driver);
+            }
+        }
+        return drivers;
     }
 
     /**

@@ -103,12 +103,12 @@ public class SqliteSupplierController implements ISupplierController {
     }
 
     @Override
-    public ArrayList<Supplier> getAllRecords() {
+    public List<Integer> getAllIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return (ArrayList<Supplier>) session.createQuery("FROM Supplier", Supplier.class).list();
+            return session.createQuery("SELECT id FROM Supplier", Integer.class).list();
         } catch (Exception e) {
-            Helper.showError("Failed to get all Suppliers", e);
-            return null;
+            Helper.showError("Failed to get all Supplier IDs", e);
+            return new ArrayList<>();
         }
     }
 }

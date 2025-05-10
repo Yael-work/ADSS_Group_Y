@@ -5,6 +5,7 @@ import DB.interfaces.IBranchController;
 import Models.DBModels.transport.Branch;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockBranchController implements IBranchController {
     private static MockBranchController instance = null;
@@ -134,7 +135,11 @@ public class MockBranchController implements IBranchController {
     }
 
     @Override
-    public final ArrayList<Branch> getAllRecords() {
-        return new ArrayList<>(branches);
+    public List<Integer> getAllIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (Branch branch : branches) {
+            ids.add(branch.getId());
+        }
+        return ids;
     }
 }

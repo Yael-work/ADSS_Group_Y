@@ -109,7 +109,11 @@ public class MockSupplierController implements ISupplierController {
     }
 
     @Override
-    public final ArrayList<Supplier> getAllRecords() {
-        return new ArrayList<>(suppliers);
+    public List<Integer> getAllIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (Supplier supplier : suppliers) {
+            ids.add(supplier.getId());
+        }
+        return ids;
     }
 }

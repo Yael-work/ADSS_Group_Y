@@ -20,7 +20,14 @@ public class SuppliersManager {
             .getSupplierController();
 
     public static ArrayList<Supplier> getSuppliers() {
-        return supplierController.getAllRecords();
+        ArrayList<Supplier> suppliers = new ArrayList<>();
+        for (Integer id : supplierController.getAllIds()) {
+            Supplier supplier = supplierController.getSupplierById(id);
+            if (supplier != null) {
+                suppliers.add(supplier);
+            }
+        }
+        return suppliers;
     }
 
     public static Supplier getSupplierById(int id) {

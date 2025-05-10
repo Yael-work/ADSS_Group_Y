@@ -95,7 +95,11 @@ public class MockTransportAreaController implements ITransportAreaController {
     }
 
     @Override
-    public final ArrayList<TransportArea> getAllRecords() {
-        return new ArrayList<>(transportAreas);
+    public List<Integer> getAllIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (TransportArea area : transportAreas) {
+            ids.add(area.getId()); // Collect all IDs
+        }
+        return ids; // Return the list of IDs
     }
 }

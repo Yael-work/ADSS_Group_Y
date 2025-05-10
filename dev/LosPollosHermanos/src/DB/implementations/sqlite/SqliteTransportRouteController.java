@@ -7,6 +7,7 @@ import Models.DBModels.transport.TransportRoute;
 import org.hibernate.Session;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SqliteTransportRouteController implements ITransportRouteController {
     private static SqliteTransportRouteController instance;
@@ -95,12 +96,12 @@ public class SqliteTransportRouteController implements ITransportRouteController
     }
 
     @Override
-    public ArrayList<TransportRoute> getAllRecords() {
+    public List<Integer> getAllIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return (ArrayList<TransportRoute>) session.createQuery("FROM TransportRoute", TransportRoute.class).list();
+            return session.createQuery("SELECT id FROM TransportRoute", Integer.class).list();
         } catch (Exception e) {
-            Helper.showError("Failed to get all transport routes", e);
-            return null;
+            Helper.showError("Failed to get all transport route IDs", e);
+            return new ArrayList<>();
         }
     }
 }

@@ -7,6 +7,7 @@ import Models.DBModels.transport.Driver;
 import org.hibernate.Session;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SqliteDriverController implements IDriverController {
     private static SqliteDriverController instance;
@@ -111,12 +112,13 @@ public class SqliteDriverController implements IDriverController {
     }
 
     @Override
-    public ArrayList<Driver> getAllRecords() {
+    public List<Integer> getAllIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return new ArrayList<>(session.createQuery("FROM Driver", Driver.class).getResultList());
+            var query = session.createQuery("SELECT id FROM Driver", Integer.class);
+            return query.list();
         } catch (Exception e) {
-            Helper.showError("Failed to get all Drivers", e);
-            return null;
+            Helper.showError("Failed to get all Driver IDs", e);
+            return new ArrayList<>();
         }
     }
 }

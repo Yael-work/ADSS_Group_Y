@@ -4,6 +4,7 @@ import DB.interfaces.ITruckController;
 import Models.DBModels.transport.Truck;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MockTruckController implements ITruckController {
     private static MockTruckController instance = null;
@@ -92,7 +93,11 @@ public class MockTruckController implements ITruckController {
     }
 
     @Override
-    public final ArrayList<Truck> getAllRecords() {
-        return new ArrayList<>(trucks);
+    public List<Integer> getAllIds() {
+        List<Integer> ids = new ArrayList<>();
+        for (Truck truck : trucks) {
+            ids.add(truck.getId());
+        }
+        return ids;
     }
 }
