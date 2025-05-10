@@ -543,6 +543,7 @@ public class TransportManager {
             }
             transport.setStatus(TransportStatusEnum.STARTED);
             Helper.println("Transport started successfully.");
+            transportController.updateTransport(transport, transport.getId());
             return true;
         } else {
             Helper.println("Transport is already started or completed. Cannot start again.");
@@ -588,6 +589,7 @@ public class TransportManager {
         if (selectedRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES) {
             selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED);
         }
+        transportController.updateTransport(transport, transport.getId());
         return visitSiteEnum.SUCCESS;
     }
 
@@ -640,16 +642,20 @@ public class TransportManager {
                                 selectedRoute.getId(), 0);
                         transportIssueLogIds.add(transportIssueLog.getId());
                         transport.setTransportIssueLogIds(transportIssueLogIds);
+                        transportController.updateTransport(transport, transport.getId());
+                    } else {
+                        TransportIssueLog transportIssueLog = new TransportIssueLog(transport.getTransportIssueLogIds().getLast() + 1, transport.getTruckId(), truckId,
+                                selectedRoute.getId(), 0);
+                        transport.getTransportIssueLogIds().add(transportIssueLog.getId());
+                        transportController.updateTransport(transport, transport.getId());
                     }
-                    TransportIssueLog transportIssueLog = new TransportIssueLog(transport.getTransportIssueLogIds().getLast() + 1, transport.getTruckId(), truckId,
-                            selectedRoute.getId(), 0);
-                    transport.getTransportIssueLogIds().add(transportIssueLog.getId());
                 }
                 if (code == 2) {
                     selectedRoute.setDeliveryFile(deliveryFile);
                 }
                 selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
                 transport.setStatus(TransportStatusEnum.CONTINUED_WITH_ISSUES);
+                transportController.updateTransport(transport, transport.getId());
                 return true;
             }
             if (codeSite == 1) {
@@ -677,14 +683,17 @@ public class TransportManager {
             }
             if (transportRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED) {
                 isCompleted = false;
+                transportController.updateTransport(transport, transport.getId());
                 break;
             }
         }
         if (isCompleted) {
             if (transport.getStatus() == TransportStatusEnum.CONTINUED_WITH_ISSUES) {
                 transport.setStatus(TransportStatusEnum.DONE_WITH_ISSUES);
+                transportController.updateTransport(transport, transport.getId());
             } else {
                 transport.setStatus(TransportStatusEnum.DONE);
+                transportController.updateTransport(transport, transport.getId());
             }
             return true;
         } else {
@@ -710,6 +719,7 @@ public class TransportManager {
         }
         if (transport.getActualStartDatetime().isAfter(newPlannedDateTime)) {
             transport.setPlannedDateTime(newPlannedDateTime);
+            transportController.updateTransport(transport, transport.getId());
             return UpdateNewPlannedDateTime.SUCCESS;
         }
         if (transport.getActualStartDatetime().isBefore(newPlannedDateTime) &&
@@ -739,6 +749,7 @@ public class TransportManager {
             return false;
         }
         transport.setStatus(TransportStatusEnum.CANCELED);
+        transportController.updateTransport(transport, transport.getId());
         Helper.println("Transport canceled successfully.");
         return true;
     }
@@ -764,6 +775,7 @@ public class TransportManager {
             return false;
         }
         transport.setTruckId(truckId);
+        transportController.updateTransport(transport, transport.getId());
         Helper.println("Truck ID set successfully.");
         return true;
     }
@@ -789,6 +801,7 @@ public class TransportManager {
             return false;
         }
         transport.setDriverId(driverId);
+        transportController.updateTransport(transport, transport.getId());
         Helper.println("Driver ID set successfully.");
         return true;
     }
@@ -855,6 +868,7 @@ public class TransportManager {
             return false;
         }
         transport.setActualStartDatetime(actualStartDateTime);
+        transportController.updateTransport(transport, transport.getId());
         return true;
     }
 
@@ -879,6 +893,7 @@ public class TransportManager {
             return false;
         }
         transport.setActualEndDatetime(actualEndDateTime);
+        transportController.updateTransport(transport, transport.getId());
         return true;
     }
 }
