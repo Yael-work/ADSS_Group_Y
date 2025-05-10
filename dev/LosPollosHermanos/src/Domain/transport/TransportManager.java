@@ -64,6 +64,7 @@ public class TransportManager {
     private static final ITransportController transportController = DBManager.getInstance().getTransportController();
     private static final IDeliveryFileController deliveryFileController = DBManager.getInstance().getDeliveryFileController();
     private static final ITransportRouteController transportRouteController = DBManager.getInstance().getTransportRouteController();
+    private static final ISiteController siteController = DBManager.getInstance().getSiteController();
 
     /**
      * This method is used to create a delivery file.
@@ -134,20 +135,34 @@ public class TransportManager {
             Helper.showError("Invalid supplier ID: " + supplierId);
             return Helper.UndefinedId;
         }
-
-        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(deliveryFileId);
-        if (deliveryFile == null) {
-            Helper.showError("Failed to get delivery file by ID: " + deliveryFileId);
+        Site src = new Site(Helper.UndefinedId, s, s.getSupplierAddress(),
+                SuppliersManager.getCurrentContactPhoneOfSupplier(supplierId),
+                SuppliersManager.getCurrentContactNameOfSupplier(supplierId), 0);
+        int srcSiteId = siteController.addSite(src);
+        if (srcSiteId <= Helper.UndefinedId) {
+            Helper.showError("Failed to add source site.");
+            if (!deleteDeliveryFile(deliveryFileId)) {
+                Helper.showError("Failed to delete delivery file");
+            }
+            return Helper.UndefinedId;
+        }
+        Site dest = new Site(Helper.UndefinedId, b, b.getAddress(),
+                BranchesManager.getCurrentContactPhoneOfBranch(branchId),
+                BranchesManager.getCurrentContactNameOfBranch(branchId), 0);
+        int destSiteId = siteController.addSite(dest);
+        if (destSiteId <= Helper.UndefinedId) {
+            Helper.showError("Failed to add destination site.");
+            if (!deleteDeliveryFile(deliveryFileId)) {
+                Helper.showError("Failed to delete delivery file");
+            }
+            if (!deleteSite(srcSiteId)) {
+                Helper.showError("Failed to delete source site");
+            }
             return Helper.UndefinedId;
         }
 
-        TransportRoute transportRoute = new TransportRoute(Helper.UndefinedId,
-                TransportStatusEnum.PENDING,
-                deliveryFile, s, b,
-                SuppliersManager.getCurrentContactNameOfSupplier(supplierId),
-                SuppliersManager.getCurrentContactPhoneOfSupplier(supplierId),
-                BranchesManager.getCurrentContactNameOfBranch(branchId),
-                BranchesManager.getCurrentContactPhoneOfBranch(branchId), 0);
+        TransportRoute transportRoute = new TransportRoute(Helper.UndefinedId, TransportStatusEnum.PENDING,
+                deliveryFileId, srcSiteId, destSiteId);
         return transportRouteController.addTransportRoute(transportRoute);
     }
 
@@ -215,6 +230,31 @@ public class TransportManager {
                 items);
     }
 
+    /**
+     * This method is used to delete a site
+     *
+     * @param siteId - the ID of the delivery file to be deleted
+     * @return - true if the delivery file was deleted successfully, false otherwise
+     */
+    private static boolean deleteSite(int siteId) {
+        if (siteId <= 0) {
+            Helper.showError("Cant delete site with id <= 0");
+            return false;
+        }
+        Site site = DBManager.getInstance().getSiteController().getSiteById(siteId);
+        if (site == null) {
+            Helper.showError("Cant delete site with id=" + siteId + ", it does not exist");
+            return false;
+        } else {
+            if (!DBManager.getInstance().getSiteController().deleteSite(siteId)) {
+                Helper.showError("Cant delete site with id=" + siteId + ", failed to delete site");
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
 
     /**
      * This method is used to delete transport routes.
@@ -237,8 +277,16 @@ public class TransportManager {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", it is not in pending status");
                     return false;
                 }
-                if (!deleteDeliveryFile(t.getDeliveryFile().getId())) {
+                if (!deleteDeliveryFile(t.getDeliveryFileId())) {
                     Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete delivery file");
+                    return false;
+                }
+                if (!deleteSite(t.getSourceSiteId())) {
+                    Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete source site");
+                    return false;
+                }
+                if (!deleteSite(t.getDestinationSiteId())) {
+                    Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete destination site");
                     return false;
                 }
                 if (!transportRouteController.deleteTransportRoute(t.getId())) {
@@ -378,11 +426,12 @@ public class TransportManager {
             for (int routeId : transportRoutes) {
                 TransportRoute route = transportRouteController.getTransportRouteById(routeId);
                 if (route != null) {
-                    APhysicalSite srcSite = route.getSourceSite();
-                    DeliveryFile deliveryFile = route.getDeliveryFile();
+                    Site srcSite = siteController.getSiteById(route.getSourceSiteId());
+                    DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(route.getDeliveryFileId());
                     if (srcSite != null) {
-                        if (srcSite instanceof Supplier supplier) {
+                        if (srcSite.getPhysicalSite() instanceof Supplier supplier) {
                             List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
+                            List<StockItem> items = new ArrayList<>();
                             List<ItemsAtSupplier> itemsAtSupplier =
                                     SuppliersManager.mockGetSupplierItemsByStockItems(supplier.getId(),
                                             StockManager.mockGetStockItemsByIds(
@@ -432,24 +481,29 @@ public class TransportManager {
     /**
      * This method is used to get a detailed string representation of a delivery file.
      *
-     * @param deliveryFile - the delivery file object
+     * @param deliveryFileId - the ID of the delivery file
      * @return - a detailed string representation of the delivery file
      */
-    private static String getDetailedDeliveryFileString(DeliveryFile deliveryFile) {
+    private static String getDetailedDeliveryFileString(int deliveryFileId) {
+        if (deliveryFileId <= Helper.UndefinedId) {
+            Helper.showError("Cant get delivery file with id <= 0");
+            return null;
+        }
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(deliveryFileId);
         if (deliveryFile == null) {
-            Helper.showError("Delivery file not found.");
+            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
             return null;
         }
         List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
         if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
-            Helper.showError("No items in the delivery file.");
+            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
             return null;
         }
         List<StockItem> items = StockManager.mockGetStockItemsByIds(deliveryFileItems.stream()
                 .map(DeliveryFileItem::getStockItemId)
                 .collect(Collectors.toList()));
         if (items.isEmpty()) {
-            Helper.showError("No items found for the delivery file.");
+            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
             return null;
         }
         StringBuilder sb = new StringBuilder();
@@ -485,14 +539,14 @@ public class TransportManager {
             Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
             return null;
         }
-        String deleiveryFileDetailedString = getDetailedDeliveryFileString(route.getDeliveryFile());
+        String deleiveryFileDetailedString = getDetailedDeliveryFileString(route.getDeliveryFileId());
 
-        APhysicalSite sourceSite = route.getSourceSite();
+        Site sourceSite = siteController.getSiteById(route.getSourceSiteId());
         if (sourceSite == null) {
-            Helper.showError("source site not found for transport route with id=" + routeId);
+            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
             return null;
         }
-        APhysicalSite destinationSite = route.getDestinationSite();
+        Site destinationSite = siteController.getSiteById(route.getDestinationSiteId());
         if (destinationSite == null) {
             Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
             return null;
@@ -566,7 +620,7 @@ public class TransportManager {
      * @return - an enum indicating the result of the visit
      */
     public static visitSiteEnum visitSource(Transport transport, TransportRoute selectedRoute) {
-        DeliveryFile deliveryFile = selectedRoute.getDeliveryFile();
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFileId());
         if (deliveryFile == null) {
             Helper.println("Delivery file not found.");
             return visitSiteEnum.FAILED;
@@ -625,6 +679,25 @@ public class TransportManager {
     }
 
     /**
+     * This method is used to get a site by ID.
+     *
+     * @param SiteId - the ID of the site
+     * @return - the site object, or null if not found
+     */
+    public static Site getSiteById(int SiteId) {
+        if (SiteId <= Helper.UndefinedId) {
+            Helper.showError("Cant get site with id <= 0");
+            return null;
+        }
+        Site site = siteController.getSiteById(SiteId);
+        if (site == null) {
+            Helper.showError("Cant get site with id=" + SiteId + ", it does not exist");
+            return null;
+        }
+        return site;
+    }
+
+    /**
      * This method is used to update the transport issue.
      *
      * @param transport     - the transport object
@@ -654,7 +727,7 @@ public class TransportManager {
                     transport.getTransportIssueLogIds().add(transportIssueLog.getId());
                 }
                 if (code == 2) {
-                    selectedRoute.setDeliveryFile(deliveryFile);
+                    selectedRoute.setDeliveryFileId(deliveryFile.getId());
                 }
                 selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
                 transport.setStatus(TransportStatusEnum.CONTINUED_WITH_ISSUES);
@@ -714,50 +787,17 @@ public class TransportManager {
         }
         if ((transport.getActualStartDatetime().isBefore(newPlannedDateTime) || transport.getActualStartDatetime().isEqual(newPlannedDateTime))
                 && transport.getActualEndDatetime().isAfter(newPlannedDateTime)) {
-            Helper.println("The new planned date and time cannot be before the actual start date and time. " +
-                    "Please set a new actual start date and time.");
             return UpdateNewPlannedDateTime.MIDDLE;
         }
         if (transport.getActualStartDatetime().isAfter(newPlannedDateTime)) {
             transport.setPlannedDateTime(newPlannedDateTime);
-            return true;
+            return UpdateNewPlannedDateTime.SUCCESS;
         }
         if (transport.getActualStartDatetime().isBefore(newPlannedDateTime) &&
                 transport.getActualEndDatetime().isBefore(newPlannedDateTime)) {
-            Helper.println("The new planned date and time cannot be before the actual end date and time. " +
-                    "Please set a new actual start and end date ane time.");
-            do {
-                Helper.print("Enter the new start planned date and time (%s): "
-                        .formatted(Helper.DefaultDateTimeFormat));
-                String dateTimeStr = Helper.getUserInputString();
-                LocalDateTime actualNewStartDateTime = Helper.stringToDateTime(dateTimeStr);
-                while (actualNewStartDateTime == null) {
-                    Helper.print("Invalid date and time format. Please try again: ");
-                    dateTimeStr = Helper.getUserInputString();
-                    actualNewStartDateTime = Helper.stringToDateTime(dateTimeStr);
-                }
-                Helper.print("Enter the new end planned date and time (%s): "
-                        .formatted(Helper.DefaultDateTimeFormat));
-                dateTimeStr = Helper.getUserInputString();
-                LocalDateTime actualNewEndDateTime = Helper.stringToDateTime(dateTimeStr);
-                while (actualNewEndDateTime == null) {
-                    Helper.print("Invalid date and time format. Please try again: ");
-                    dateTimeStr = Helper.getUserInputString();
-                    actualNewEndDateTime = Helper.stringToDateTime(dateTimeStr);
-                }
-                if (transport.getActualStartDatetime().isBefore(newPlannedDateTime) ||
-                        transport.getActualEndDatetime().isBefore(newPlannedDateTime)) {
-                    Helper.println("The new planned date and time cannot be before the actual end date and time. " +
-                            "Please set a new actual start and end date and time.");
-                } else {
-                    transport.setPlannedDateTime(actualNewStartDateTime);
-                    transport.setActualStartDatetime(actualNewStartDateTime);
-                    transport.setActualEndDatetime(actualNewEndDateTime);
-                    return true;
-                }
-            } while (true);
+            return UpdateNewPlannedDateTime.AFTER;
         }
-        return false;
+        return UpdateNewPlannedDateTime.FAILED;
     }
 
     /**
@@ -891,7 +931,7 @@ public class TransportManager {
             Helper.println("The new actual start date and time cannot be before the planned date and time.");
             return false;
         }
-        if(actualStartDateTime.isAfter(transport.getActualEndDatetime())) {
+        if (actualStartDateTime.isAfter(transport.getActualEndDatetime())) {
             Helper.println("The new actual start date and time cannot be after the actual end date and time.");
             return false;
         }
