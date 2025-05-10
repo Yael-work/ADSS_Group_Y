@@ -1,5 +1,6 @@
 package Presentation.transport;
 
+import Auxiliary.Enums.Domain.UpdateNewPlannedDateTime;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Enums.Models.visitSiteEnum;
 import Auxiliary.Helper;
@@ -486,7 +487,7 @@ public class TransportHandler {
     /**
      * This method is used to visit the source of the transport.
      */
-    private static void visitSource() {
+    private static void visitSource() { //TODO rework on that
         for (Transport transport : TransportManager.getAllTransports()) {
             Helper.println("Transport ID: " + transport.getId() + ", Status: " + transport.getStatus());
         }
@@ -776,12 +777,14 @@ public class TransportHandler {
                         dateTimeStr = Helper.getUserInputString();
                         plannedDateTime = Helper.stringToDateTime(dateTimeStr);
                     }
-                    if (TransportManager.setNewPlannedDateTime(transport, plannedDateTime)) {
-                        Helper.println("Planned date and time updated successfully.");
-                    } else {
-                        Helper.println("Failed to update planned date and time. Try again.");
-                    }
-                    break;
+                    do {
+                        if (TransportManager.setNewPlannedDateTime(transport, plannedDateTime) == UpdateNewPlannedDateTime.MIDDLE) {
+                            Helper.println("Planned date and time updated successfully.");
+                            break;
+                        } else {
+                            Helper.println("Failed to update planned date and time. Try again.");
+                        }
+                    } while (true);
                 }
                 case 2 -> {
                     Helper.print("Are you sure you want to cancel this transport? (yes/no): ");
@@ -832,65 +835,80 @@ public class TransportHandler {
                 case 5 -> {
                     Helper.println("Choose to add or edit or delete transport route IDs:");
                     Helper.println("1. Add transport routes ID");
-                    Helper.println("2. Edit transport route ID");
-                    Helper.println("3. Delete transport route ID");
+                    //Helper.println("2. Edit transport route ID");
+                    Helper.println("2. Delete transport route ID");
                     String userInput = Helper.getUserInputString();
                     while (userInput == null || userInput.isEmpty() || !userInput.matches("[1-3]")) {
-                        Helper.println("Invalid input. Please choose 1, 2 or 3.");
+                        Helper.println("Invalid input. Please choose 1 or 2.");
                         userInput = Helper.getUserInputString();
                     }
                     switch (userInput) {
                         case "1" -> {
-                            Helper.println("Enter the transport ID to add: ");
-                            int transportIdToAdd = Helper.getUserInputInteger();
-                            while (transportIdToAdd == Helper.UndefinedUserInput) {
-                                Helper.println("Invalid transport ID. Please try again: ");
-                                transportIdToAdd = Helper.getUserInputInteger();
-                            }
-                            if (TransportManager.getTransportById(transportIdToAdd) == null) {
-                                Helper.println("Transport not found. Please try again.");
-                                return;
-                            }
                             List<Integer> createdTransportRoutesIds = new ArrayList<>();
                             HelperForCreateTransportRoutes(createdTransportRoutesIds);
                             if (createdTransportRoutesIds.isEmpty()) {
                                 Helper.println("No transport routes created. Cannot proceed with adding new transport routes.");
                                 return;
                             }
-                            Objects.requireNonNull(TransportManager.getTransportById(transportIdToAdd)).getTransportRouteIds().addAll(createdTransportRoutesIds);
+                            transport.getTransportRouteIds().addAll(createdTransportRoutesIds);
                             //Took time to think.
                         }
+//                        case "2" -> {
+//                            // TODO NTH Edit transport route ID
+//                        }
                         case "2" -> {
-                            // TODO NTH Edit transport route ID
-                        }
-                        case "3" -> {
-                            Helper.println("Enter the transport ID to delete: ");
-                            int transportIdToDelete = Helper.getUserInputInteger();
-                            while (transportIdToDelete == Helper.UndefinedUserInput) {
-                                Helper.println("Invalid transport ID. Please try again: ");
-                                transportIdToDelete = Helper.getUserInputInteger();
-                            }
-                            if (TransportManager.getTransportById(transportIdToDelete) == null) {
-                                Helper.println("Transport not found. Please try again.");
-                                return;
-                            }
                             Helper.println("Enter the transport route ID to delete: ");
                             int transportRouteIdToDelete = Helper.getUserInputInteger();
                             while (transportRouteIdToDelete == Helper.UndefinedUserInput) {
                                 Helper.println("Invalid transport route ID. Please try again: ");
                                 transportRouteIdToDelete = Helper.getUserInputInteger();
                             }
-                            if (TransportManager.deleteTransportRoute(transportIdToDelete, transportRouteIdToDelete)) {
+                            if (TransportManager.deleteTransportRoute(transport, transportRouteIdToDelete)) {
                                 Helper.println("Transport route ID deleted successfully.");
                             } else {
                                 Helper.println("Failed to delete transport route ID. Try again.");
                             }
-
                         }
                         default -> {
-                            Helper.println("Invalid input. Please choose 1, 2 or 3.");
+                            Helper.println("Invalid input. Please choose 1 or 2.");
                         }
                     }
+                }
+                case 6 -> {
+                    Helper.print("Enter the new actual start date and time (%s): "
+                            .formatted(Helper.DefaultDateTimeFormat));
+                    String dateTimeStr = Helper.getUserInputString();
+                    LocalDateTime actualStartDateTime = Helper.stringToDateTime(dateTimeStr);
+                    while (actualStartDateTime == null) {
+                        Helper.print("Invalid date and time format. Please try again: ");
+                        dateTimeStr = Helper.getUserInputString();
+                        actualStartDateTime = Helper.stringToDateTime(dateTimeStr);
+                    }
+                    if (TransportManager.setNewActualStartDateTime(transport, actualStartDateTime)) {
+                        Helper.println("Actual start date and time updated successfully.");
+                    } else {
+                        Helper.println("Failed to update actual start date and time. Try again.");
+                    }
+                    break;
+                }
+                case 7 -> {
+                    do {
+                        Helper.print("Enter the new actual end date and time (%s): "
+                                .formatted(Helper.DefaultDateTimeFormat));
+                        String dateTimeStr = Helper.getUserInputString();
+                        LocalDateTime actualEndDateTime = Helper.stringToDateTime(dateTimeStr);
+                        while (actualEndDateTime == null) {
+                            Helper.print("Invalid date and time format. Please try again: ");
+                            dateTimeStr = Helper.getUserInputString();
+                            actualEndDateTime = Helper.stringToDateTime(dateTimeStr);
+                        }
+                        if (TransportManager.setNewActualEndDateTime(transport, actualEndDateTime)) {
+                            Helper.println("Actual end date and time updated successfully.");
+                            break;
+                        } else {
+                            Helper.println("Failed to update actual end date and time. Try again.");
+                        }
+                    } while (true);
                 }
                 case 8 -> {
                     Helper.println("Exiting edit menu.");
@@ -898,6 +916,7 @@ public class TransportHandler {
                 }
                 default -> Helper.println("Invalid choice. Please try again.");
             }
+
 
         } while (true);
     }
