@@ -866,6 +866,19 @@ public class TransportManager {
      * @return - true if the actual end date and time were set successfully, false otherwise
      */
     public static boolean setNewActualEndDateTime(Transport transport, LocalDateTime actualEndDateTime) {
-        return false;
+        if (actualEndDateTime == null) {
+            Helper.println("New actual end date and time cannot be null.");
+            return false;
+        }
+        if (actualEndDateTime.isBefore(transport.getActualStartDatetime())) {
+            Helper.println("The new actual end date and time cannot be before the actual start date and time.");
+            return false;
+        }
+        if (actualEndDateTime.isAfter(transport.getPlannedDateTime())) {
+            Helper.println("The new actual end date and time cannot be after the planned date and time.");
+            return false;
+        }
+        transport.setActualEndDatetime(actualEndDateTime);
+        return true;
     }
 }
