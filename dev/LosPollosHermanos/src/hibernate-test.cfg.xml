@@ -23,6 +23,7 @@
         <mapping class="Models.DBModels.transport.DeliveryFileItem"/>
         <mapping class="Models.DBModels.transport.DeliveryFile"/>
         <mapping class="Models.DBModels.transport.APhysicalSite"/>
+        <mapping class="Models.DBModels.transport.TransportRoute"/>
         <mapping class="Models.DBModels.suppliers.Supplier"/>
     </session-factory>
 </hibernate-configuration>

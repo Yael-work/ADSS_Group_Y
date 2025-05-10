@@ -1,10 +1,12 @@
 package Tests;
 
+import Auxiliary.Enums.Models.TransportStatusEnum;
 import DB.DBManager;
 import Models.DBModels.suppliers.Supplier;
 import Models.DBModels.transport.Branch;
 import Models.DBModels.transport.DeliveryFile;
 import Models.DBModels.transport.DeliveryFileItem;
+import Models.DBModels.transport.TransportRoute;
 import Tests.losPollosAnnotations.UseTestingDatabase;
 import Tests.losPollosAnnotations.UseTestingDatabaseExtension;
 import org.junit.jupiter.api.Test;
@@ -98,8 +100,15 @@ public class DBTests {
     @UseTestingDatabase
     @Test
     public void testCreateBranch() {
+        _testCreateBranch(false);
+    }
+
+    private void _testCreateBranch(boolean quitIfExisting) {
         Branch branch = DBManager.getInstance().getBranchController().getBranchByName("Branch 1");
         if (branch != null) {
+            if (quitIfExisting) {
+                return;
+            }
             DBManager.getInstance().getBranchController().deleteBranch(branch.getId());
         }
         branch = new Branch(0, "Branch 1", "123 Main St", "555-1234");
@@ -155,8 +164,15 @@ public class DBTests {
     @UseTestingDatabase
     @Test
     public void testCreateSupplier() {
+        _testCreateSupplier(false);
+    }
+
+    private void _testCreateSupplier(boolean quitIfExisting) {
         Supplier supplier = DBManager.getInstance().getSupplierController().getSupplierByName("Supplier 1");
         if (supplier != null) {
+            if (quitIfExisting) {
+                return;
+            }
             DBManager.getInstance().getSupplierController().deleteSupplier(supplier.getId());
         }
         supplier = new Supplier(0, "Supplier 1", "123 Main St test1234", "555-1234666");
@@ -167,6 +183,7 @@ public class DBTests {
         assertEquals("123 Main St test1234", retrievedSupplier.getSiteAddress());
         assertEquals("555-1234666", retrievedSupplier.getSitePhone());
     }
+
 
     @UseTestingDatabase
     @Test
@@ -212,10 +229,47 @@ public class DBTests {
     @Test
     public void testCreateTransportRoute() {
         //We assume that these function leave a correct creation of branch, supplier, delivery file
-        testCreateBranch();
-        testCreateSupplier();
+        _testCreateBranch(true);
+        _testCreateSupplier(true);
         testCreateDeliveryFile();
 
+        List<Integer> deliveryFileIds = DBManager.getInstance().getDeliveryFileController().getAllIds();
+        assertFalse(deliveryFileIds.isEmpty(), "No delivery files found");
+        int deliveryFileId = deliveryFileIds.getLast();// we use a one to one so we take the last one(must be newly created)!
 
+        List<Integer> branchIds = DBManager.getInstance().getBranchController().getAllIds();
+        assertFalse(branchIds.isEmpty(), "No branches found");
+        int branchId = branchIds.getFirst();
+
+        List<Integer> supplierIds = DBManager.getInstance().getSupplierController().getAllIds();
+        assertFalse(supplierIds.isEmpty(), "No suppliers found");
+        int supplierId = supplierIds.getFirst();
+
+        DeliveryFile deliveryFile = DBManager.getInstance().getDeliveryFileController().getDeliveryFileById(deliveryFileId);
+        assertNotNull(deliveryFile, "Delivery file not found");
+        Branch branch = DBManager.getInstance().getBranchController().getBranchById(branchId);
+        assertNotNull(branch, "Branch not found");
+        Supplier supplier = DBManager.getInstance().getSupplierController().getSupplierById(supplierId);
+        assertNotNull(supplier, "Supplier not found");
+
+        // Create a new transport route
+        int addedId = DBManager.getInstance().getTransportRouteController().addTransportRoute(
+                new TransportRoute(0, TransportStatusEnum.PENDING, deliveryFile, supplier, branch,
+                        "John Doe", "555-1234", "Jane Smith",
+                        "555-5678", 0.0));
+        assertTrue(addedId > 0, "Failed to add transport route");
+        TransportRoute transportRoute = DBManager.getInstance().getTransportRouteController().getTransportRouteById(addedId);
+        assertNotNull(transportRoute, "Transport route not found");
+        assertEquals(TransportStatusEnum.PENDING, transportRoute.getStatus(), "Transport route status mismatch");
+        assertEquals(deliveryFileId, transportRoute.getDeliveryFile().getId(), "Delivery file ID mismatch");
+        assertEquals(supplierId, transportRoute.getSourceSite().getId(), "Source branch ID mismatch");
+        assertEquals(branchId, transportRoute.getDestinationSite().getId(), "Destination supplier ID mismatch");
+        assertEquals("John Doe", transportRoute.getSourceContactName(), "Source contact name mismatch");
+        assertEquals("555-1234", transportRoute.getSourceContactPhone(), "Source contact phone mismatch");
+        assertEquals("Jane Smith", transportRoute.getDestinationContactName(), "Destination contact name mismatch");
+        assertEquals("555-5678", transportRoute.getDestinationContactPhone(), "Destination contact phone mismatch");
+        assertEquals(0.0, transportRoute.getRecordedWeightAtSite(), "Recorded weight mismatch");
+        assertEquals(supplier.getSiteName(), transportRoute.getSourceSite().getSiteName(), "Source site name mismatch");
+        assertEquals(branch.getSiteName(), transportRoute.getDestinationSite().getSiteName(), "Destination site name mismatch");
     }
 }

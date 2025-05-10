@@ -2,24 +2,24 @@ package Models.DBModels.transport;
 
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import Models.DBModels.BaseModel;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "transport_routes")
 public class TransportRoute extends BaseModel {
     @Column(nullable = false)
     private TransportStatusEnum status;
-    @OneToOne
-    @Column(nullable = false)
+
+    @OneToOne(optional = false)
+    @JoinColumn(name = "delivery_file_id", referencedColumnName = "id", nullable = false, unique = false)
     private DeliveryFile deliveryFile;
-    @OneToOne
-    @Column(nullable = false)
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "source_site_id", referencedColumnName = "id", nullable = false)
     private APhysicalSite sourceSite;
-    @OneToOne
-    @Column(nullable = false)
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "destination_site_id", referencedColumnName = "id", nullable = false)
     private APhysicalSite destinationSite;
 
     @Column(nullable = false)
