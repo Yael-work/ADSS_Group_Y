@@ -228,6 +228,10 @@ public class DBTests {
     @UseTestingDatabase
     @Test
     public void testCreateTransportRoute() {
+        _testCreateTransportRoute();
+    }
+
+    private int _testCreateTransportRoute() {
         //We assume that these function leave a correct creation of branch, supplier, delivery file
         // so that a new delivery file is created, but an ALREADY EXISTING branch and supplier are used
         _testCreateBranch(true);
@@ -236,7 +240,7 @@ public class DBTests {
 
         List<Integer> deliveryFileIds = DBManager.getInstance().getDeliveryFileController().getAllIds();
         assertFalse(deliveryFileIds.isEmpty(), "No delivery files found");
-        int deliveryFileId = deliveryFileIds.getLast();// we use a one to one so we take the last one(must be newly created)!
+        int deliveryFileId = deliveryFileIds.getLast();// we use a one to one, so we take the last one(must be newly created)!
 
         List<Integer> branchIds = DBManager.getInstance().getBranchController().getAllIds();
         assertFalse(branchIds.isEmpty(), "No branches found");
@@ -272,5 +276,44 @@ public class DBTests {
         assertEquals(0.0, transportRoute.getRecordedWeightAtSite(), "Recorded weight mismatch");
         assertEquals(supplier.getSiteName(), transportRoute.getSourceSite().getSiteName(), "Source site name mismatch");
         assertEquals(branch.getSiteName(), transportRoute.getDestinationSite().getSiteName(), "Destination site name mismatch");
+        return addedId;
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testUpdateTransportRoute() {
+        // first we must create a route
+        int transportRouteId = _testCreateTransportRoute();
+
+        TransportRoute transportRoute = DBManager.getInstance().getTransportRouteController().getTransportRouteById(transportRouteId);
+        assertNotNull(transportRoute, "Transport route not found");
+        transportRoute.setStatus(TransportStatusEnum.STARTED);
+        transportRoute.setSourceContactName("Updated John Doe");
+        transportRoute.setSourceContactPhone("555-9876");
+        transportRoute.setDestinationContactName("Updated Jane Smith");
+        transportRoute.setDestinationContactPhone("555-6543");
+        boolean result = DBManager.getInstance().getTransportRouteController().updateTransportRoute(transportRoute, transportRouteId);
+        assertTrue(result, "Failed to update transport route");
+        TransportRoute updatedTransportRoute = DBManager.getInstance().getTransportRouteController().getTransportRouteById(transportRouteId);
+        assertNotNull(updatedTransportRoute, "Updated transport route not found");
+        assertEquals(TransportStatusEnum.STARTED, updatedTransportRoute.getStatus(), "Transport route status mismatch");
+        assertEquals("Updated John Doe", updatedTransportRoute.getSourceContactName(), "Source contact name mismatch");
+        assertEquals("555-9876", updatedTransportRoute.getSourceContactPhone(), "Source contact phone mismatch");
+        assertEquals("Updated Jane Smith", updatedTransportRoute.getDestinationContactName(), "Destination contact name mismatch");
+        assertEquals("555-6543", updatedTransportRoute.getDestinationContactPhone(), "Destination contact phone mismatch");
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testDeleteTransportRoute() {
+        // first we must create a route
+        int transportRouteId = _testCreateTransportRoute();
+
+        TransportRoute transportRoute = DBManager.getInstance().getTransportRouteController().getTransportRouteById(transportRouteId);
+        assertNotNull(transportRoute, "Transport route not found");
+        boolean result = DBManager.getInstance().getTransportRouteController().deleteTransportRoute(transportRouteId);
+        assertTrue(result, "Failed to delete transport route");
+        transportRoute = DBManager.getInstance().getTransportRouteController().getTransportRouteById(transportRouteId);
+        assertNull(transportRoute, "Transport route still exists after deletion");
     }
 }
