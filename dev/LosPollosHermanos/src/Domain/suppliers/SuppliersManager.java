@@ -47,7 +47,7 @@ public class SuppliersManager {
         if (s != null) {
             Helper.showError("Supplier with this name already exists");
         }
-        s = new Supplier(Helper.UndefinedUserInput, name, address, phone);
+        s = new Supplier(Helper.UndefinedId, name, address, phone);
         return supplierController.addSupplier(s) != Helper.UndefinedId;
     }
 

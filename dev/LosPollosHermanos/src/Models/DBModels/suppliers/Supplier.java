@@ -3,7 +3,6 @@ package Models.DBModels.suppliers;
 import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
 import Models.DBModels.transport.APhysicalSite;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 

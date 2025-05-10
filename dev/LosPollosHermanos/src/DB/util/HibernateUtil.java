@@ -24,7 +24,8 @@ public class HibernateUtil {
      */
     private static SessionFactory buildSessionFactory() {
         try {
-            return new Configuration().configure(GlobalConfig.getDatabaseConfigUrl()).buildSessionFactory();
+            return new Configuration().configure(GlobalConfig.getDatabaseConfigUrl()).setProperty("hibernate.show_sql",
+                    GlobalConfig.logSql()).buildSessionFactory();
         } catch (Exception e) {
             System.err.println("Failed to create SessionFactory: " + e);
             throw new ExceptionInInitializerError(e);

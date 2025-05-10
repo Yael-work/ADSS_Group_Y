@@ -5,6 +5,7 @@ import Domain.stock.StockManager;
 import Domain.transport.*;
 import Domain.suppliers.SuppliersManager;
 import Models.DBModels.BaseModel;
+import Models.DBModels.transport.Branch;
 import Models.DBModels.transport.Driver;
 import Models.DBModels.transport.TransportRoute;
 import Models.DBModels.transport.Truck;
@@ -86,34 +87,35 @@ public class TransportPresentation {
             Helper.println("Temporary mock data has already been loaded.");
             return false;
         }
-        boolean res1 = BranchesManager.addBranch("Branch1", "Address1", "+972 5412311") &&
-                BranchesManager.addBranch("Branch2", "Address2", "+972 5488899") &&
-                BranchesManager.addBranch("Branch3", "Address3", "+972 5412988") &&
+        BranchesManager.addBranch("Branch1", "Address1", "+972 5412311");
+        BranchesManager.addBranch("Branch2", "Address2", "+972 5488899");
+        BranchesManager.addBranch("Branch3", "Address3", "+972 5412988");
 
-                DriversManager.addDriver("John", "Doe", "123456789", "+972 5412311", "C") &&
-                DriversManager.addDriver("Sam", "Wilson", "987654321", "+972 5488899", "B") &&
-                DriversManager.addDriver("Jane", "Smith", "456789123", "+972 5412988", "C1") &&
+        DriversManager.addDriver("John", "Doe", "123456789", "+972 5412311", "C");
+        DriversManager.addDriver("Sam", "Wilson", "987654321", "+972 5488899", "B");
+        DriversManager.addDriver("Jane", "Smith", "456789123", "+972 5412988", "C1");
 
-                TrucksManager.addTruck("5498875", 3500, 5000, "C1", "Toyota") &&
-                TrucksManager.addTruck("5491176", 4000, 6000, "C", "Ford") &&
-                TrucksManager.addTruck("5491177", 4500, 7000, "C1", "Mercedes") &&
+        TrucksManager.addTruck("5498875", 3500, 5000, "C1", "Toyota");
+        TrucksManager.addTruck("5491176", 4000, 6000, "C", "Ford");
+        TrucksManager.addTruck("5491177", 4500, 7000, "C1", "Mercedes");
 
-                SuppliersManager.addSupplier("Supplier1", "Address1", "+972 77788855") &&
-                SuppliersManager.addSupplier("Supplier2", "Address2", "+972 77788856") &&
-                SuppliersManager.addSupplier("Supplier3", "Address3", "+972 77788857") &&
+        SuppliersManager.addSupplier("Supplier1", "Address4", "+972 77788855");
+        SuppliersManager.addSupplier("Supplier2", "Address5", "+972 77788856");
+        SuppliersManager.addSupplier("Supplier3", "Address6", "+972 77788857");
 
-                TransportAreasManager.addNewTransportArea("Area1",
-                        BranchesManager.getExistingBranches().subList(0, BranchesManager.getExistingBranches().size()).stream().map(BaseModel::getId).toList(),
-                        SuppliersManager.getSuppliers().subList(0, BranchesManager.getExistingBranches().size()).stream().map(BaseModel::getId).toList()) &
+        TransportAreasManager.addNewTransportArea("Area1",
+                BranchesManager.getExistingBranches().subList(0, BranchesManager.getExistingBranches().size()).stream().map(BaseModel::getId).toList(),
+                SuppliersManager.getSuppliers().subList(0, BranchesManager.getExistingBranches().size()).stream().map(BaseModel::getId).toList());
 
-                        TransportAreasManager.addNewTransportArea("Area2",
-                                BranchesManager.getExistingBranches().subList(0, BranchesManager.getExistingBranches().size() - 1).stream().map(BaseModel::getId).toList(),
-                                SuppliersManager.getSuppliers().subList(0, BranchesManager.getExistingBranches().size() - 1).stream().map(BaseModel::getId).toList());
+        TransportAreasManager.addNewTransportArea("Area2",
+                BranchesManager.getExistingBranches().subList(0, BranchesManager.getExistingBranches().size() - 1).stream().map(BaseModel::getId).toList(),
+                SuppliersManager.getSuppliers().subList(0, BranchesManager.getExistingBranches().size() - 1).stream().map(BaseModel::getId).toList());
 
-        List<StockItem> selectedItems = StockManager.mockSearchAndReturnRelevantStockItems("", 1);
+        Branch firstBranch = BranchesManager.getBranchByName("Branch1");
+        List<StockItem> selectedItems = StockManager.mockSearchAndReturnRelevantStockItems("", firstBranch.getId());
         LocalDateTime plannedDateTime = LocalDateTime.now().plusDays(1);
         CreateNewTransportRoutesResult routesCreationResult =
-                TransportManager.createNewTransportRoutes(1, selectedItems);
+                TransportManager.createNewTransportRoutes(firstBranch.getId(), selectedItems);
         List<TransportRoute> createdTransportRoutesIds = new ArrayList<>(routesCreationResult.getCreatedTransportRoutes());
         List<Truck> trucks = TransportManager.getAvailableTrucksByDate(plannedDateTime);
         Truck selectedTruck = null;
@@ -136,7 +138,7 @@ public class TransportPresentation {
         int createdTransportId = TransportManager.createTransport(plannedDateTime, selectedTruck, selectedDriver,
                 createdTransportRoutesIds);
 
-        if (res1 && createdTransportId > 0) {
+        if (createdTransportId > 0) {
             mockDataLoaded = true;
             return true;
         }

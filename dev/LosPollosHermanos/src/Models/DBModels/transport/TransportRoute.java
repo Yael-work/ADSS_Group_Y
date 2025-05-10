@@ -34,6 +34,10 @@ public class TransportRoute extends BaseModel {
     @Column()
     private double recordedWeightAtSite;
 
+    @ManyToOne
+    @JoinColumn(name = "transport_id")
+    private Transport transport;
+
     public TransportRoute(int id, TransportStatusEnum status, DeliveryFile deliveryFile, APhysicalSite sourceSite,
                           APhysicalSite destinationSite, String sourceContactName, String sourceContactPhone,
                           String destinationContactName, String destinationContactPhone, double recordedWeightAtSite) {
@@ -52,6 +56,15 @@ public class TransportRoute extends BaseModel {
     public TransportRoute() {
         super(0, TransportRoute.class.getName());
         this.status = TransportStatusEnum.PENDING;
+    }
+
+
+    public void setTransport(Transport transport) {
+        this.transport = transport;
+    }
+
+    public Transport getTransport() {
+        return transport;
     }
 
     public TransportStatusEnum getStatus() {

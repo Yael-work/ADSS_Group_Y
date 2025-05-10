@@ -9,6 +9,7 @@ public class GlobalConfig {
     private static final String DATABASE_CONFIG_URL = "hibernate.cfg.xml"; // default
     private static final String DATABASE_CONFIG_TESTING_URL = "hibernate-test.cfg.xml"; // testing only db
     private static boolean testMode = false;
+    private static final boolean overrideAndShowSql = false;//change this manually to true to show sql queries
 
     /**
      * Sets the test mode for the application.
@@ -25,5 +26,15 @@ public class GlobalConfig {
      */
     public static String getDatabaseConfigUrl() {
         return testMode ? DATABASE_CONFIG_TESTING_URL : DATABASE_CONFIG_URL;
+    }
+
+
+    /**
+     * Returns the database print sql queries config
+     *
+     * @return the database print sql queries config
+     */
+    public static String logSql() {
+        return testMode || overrideAndShowSql ? "true" : "false";
     }
 }

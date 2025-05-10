@@ -2,6 +2,7 @@ package Tests;
 
 import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Auxiliary.Enums.Models.TransportStatusEnum;
+import Auxiliary.Helper;
 import DB.DBManager;
 import Models.DBModels.suppliers.Supplier;
 import Models.DBModels.transport.*;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -632,4 +634,48 @@ public class DBTests {
         assertNotNull(updatedIssueLog, "Updated transport issue log not found");
         assertEquals(newTruck.getId(), updatedIssueLog.getNewTruck().getId(), "New truck ID mismatch");
     }
+
+    @UseTestingDatabase
+    @Test
+    public void testCreateNewTransport() {
+        _testCreateNewTransport();
+    }
+
+    private int _testCreateNewTransport() {
+        LocalDateTime plannedDateTime = Helper.stringToDateTime("2023-10-01 10:00");
+        int createdRouteOne = _testCreateTransportRoute();
+        int createdRouteTwo = _testCreateTransportRoute();
+        int createdTruck = _testCreateTruck(true);
+        int createdDriver = _testCreateDriver(true);
+
+        TransportRoute transportRouteOne = DBManager.getInstance().getTransportRouteController().getTransportRouteById(createdRouteOne);
+        assertNotNull(transportRouteOne, "Transport route one not found");
+        TransportRoute transportRouteTwo = DBManager.getInstance().getTransportRouteController().getTransportRouteById(createdRouteTwo);
+        assertNotNull(transportRouteTwo, "Transport route two not found");
+        Truck truck = DBManager.getInstance().getTruckController().getTruckById(createdTruck);
+        assertNotNull(truck, "Truck not found");
+        Driver driver = DBManager.getInstance().getDriverController().getDriverById(createdDriver);
+        assertNotNull(driver, "Driver not found");
+
+        Transport transport = new Transport(0, plannedDateTime, TransportStatusEnum.PENDING, truck, driver,
+                List.of(transportRouteOne, transportRouteTwo), null, null, null);
+        int addedId = DBManager.getInstance().getTransportController().addTransport(transport);
+        assertTrue(addedId > 0, "Failed to add transport");
+        assertNotNull(DBManager.getInstance().getTransportController().getTransportById(addedId),
+                "Transport not found");
+        Transport retrievedTransport = DBManager.getInstance().getTransportController().getTransportById(addedId);
+        assertNotNull(retrievedTransport, "Retrieved transport not found");
+        assertEquals(plannedDateTime, retrievedTransport.getPlannedDateTime(), "Planned date time mismatch");
+        assertEquals(TransportStatusEnum.PENDING, retrievedTransport.getStatus(), "Transport status mismatch");
+        assertEquals(truck.getId(), retrievedTransport.getTruck().getId(), "Truck ID mismatch");
+        assertEquals(driver.getId(), retrievedTransport.getDriver().getId(), "Driver ID mismatch");
+        assertEquals(2, retrievedTransport.getTransportRoutes().size(), "Transport routes size mismatch");
+        assertEquals(transportRouteOne.getId(), retrievedTransport.getTransportRoutes().getFirst().getId(),
+                "Transport route one ID mismatch");
+        assertEquals(transportRouteTwo.getId(), retrievedTransport.getTransportRoutes().getLast().getId(),
+                "Transport route two ID mismatch");
+        return addedId;
+    }
+
+    //todo add more tests on the transport!
 }

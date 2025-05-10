@@ -23,6 +23,10 @@ public class TransportIssueLog extends BaseModel {
     @JoinColumn(name = "delivery_file_of_unloaded_items_id", referencedColumnName = "id")
     private DeliveryFile deliveryFileOfUnloadedItems;
 
+    @ManyToOne
+    @JoinColumn(name = "transport_id")
+    private Transport transport;
+
     public TransportIssueLog(int id, Truck currentTruck, Truck newTruck, TransportRoute relatedTransportRoute,
                              DeliveryFile deliveryFileOfUnloadedItems) {
         super(id, TransportIssueLog.class.getName());
@@ -30,6 +34,14 @@ public class TransportIssueLog extends BaseModel {
         this.newTruck = newTruck;
         this.relatedTransportRoute = relatedTransportRoute;
         this.deliveryFileOfUnloadedItems = deliveryFileOfUnloadedItems;
+    }
+
+    public void setTransport(Transport transport) {
+        this.transport = transport;
+    }
+
+    public Transport getTransport() {
+        return transport;
     }
 
     public TransportIssueLog() {

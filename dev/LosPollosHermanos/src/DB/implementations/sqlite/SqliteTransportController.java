@@ -4,6 +4,8 @@ import Auxiliary.Helper;
 import DB.interfaces.ITransportController;
 import DB.util.HibernateUtil;
 import Models.DBModels.transport.Transport;
+import Models.DBModels.transport.TransportIssueLog;
+import Models.DBModels.transport.TransportRoute;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 
@@ -32,11 +34,22 @@ public class SqliteTransportController implements ITransportController {
 
     @Override
     public int addTransport(Transport transport) {
+        if (transport == null || transport.getTransportRoutes() == null) {
+            return Helper.UndefinedId;
+        }
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            session.persist(transport);
+            for (TransportRoute route : transport.getTransportRoutes()) {
+                route.setTransport(transport);
+            }
+            if (transport.getTransportIssueLogs() != null) {
+                for (TransportIssueLog issueLog : transport.getTransportIssueLogs()) {
+                    issueLog.setTransport(transport);
+                }
+            }
+            Transport merged = session.merge(transport);
             session.getTransaction().commit();
-            return transport.getId();
+            return merged.getId();
         } catch (Exception e) {
             Helper.showError("Failed to add transport route", e);
             return Helper.UndefinedId;

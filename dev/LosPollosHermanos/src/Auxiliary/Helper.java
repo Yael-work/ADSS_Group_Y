@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class Helper {
     public final static int UndefinedUserInput = -1;
-    public final static int UndefinedId = -1;
+    public final static int UndefinedId = 0;
 
     /**
      * This method is used to get user input from the console.

@@ -27,14 +27,10 @@ public class Transport extends BaseModel {
     @JoinColumn(name = "driver_id", referencedColumnName = "id", nullable = false)
     private Driver driver;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(name = "transport_routes_link", joinColumns = @JoinColumn(name = "transport_id"),
-            inverseJoinColumns = @JoinColumn(name = "route_id"))
+    @OneToMany(mappedBy = "transport", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TransportRoute> transportRoutes;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(name = "transport_issue_logs_link", joinColumns = @JoinColumn(name = "transport_id"),
-            inverseJoinColumns = @JoinColumn(name = "issue_log_id"))
+    @OneToMany(mappedBy = "transport", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TransportIssueLog> transportIssueLogs;
 
     public Transport(int id, LocalDateTime plannedDateTime, TransportStatusEnum status, Truck truck, Driver driver,
