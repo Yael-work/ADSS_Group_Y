@@ -316,7 +316,7 @@ public class TransportManager {
      * @param targetDateTime - the date to check for available drivers
      * @return - a list of available drivers
      */
-    public static List<Driver> getAvailableDriversByDateAndLicense(LocalDateTime targetDateTime, String truckLicenseType) {
+    public static List<Driver> getAvailableDriversByDateAndLicense(LocalDateTime targetDateTime, LicenseTypeEnum truckLicenseType) {
         List<Driver> availableDrivers = DriversManager.getAllDrivers();
         List<Transport> transports = getAllTransports();
         // Extract the target date (without time)
@@ -336,7 +336,7 @@ public class TransportManager {
         return availableDrivers.stream()
                 .filter(driver -> !busyDriverIds.contains(driver.getId())
                         && Helper.isLicenseTypeValidPerTruck(driver.getLicenseType(),
-                        LicenseTypeEnum.stringToEnum(truckLicenseType)))
+                        truckLicenseType))
                 .collect(Collectors.toList());
     }
 

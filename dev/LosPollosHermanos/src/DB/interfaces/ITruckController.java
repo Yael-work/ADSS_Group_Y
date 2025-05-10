@@ -7,9 +7,9 @@ public interface ITruckController extends IController<Truck> {
      * Adds a new truck to the database.
      *
      * @param truck The truck to be added.
-     * @return true if the truck was added successfully, false otherwise.
+     * @return The ID of the added truck, or -1 if the operation failed.
      */
-    boolean addTruck(Truck truck);
+    int addTruck(Truck truck);
 
     /**
      * Updates an existing truck in the database.

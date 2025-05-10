@@ -1,5 +1,6 @@
 package Domain.transport;
 
+import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Models.DBModels.transport.TransportArea;
 import Models.DBModels.transport.Truck;
 import DB.DBManager;
@@ -21,8 +22,8 @@ public class TrucksManager {
             Helper.showError("Truck with this plate already exists");
             return false;
         }
-        t = new Truck(0, plate, netWeight, maxWeight, requiredLicenseType, model);
-        return truckController.addTruck(t);
+        t = new Truck(0, plate, netWeight, maxWeight, LicenseTypeEnum.stringToEnum(requiredLicenseType), model);
+        return truckController.addTruck(t) > 0;
     }
 
     /**
@@ -50,7 +51,7 @@ public class TrucksManager {
                 t.setMaxWeight(Integer.parseInt(some));
                 break;
             case 4:
-                t.setRequiredLicenseType(some);
+                t.setRequiredLicenseType(LicenseTypeEnum.stringToEnum(some));
                 break;
             case 5:
                 t.setModel(some);

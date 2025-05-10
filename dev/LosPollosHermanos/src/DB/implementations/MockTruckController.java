@@ -1,5 +1,6 @@
 package DB.implementations;
 
+import Auxiliary.Helper;
 import DB.interfaces.ITruckController;
 import Models.DBModels.transport.Truck;
 
@@ -29,13 +30,13 @@ public class MockTruckController implements ITruckController {
     }
 
     @Override
-    public boolean addTruck(Truck truck) {
+    public int addTruck(Truck truck) {
         if (truck == null) {
-            return false;
+            return Helper.UndefinedId;
         }
         truck.setId(currentId++);
         trucks.add(truck);
-        return true;
+        return truck.getId();
     }
 
     @Override

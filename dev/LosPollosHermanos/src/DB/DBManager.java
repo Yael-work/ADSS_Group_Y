@@ -23,14 +23,14 @@ public class DBManager {
 
     private DBManager() {
         this.deliveryFileController = SqliteDeliveryFileController.getInstance();
-        this.truckController = MockTruckController.getInstance();
+        this.truckController = SqliteTruckController.getInstance();
         this.transportAreaController = SqliteTransportAreaController.getInstance();
         this.driverController = SqliteDriverController.getInstance();
         this.supplierController = SqliteSupplierController.getInstance();
-        this.transportController = MockTransportController.getInstance();
         this.branchController = SqliteBranchController.getInstance();
-        this.transportIssueLogController = MockTransportIssueLogController.getInstance();
         this.transportRouteController = SqliteTransportRouteController.getInstance();
+        this.transportController = MockTransportController.getInstance();
+        this.transportIssueLogController = MockTransportIssueLogController.getInstance();
     }
 
     /**

@@ -1,25 +1,36 @@
 package Models.DBModels.transport;
 
+import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Models.DBModels.BaseModel;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "trucks")
 public class Truck extends BaseModel {
+    @Column(nullable = false, unique = true)
     private String plate;
+    @Column(nullable = false)
     private double netWeight;
+    @Column(nullable = false)
     private double maxWeight;
-    private String requiredLicenseType;
+    @Column(nullable = false)
+    private LicenseTypeEnum requiredLicenseType;
+    @Column(nullable = false)
     private String model;
 
-    public Truck(int id, String plate, double netWeight, double maxWeight, String requiredLicenseType, String model) {
+    public Truck(int id, String plate, double netWeight, double maxWeight, LicenseTypeEnum requiredLicenseType, String model) {
         super(id, Truck.class.getName());
         this.plate = plate;
         this.netWeight = netWeight;
         this.maxWeight = maxWeight;
         this.requiredLicenseType = requiredLicenseType;
         this.model = model;
+    }
+
+    public Truck() {
+        super(0, Truck.class.getName());
     }
 
     public String getPlate() {
@@ -46,11 +57,11 @@ public class Truck extends BaseModel {
         this.maxWeight = maxWeight;
     }
 
-    public String getRequiredLicenseType() {
+    public LicenseTypeEnum getRequiredLicenseType() {
         return requiredLicenseType;
     }
 
-    public void setRequiredLicenseType(String requiredLicenseType) {
+    public void setRequiredLicenseType(LicenseTypeEnum requiredLicenseType) {
         this.requiredLicenseType = requiredLicenseType;
     }
 

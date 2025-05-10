@@ -25,6 +25,7 @@
         <mapping class="Models.DBModels.transport.APhysicalSite"/>
         <mapping class="Models.DBModels.transport.TransportRoute"/>
         <mapping class="Models.DBModels.transport.TransportArea"/>
+        <mapping class="Models.DBModels.transport.Truck"/>
         <mapping class="Models.DBModels.suppliers.Supplier"/>
     </session-factory>
 </hibernate-configuration>

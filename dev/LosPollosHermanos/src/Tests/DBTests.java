@@ -461,4 +461,67 @@ public class DBTests {
         transportArea = DBManager.getInstance().getTransportAreaController().getTransportAreaById(transportAreaId);
         assertNull(transportArea, "Transport area still exists after deletion");
     }
+
+    @UseTestingDatabase
+    @Test
+    public void testCreateTruck() {
+        Truck truck = DBManager.getInstance().getTruckController().getTruckByPlate("ABC123");
+        if (truck != null) {
+            DBManager.getInstance().getTruckController().deleteTruck(truck.getId());
+        }
+        truck = new Truck(0, "ABC123", 1000.0, 2000.0, LicenseTypeEnum.C, "Model X");
+        int addedId = DBManager.getInstance().getTruckController().addTruck(truck);
+        Truck retrievedTruck = DBManager.getInstance().getTruckController().getTruckById(addedId);
+        assertNotNull(retrievedTruck);
+        assertEquals("ABC123", retrievedTruck.getPlate());
+        assertEquals(1000.0, retrievedTruck.getNetWeight());
+        assertEquals(2000.0, retrievedTruck.getMaxWeight());
+        assertEquals(LicenseTypeEnum.C, retrievedTruck.getRequiredLicenseType());
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testUpdateTruck() {
+        Truck truck = DBManager.getInstance().getTruckController().getTruckByPlate("XYZ789");
+        if (truck != null) {
+            DBManager.getInstance().getTruckController().deleteTruck(truck.getId());
+        }
+        truck = DBManager.getInstance().getTruckController().getTruckByPlate("UpdatedXYZ789");
+        if (truck != null) {
+            DBManager.getInstance().getTruckController().deleteTruck(truck.getId());
+        }
+        truck = new Truck(0, "XYZ789", 1500.0, 2500.0, LicenseTypeEnum.B, "Model Y");
+        int addedId = DBManager.getInstance().getTruckController().addTruck(truck);
+        Truck retrievedTruck = DBManager.getInstance().getTruckController().getTruckById(addedId);
+        assertNotNull(retrievedTruck);
+
+        retrievedTruck.setPlate("UpdatedXYZ789");
+        retrievedTruck.setNetWeight(1600.0);
+        retrievedTruck.setMaxWeight(2600.0);
+        retrievedTruck.setRequiredLicenseType(LicenseTypeEnum.CPlusE);
+        boolean result = DBManager.getInstance().getTruckController().updateTruck(retrievedTruck, addedId);
+        assertTrue(result);
+        assertEquals("UpdatedXYZ789", retrievedTruck.getPlate());
+        assertEquals(1600.0, retrievedTruck.getNetWeight());
+        assertEquals(2600.0, retrievedTruck.getMaxWeight());
+        assertEquals(LicenseTypeEnum.CPlusE, retrievedTruck.getRequiredLicenseType());
+    }
+
+    @UseTestingDatabase
+    @Test
+    public void testDeleteTruck() {
+        Truck truck = DBManager.getInstance().getTruckController().getTruckByPlate("DeleteXYZ789");
+        if (truck != null) {
+            DBManager.getInstance().getTruckController().deleteTruck(truck.getId());
+        }
+        truck = new Truck(0, "DeleteXYZ789", 1500.0, 2500.0, LicenseTypeEnum.B, "Model Y");
+        int addedId = DBManager.getInstance().getTruckController().addTruck(truck);
+        Truck retrievedTruck = DBManager.getInstance().getTruckController().getTruckById(addedId);
+        assertNotNull(retrievedTruck);
+
+        boolean result = DBManager.getInstance().getTruckController().deleteTruck(addedId);
+        assertTrue(result);
+        retrievedTruck = DBManager.getInstance().getTruckController().getTruckById(addedId);
+        assertNull(retrievedTruck);
+    }
 }
