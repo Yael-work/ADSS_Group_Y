@@ -396,7 +396,7 @@ public class TransportHandler {
      */
     private static List<Transport> showAllTransports() {
         List<Transport> transports = TransportManager.getAllTransports();
-        if (transports == null || transports.isEmpty()) {
+        if (transports.isEmpty()) {
             Helper.println("No transports available.");
             return null;
         }
@@ -485,7 +485,7 @@ public class TransportHandler {
     /**
      * This method is used to visit the source of the transport.
      */
-    private static void visitSource() { //TODO rework on that
+    private static void visitSource() {
         for (Transport transport : TransportManager.getAllTransports()) {
             Helper.println("Transport ID: " + transport.getId() + ", Status: " + transport.getStatus());
         }
@@ -682,6 +682,7 @@ public class TransportHandler {
                     APhysicalSite destination = tr.getDestinationSite();
                     if (destination != null && destination.getId() == destinationID) {
                         Helper.println("Visiting destination: " + destination.toPrettyString());
+                        selectedRoute = tr;
                         flag = true;
                         break;
                     }
