@@ -379,8 +379,7 @@ public class TransportHandler {
             Helper.println("Transport deletion canceled.");
             return;
         }
-        boolean success = TransportManager.deleteTransportById(transportId);
-        if (success) {
+        if (TransportManager.deleteTransportById(transportId)) {
             Helper.println("Transport with ID " + transportId + " deleted successfully.");
         } else {
             Helper.println("Failed to delete transport with ID " + transportId + ".");

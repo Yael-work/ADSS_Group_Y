@@ -228,21 +228,13 @@ public class TransportManager {
             Helper.showError("Cant delete transport, it does not exist");
             return false;
         } else {
-            for (TransportRoute t : routes) {
-                if (t == null) {
-                    Helper.showError("Cant delete transport it does not exist");
+            for (TransportRoute route : routes) {
+                if (route == null) {
+                    Helper.showError("Cant delete transport route it does not exist");
                     continue;
                 }
-                if (t.getStatus() != TransportStatusEnum.PENDING) {
-                    Helper.showError("Cant delete transport with id=" + t.getId() + ", it is not in pending status");
-                    return false;
-                }
-                if (!deleteDeliveryFile(t.getDeliveryFile().getId())) {
-                    Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete delivery file");
-                    return false;
-                }
-                if (!transportRouteController.deleteTransportRoute(t.getId())) {
-                    Helper.showError("Cant delete transport with id=" + t.getId() + ", failed to delete transport route");
+                if (!transportRouteController.deleteTransportRoute(route.getId())) {
+                    Helper.showError("Cant delete transport with id=" + route.getId() + ", failed to delete transport route");
                     return false;
                 }
             }
@@ -266,14 +258,15 @@ public class TransportManager {
             Helper.showError("Cant delete transport with id=" + transportId + ", it does not exist");
             return false;
         }
-        List<TransportRoute> routes = transport.getTransportRoutes();
-        if (routes == null || routes.isEmpty()) {
-            Helper.showError("Cant delete transport with id=" + transportId + ", it does not exist");
-            return false;
-        }
-        if (!deleteTransportRoutes(routes)) {
-            Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete transport routes");
-            return false;
+        for (TransportRoute route : transport.getTransportRoutes()) {
+            if (route == null) {
+                Helper.showError("Cant delete transport route it does not exist");
+                continue;
+            }
+            if (!transportRouteController.deleteTransportRoute(route.getId())) {
+                Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete transport route");
+                return false;
+            }
         }
         if (!transportController.deleteTransport(transportId)) {
             Helper.showError("Cant delete transport with id=" + transportId + ", failed to delete transport");
@@ -507,31 +500,31 @@ public class TransportManager {
                 deleiveryFileDetailedString;
     }
 
-    public static TransportRoute getTransportRouteById(int routeId) {
-        if (routeId <= Helper.UndefinedId) {
-            Helper.showError("Cant get transport route with id <= 0");
-            return null;
-        }
-        TransportRoute route = transportRouteController.getTransportRouteById(routeId);
-        if (route == null) {
-            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
-            return null;
-        }
-        return route;
-    }
-
-    public static DeliveryFile getDeliveryFileById(int deliveryFileId) {
-        if (deliveryFileId <= Helper.UndefinedId) {
-            Helper.showError("Cant get delivery file with id <= 0");
-            return null;
-        }
-        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(deliveryFileId);
-        if (deliveryFile == null) {
-            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
-            return null;
-        }
-        return deliveryFile;
-    }
+//    public static TransportRoute getTransportRouteById(int routeId) {
+//        if (routeId <= Helper.UndefinedId) {
+//            Helper.showError("Cant get transport route with id <= 0");
+//            return null;
+//        }
+//        TransportRoute route = transportRouteController.getTransportRouteById(routeId);
+//        if (route == null) {
+//            Helper.showError("Cant get transport route with id=" + routeId + ", it does not exist");
+//            return null;
+//        }
+//        return route;
+//    }
+//
+//    public static DeliveryFile getDeliveryFileById(int deliveryFileId) {
+//        if (deliveryFileId <= Helper.UndefinedId) {
+//            Helper.showError("Cant get delivery file with id <= 0");
+//            return null;
+//        }
+//        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(deliveryFileId);
+//        if (deliveryFile == null) {
+//            Helper.showError("Cant get delivery file with id=" + deliveryFileId + ", it does not exist");
+//            return null;
+//        }
+//        return deliveryFile;
+//    }
 
     public static boolean StartTransport(Transport transport, LocalDateTime startDateTime) {
         if (transport.getStatus() == TransportStatusEnum.PENDING) {
@@ -597,9 +590,11 @@ public class TransportManager {
             return visitSiteEnum.OVERLOAD;
         }
         if (selectedRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES) {
+            selectedRoute.setRecordedWeightAtSite(totalWeight);
             selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED);
         }
         if (selectedRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED) {
+            selectedRoute.setRecordedWeightAtSite(totalWeight);
             selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
         }
         transportController.updateTransport(transport, transport.getId());
