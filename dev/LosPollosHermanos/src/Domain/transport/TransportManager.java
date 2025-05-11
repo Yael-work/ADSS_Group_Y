@@ -2,19 +2,24 @@ package Domain.transport;
 
 
 /*
- * 1. Show all transports -> by id and date
- * 2. Show specific detailed transport by ID -> all the static details (status, date...)
+ * 1. V Show all transports -> by id and date
+ * 2. V Show specific detailed transport by ID -> all the static details (status, date...)
  *   + print all linked transport routes -> also print the delivery file of each route
  *   + print all linked issue logs -> also print the issue file of each log
- * 3. Print transport drives for driver - by Transport ID:
- *   A. Take all the linked transport routes of the transport ID
- *   B. Make a dict (or pair?) of all the routes by their branch ID {"branch_id":[<transport_route_id>,...]...}
- *   C. For each branch ID, check if they started any transport route and haven't finished all.(create list of boolean as the len of the branches and each of them true or false).
- *        In case that none started, pick random branch id.
- *   C. Using the picked branch id - aggregate the relevant Transport Routes and return.
- * [???]. Maybe also do something like [3] but with the option to see all pending routes according to branch id??
+ *
+ * 3. Print transport drives for driver - by Transport ID: //TODO @tom
+ *      This is a printing function the should be used by the driver
+ *   A. get transport by id
+ *   B. get all the routes of the transport
+ *   C. get all the routes of the transport that are not started yet
+ *  For each route:
+ *      D. Pretty print each route with: address from, address to, contact names from and to, contact phones from and to,
+ *      E. pretty print the delivery file.
+ *
  * 4. Print the next drive for driver:
- *    same like in [3] but only take the first route of the aggregated routes.
+ *    We should get the driver ID, and print the NEXT route with details: src address, src contact, src phone, dest address,
+ *      dest contact, dest phone, delivery file.
+ *
  * 5. Delete transport by ID -> delete all linked inner data.
  * 6. Create transport:
  *   A. Ask for planned date time of transport
