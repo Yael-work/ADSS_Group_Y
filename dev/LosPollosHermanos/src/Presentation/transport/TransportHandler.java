@@ -1,6 +1,5 @@
 package Presentation.transport;
 
-import Auxiliary.Enums.Domain.UpdateNewPlannedDateTime;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Enums.Models.visitSiteEnum;
 import Auxiliary.Helper;
@@ -732,86 +731,32 @@ public class TransportHandler {
             Helper.println("3. Truck ID");
             Helper.println("4. Driver ID");
             Helper.println("5. Transport route IDs");
-            Helper.println("6. Actual start date and time");
-            Helper.println("7. Actual end date and time");
+            //Helper.println("6. Actual start date and time");
+            //Helper.println("7. Actual end date and time");
             Helper.println("8. Back to main menu");
             int choice = Helper.getUserInputInteger();
             switch (choice) {
                 case 1 -> {
-                    Helper.print("Enter the new planned date and time (%s): "
-                            .formatted(Helper.DefaultDateTimeFormat));
-                    String dateTimeStr = Helper.getUserInputString();
-                    LocalDateTime plannedDateTime = Helper.stringToDateTime(dateTimeStr);
-                    while (plannedDateTime == null) {
-                        Helper.print("Invalid date and time format. Please try again: ");
-                        dateTimeStr = Helper.getUserInputString();
-                        plannedDateTime = Helper.stringToDateTime(dateTimeStr);
-                    }
                     do {
-                        if (TransportManager.setNewPlannedDateTime(transport, plannedDateTime) == UpdateNewPlannedDateTime.MIDDLE) {
-                            Helper.println("The new planned date and time cannot be before the actual start date and time. " +
-                                    "Please set a new actual start date and time.");
-                            Helper.print("Enter the new actual start date and time (%s): "
-                                    .formatted(Helper.DefaultDateTimeFormat));
-                            String actualStartDateTimeStr = Helper.getUserInputString();
-                            LocalDateTime actualStartDateTime = Helper.stringToDateTime(actualStartDateTimeStr);
-                            while (actualStartDateTime == null) {
-                                Helper.print("Invalid date and time format. Please try again: ");
-                                actualStartDateTimeStr = Helper.getUserInputString();
-                                actualStartDateTime = Helper.stringToDateTime(actualStartDateTimeStr);
-                            }
-                            if (TransportManager.setNewActualStartDateTime(transport, actualStartDateTime)) {
-                                if (TransportManager.setNewPlannedDateTime(transport, plannedDateTime) == UpdateNewPlannedDateTime.SUCCESS) {
-                                    Helper.println("Planned date and time updated successfully.");
-                                    break;
-                                } else {
-                                    Helper.println("Failed to update planned date and time. Try again.");
-                                }
-                            } else {
-                                Helper.println("Failed to update actual start date and time. Try again.");
-                            }
-                        }
-                        if (TransportManager.setNewPlannedDateTime(transport, plannedDateTime) == UpdateNewPlannedDateTime.AFTER) {
-                            Helper.println("The new planned date and time cannot be before the actual end date and time. " +
-                                    "Please set a new actual start and end date ane time.");
-                            Helper.print("Enter the new actual start date and time (%s): "
-                                    .formatted(Helper.DefaultDateTimeFormat));
-                            String actualStartDateTimeStr = Helper.getUserInputString();
-                            LocalDateTime actualStartDateTime = Helper.stringToDateTime(actualStartDateTimeStr);
-                            while (actualStartDateTime == null) {
-                                Helper.print("Invalid date and time format. Please try again: ");
-                                actualStartDateTimeStr = Helper.getUserInputString();
-                                actualStartDateTime = Helper.stringToDateTime(actualStartDateTimeStr);
-                            }
-                            if (TransportManager.setNewActualStartDateTime(transport, actualStartDateTime)) {
-                                Helper.print("Enter the new actual end date and time (%s): "
-                                        .formatted(Helper.DefaultDateTimeFormat));
-                                String actualEndDateTimeStr = Helper.getUserInputString();
-                                LocalDateTime actualEndDateTime = Helper.stringToDateTime(actualEndDateTimeStr);
-                                while (actualEndDateTime == null) {
-                                    Helper.print("Invalid date and time format. Please try again: ");
-                                    actualEndDateTimeStr = Helper.getUserInputString();
-                                    actualEndDateTime = Helper.stringToDateTime(actualEndDateTimeStr);
-                                }
-                                if (TransportManager.setNewActualEndDateTime(transport, actualEndDateTime)) {
-                                    if (TransportManager.setNewPlannedDateTime(transport, plannedDateTime) == UpdateNewPlannedDateTime.SUCCESS) {
-                                        Helper.println("Planned date and time updated successfully.");
-                                        break;
-                                    } else {
-                                        Helper.println("Failed to update planned date and time. Try again.");
-                                    }
-                                } else {
-                                    Helper.println("Failed to update actual end date and time. Try again.");
-                                }
-                            } else {
-                                Helper.println("Failed to update actual start date and time. Try again.");
-                            }
-                        }
-                        if (TransportManager.setNewPlannedDateTime(transport, plannedDateTime) == UpdateNewPlannedDateTime.SUCCESS) {
-                            Helper.println("Planned date and time updated successfully.");
+                        if (transport.getStatus() != TransportStatusEnum.PENDING) {
+                            Helper.println("Transport is already started. Cannot edit planned date and time.");
                             break;
                         } else {
-                            Helper.println("Failed to update planned date and time. Try again.");
+                            Helper.print("Enter the new planned date and time (%s): "
+                                    .formatted(Helper.DefaultDateTimeFormat));
+                            String dateTimeStr = Helper.getUserInputString();
+                            LocalDateTime plannedDateTime = Helper.stringToDateTime(dateTimeStr);
+                            while (plannedDateTime == null) {
+                                Helper.print("Invalid date and time format. Please try again: ");
+                                dateTimeStr = Helper.getUserInputString();
+                                plannedDateTime = Helper.stringToDateTime(dateTimeStr);
+                            }
+                            if (TransportManager.setNewPlannedDateTime(transport, plannedDateTime)) {
+                                Helper.println("Planned date and time updated successfully.");
+                                break;
+                            } else {
+                                Helper.println("Failed to update planned date and time. Try again.");
+                            }
                         }
                     } while (true);
                 }
@@ -913,42 +858,42 @@ public class TransportHandler {
                         }
                     }
                 }
-                case 6 -> {
-                    Helper.print("Enter the new actual start date and time (%s): "
-                            .formatted(Helper.DefaultDateTimeFormat));
-                    String dateTimeStr = Helper.getUserInputString();
-                    LocalDateTime actualStartDateTime = Helper.stringToDateTime(dateTimeStr);
-                    while (actualStartDateTime == null) {
-                        Helper.print("Invalid date and time format. Please try again: ");
-                        dateTimeStr = Helper.getUserInputString();
-                        actualStartDateTime = Helper.stringToDateTime(dateTimeStr);
-                    }
-                    if (TransportManager.setNewActualStartDateTime(transport, actualStartDateTime)) {
-                        Helper.println("Actual start date and time updated successfully.");
-                    } else {
-                        Helper.println("Failed to update actual start date and time. Try again.");
-                    }
-                    break;
-                }
-                case 7 -> {
-                    do {
-                        Helper.print("Enter the new actual end date and time (%s): "
-                                .formatted(Helper.DefaultDateTimeFormat));
-                        String dateTimeStr = Helper.getUserInputString();
-                        LocalDateTime actualEndDateTime = Helper.stringToDateTime(dateTimeStr);
-                        while (actualEndDateTime == null) {
-                            Helper.print("Invalid date and time format. Please try again: ");
-                            dateTimeStr = Helper.getUserInputString();
-                            actualEndDateTime = Helper.stringToDateTime(dateTimeStr);
-                        }
-                        if (TransportManager.setNewActualEndDateTime(transport, actualEndDateTime)) {
-                            Helper.println("Actual end date and time updated successfully.");
-                            break;
-                        } else {
-                            Helper.println("Failed to update actual end date and time. Try again.");
-                        }
-                    } while (true);
-                }
+//                case 6 -> {
+//                    Helper.print("Enter the new actual start date and time (%s): "
+//                            .formatted(Helper.DefaultDateTimeFormat));
+//                    String dateTimeStr = Helper.getUserInputString();
+//                    LocalDateTime actualStartDateTime = Helper.stringToDateTime(dateTimeStr);
+//                    while (actualStartDateTime == null) {
+//                        Helper.print("Invalid date and time format. Please try again: ");
+//                        dateTimeStr = Helper.getUserInputString();
+//                        actualStartDateTime = Helper.stringToDateTime(dateTimeStr);
+//                    }
+//                    if (TransportManager.setNewActualStartDateTime(transport, actualStartDateTime)) {
+//                        Helper.println("Actual start date and time updated successfully.");
+//                    } else {
+//                        Helper.println("Failed to update actual start date and time. Try again.");
+//                    }
+//                    break;
+//                }
+//                case 7 -> {
+//                    do {
+//                        Helper.print("Enter the new actual end date and time (%s): "
+//                                .formatted(Helper.DefaultDateTimeFormat));
+//                        String dateTimeStr = Helper.getUserInputString();
+//                        LocalDateTime actualEndDateTime = Helper.stringToDateTime(dateTimeStr);
+//                        while (actualEndDateTime == null) {
+//                            Helper.print("Invalid date and time format. Please try again: ");
+//                            dateTimeStr = Helper.getUserInputString();
+//                            actualEndDateTime = Helper.stringToDateTime(dateTimeStr);
+//                        }
+//                        if (TransportManager.setNewActualEndDateTime(transport, actualEndDateTime)) {
+//                            Helper.println("Actual end date and time updated successfully.");
+//                            break;
+//                        } else {
+//                            Helper.println("Failed to update actual end date and time. Try again.");
+//                        }
+//                    } while (true);
+//                }
                 case 8 -> {
                     Helper.println("Exiting edit menu.");
                     return;

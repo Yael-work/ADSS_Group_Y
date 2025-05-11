@@ -47,7 +47,6 @@ import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Enums.Models.visitSiteEnum;
 import Auxiliary.Helper;
-import Auxiliary.Enums.Domain.UpdateNewPlannedDateTime;
 import DB.DBManager;
 import DB.interfaces.IDeliveryFileController;
 import DB.interfaces.ITransportController;
@@ -552,6 +551,7 @@ public class TransportManager {
                 return false;
             }
             transport.setStatus(TransportStatusEnum.STARTED);
+            transport.setActualStartDatetime(startDateTime);
             Helper.println("Transport started successfully.");
             transportController.updateTransport(transport, transport.getId());
             return true;
@@ -614,20 +614,23 @@ public class TransportManager {
      * @return - an enum indicating the result of the visit
      */
     public static visitSiteEnum visitDestination(Transport transport, TransportRoute selectedRoute) {
-//        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFileId());
-//        if (deliveryFile == null) {
-//            Helper.println("Delivery file not found.");
-//            return visitSiteEnum.FAILED;
-//        }
-//        List<DeliveryFileItem> deliveryFileItems = deliveryFileItemController.getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
-//        if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
-//            Helper.println("No items in the delivery file.");
-//            return visitSiteEnum.FAILED;
-//        }
-//        if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES) {
-//            selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
-//        }
-//        selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFile().getId());
+        if (deliveryFile == null) {
+            Helper.println("Delivery file not found.");
+            return visitSiteEnum.FAILED;
+        }
+        List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
+        if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
+            Helper.println("No items in the delivery file.");
+            return visitSiteEnum.FAILED;
+        }
+        if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES) {
+            selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
+        }
+        if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED) {
+            selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES);
+        }
+        transportController.updateTransport(transport, transport.getId());
         return visitSiteEnum.SUCCESS;
     }
 
@@ -717,25 +720,14 @@ public class TransportManager {
      * @param newPlannedDateTime - the new planned date and time
      * @return - true if the planned date and time were set successfully, false otherwise
      */
-    public static UpdateNewPlannedDateTime setNewPlannedDateTime(Transport transport, LocalDateTime newPlannedDateTime) {
+    public static boolean setNewPlannedDateTime(Transport transport, LocalDateTime newPlannedDateTime) {
         if (newPlannedDateTime == null) {
             Helper.println("New planned date and time cannot be null.");
-            return UpdateNewPlannedDateTime.FAILED;
+            return false;
         }
-        if ((transport.getActualStartDatetime().isBefore(newPlannedDateTime) || transport.getActualStartDatetime().isEqual(newPlannedDateTime))
-                && transport.getActualEndDatetime().isAfter(newPlannedDateTime)) {
-            return UpdateNewPlannedDateTime.MIDDLE;
-        }
-        if (transport.getActualStartDatetime().isAfter(newPlannedDateTime)) {
-            transport.setPlannedDateTime(newPlannedDateTime);
-            transportController.updateTransport(transport, transport.getId());
-            return UpdateNewPlannedDateTime.SUCCESS;
-        }
-        if (transport.getActualStartDatetime().isBefore(newPlannedDateTime) &&
-                transport.getActualEndDatetime().isBefore(newPlannedDateTime)) {
-            return UpdateNewPlannedDateTime.AFTER;
-        }
-        return UpdateNewPlannedDateTime.FAILED;
+        transport.setPlannedDateTime(newPlannedDateTime);
+        transportController.updateTransport(transport, transport.getId());
+        return true;
     }
 
     /**
