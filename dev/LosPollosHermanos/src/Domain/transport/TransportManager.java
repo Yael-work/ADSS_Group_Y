@@ -532,8 +532,8 @@ public class TransportManager {
     public static boolean StartTransport(Transport transport, LocalDateTime startDateTime) {
         if (transport.getStatus() == TransportStatusEnum.PENDING) {
             LocalDateTime plannedDateTime = transport.getPlannedDateTime();
-            if (startDateTime.isBefore(plannedDateTime) || startDateTime.isAfter(plannedDateTime)) {
-                Helper.println("The start date and time cannot be before the planned date and time.");
+            if (plannedDateTime != null) {
+                Helper.println("Already planned date: " + plannedDateTime);
                 return false;
             }
             Helper.print("Are you sure you want to start the transport? (yes/no)");
@@ -594,6 +594,9 @@ public class TransportManager {
         if (selectedRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES) {
             selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED);
         }
+        if (selectedRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED) {
+            selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
+        }
         transportController.updateTransport(transport, transport.getId());
         return visitSiteEnum.SUCCESS;
     }
@@ -649,6 +652,7 @@ public class TransportManager {
                     TransportIssueLog transportIssueLog = new TransportIssueLog(1, transport.getTruck(),
                             newTruck, selectedRoute, null);
                     transport.getTransportIssueLogs().add(transportIssueLog);
+                    transport.setTruck(newTruck);
                     transportController.updateTransport(transport, transport.getId());
                 }
                 if (code == 2) {

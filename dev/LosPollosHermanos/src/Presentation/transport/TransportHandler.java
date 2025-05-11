@@ -541,6 +541,7 @@ public class TransportHandler {
                     APhysicalSite src = transportRoute.getSourceSite();
                     if (src != null && src.getId() == sourceID) {
                         Helper.println("Visiting source: " + src.toPrettyString());
+                        selectedRoute = transportRoute;
                         flag = true;
                         break;
                     }
@@ -551,7 +552,6 @@ public class TransportHandler {
                 do {
                     Helper.println("Overload detected. Cannot visit source. The total weight exceeds the truck's capacity.");
                     Helper.println("Choose a different truck (1) or choose which items to discard (2).");
-
                     String answer = Helper.getUserInputString();
                     do {
                         if (answer == null || answer.isEmpty() || !answer.matches("[1-2]")) {
@@ -560,7 +560,7 @@ public class TransportHandler {
                         answer = Helper.getUserInputString();
                     } while (!answer.matches("[1-2]"));
                     if (answer.equals("1")) {
-                        List<Truck> availableTrucks = TransportManager.getAvailableTrucksByDate(transport.getPlannedDateTime());
+                        List<Truck> availableTrucks = TransportManager.getAvailableTrucksByDate(transport.getActualStartDatetime());
                         if (availableTrucks.isEmpty()) {
                             Helper.println("No available trucks found.");
                             return;
@@ -579,13 +579,7 @@ public class TransportHandler {
                             Helper.println("Failed to update transport issue. Please try again.");
                             return;
                         }
-                        for (Truck availableTruck : availableTrucks) {
-                            if (availableTruck.getId() == truckId) {
-                                transport.setTruck(availableTruck);
-                                Helper.println("Truck changed successfully.");
-                                break;
-                            }
-                        }
+                        Helper.println("Truck updated successfully.");
                         if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
                             Helper.println("Successfully visited source.");
                             break;
@@ -599,43 +593,31 @@ public class TransportHandler {
                             Helper.println("Delivery file not found. Please try again.");
                             return;
                         }
-//                        for (int itemId : deliveryFile.getDeliveryFileItemIds()) {
-//                            DeliveryFileItem item = TransportManager.getDeliveryFileItemById(itemId);
-//                            if (item != null) {
-//                                Helper.println("Item ID: " + item.getStockItemId() + ", Amount: " + item.getAmount());
-//                            }
-//                        }
-//                        for (int itemId : deliveryFile.getDeliveryFileItemIds()) {
-//                            Helper.print("You want to discard this item?" + itemId + " (yes/no): ");
-//                            String discardItem = Helper.getUserInputString();
-//                            while (discardItem == null || (!discardItem.equalsIgnoreCase("yes") && !discardItem.equalsIgnoreCase("no"))) {
-//                                Helper.print("Invalid input. Please enter 'yes' or 'no': ");
-//                                discardItem = Helper.getUserInputString();
-//                            }
-//                            if (discardItem.equalsIgnoreCase("yes")) {
-//                                deliveryFile.getDeliveryFileItemIds().remove(itemId);
-//                                Helper.println("Item discarded successfully.");
-//                                Helper.println("You want to discard another item? (yes/no): ");
-//                                String discardAnotherItem = Helper.getUserInputString();
-//                                while (discardAnotherItem == null || (!discardAnotherItem.equalsIgnoreCase("yes") && !discardAnotherItem.equalsIgnoreCase("no"))) {
-//                                    Helper.print("Invalid input. Please enter 'yes' or 'no': ");
-//                                    discardAnotherItem = Helper.getUserInputString();
-//                                }
-//                                if (discardAnotherItem.equalsIgnoreCase("no")) {
-//                                    break;
-//                                }
-//                            }
-//                            if (TransportManager.UpdateTransportIssue(transport, 2, selectedRoute, 0, deliveryFile, 0)) {
-//                                Helper.println("Failed to update transport issue. Please try again.");
-//                                return;
-//                            }
-//                        }
-                        if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
-                            Helper.println("Successfully visited source.");
-                            break;
-                        } else {
-                            Helper.println("Failed to visit source. Try again.");
+                        for (DeliveryFileItem item : deliveryFile.getDeliveryFileItems()) {
+                            if (item != null) {
+                                Helper.println("Item ID: " + item.getStockItemId() + ", Amount: " + item.getAmount());
+                            }
                         }
+                        List<Integer> discardedItems = Helper.retrieveIdsListFromInput(deliveryFile.getDeliveryFileItems());
+                        if (discardedItems.isEmpty()) {
+                            Helper.println("No items selected for discard. Please try again.");
+                            continue;
+                        }
+                        for (DeliveryFileItem item : deliveryFile.getDeliveryFileItems()) {
+                            if (item != null && discardedItems.contains(item.getStockItemId())) {
+                                item.setAmountPickedUp(0);
+                            }
+                        }
+                        if (TransportManager.UpdateTransportIssue(transport, 2, selectedRoute, 0, deliveryFile, 0)) {
+                            Helper.println("Failed to update transport issue. Please try again.");
+                            return;
+                        }
+                    }
+                    if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
+                        Helper.println("Successfully visited source.");
+                        break;
+                    } else {
+                        Helper.println("Failed to visit source. Try again.");
                     }
                 } while (true);
             }

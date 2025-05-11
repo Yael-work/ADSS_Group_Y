@@ -12,7 +12,7 @@ public enum TransportStatusEnum {
     SOURCE_COMPLETED(6),
     DESTINATION_COMPLETED(7),
     SOURCE_COMPLETED_WITH_ISSUES(8),
-    DESTINATION_COMPLETED_WITH_ISSUES(9),
+    DESTINATION_COMPLETED_WITH_ISSUES(9), //Optional for now
     CANCELED(10);// optional for now
 
 
