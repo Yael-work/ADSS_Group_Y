@@ -833,56 +833,6 @@ public class TransportManager {
     }
 
     /**
-     * This method is used to set a new actual start date and time for transport.
-     *
-     * @param transport           - the transport object
-     * @param actualStartDateTime - the new actual start date and time
-     * @return - true if the actual start date and time were set successfully, false otherwise
-     */
-    public static boolean setNewActualStartDateTime(Transport transport, LocalDateTime actualStartDateTime) {
-        if (actualStartDateTime == null) {
-            Helper.println("New actual start date and time cannot be null.");
-            return false;
-        }
-        if (actualStartDateTime.isBefore(transport.getPlannedDateTime())) {
-            Helper.println("The new actual start date and time cannot be before the planned date and time.");
-            return false;
-        }
-        if (actualStartDateTime.isAfter(transport.getActualEndDatetime())) {
-            Helper.println("The new actual start date and time cannot be after the actual end date and time.");
-            return false;
-        }
-        transport.setActualStartDatetime(actualStartDateTime);
-        transportController.updateTransport(transport, transport.getId());
-        return true;
-    }
-
-    /**
-     * This method is used to set a new actual end date and time for transport.
-     *
-     * @param transport         - the transport object
-     * @param actualEndDateTime - the new actual end date and time
-     * @return - true if the actual end date and time were set successfully, false otherwise
-     */
-    public static boolean setNewActualEndDateTime(Transport transport, LocalDateTime actualEndDateTime) {
-        if (actualEndDateTime == null) {
-            Helper.println("New actual end date and time cannot be null.");
-            return false;
-        }
-        if (actualEndDateTime.isBefore(transport.getActualStartDatetime())) {
-            Helper.println("The new actual end date and time cannot be before the actual start date and time.");
-            return false;
-        }
-        if (actualEndDateTime.isAfter(transport.getPlannedDateTime())) {
-            Helper.println("The new actual end date and time cannot be after the planned date and time.");
-            return false;
-        }
-        transport.setActualEndDatetime(actualEndDateTime);
-        transportController.updateTransport(transport, transport.getId());
-        return true;
-    }
-
-    /**
      * This method is used to get a driver by ID.
      *
      * @param driverId - the ID of the driver
