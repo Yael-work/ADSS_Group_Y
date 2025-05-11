@@ -735,7 +735,7 @@ public class DBTests {
             assertNull(r, "Transport route still exists after deletion");
             DeliveryFile df = DBManager.getInstance().getDeliveryFileController().getDeliveryFileById(deliveryFileId);
             assertNull(df, "Delivery file still exists after deletion");
-        }
+        } //NOTE: in real time - we should also do the same for the transport issue logs
 
         boolean result = DBManager.getInstance().getTransportController().deleteTransport(createdId);
         assertTrue(result, "Failed to delete transport");
