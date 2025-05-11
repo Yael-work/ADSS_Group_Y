@@ -614,20 +614,23 @@ public class TransportManager {
      * @return - an enum indicating the result of the visit
      */
     public static visitSiteEnum visitDestination(Transport transport, TransportRoute selectedRoute) {
-//        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFileId());
-//        if (deliveryFile == null) {
-//            Helper.println("Delivery file not found.");
-//            return visitSiteEnum.FAILED;
-//        }
-//        List<DeliveryFileItem> deliveryFileItems = deliveryFileItemController.getDeliveryFileItemsByIds(deliveryFile.getDeliveryFileItemIds());
-//        if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
-//            Helper.println("No items in the delivery file.");
-//            return visitSiteEnum.FAILED;
-//        }
-//        if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES) {
-//            selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
-//        }
-//        selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFile().getId());
+        if (deliveryFile == null) {
+            Helper.println("Delivery file not found.");
+            return visitSiteEnum.FAILED;
+        }
+        List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
+        if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
+            Helper.println("No items in the delivery file.");
+            return visitSiteEnum.FAILED;
+        }
+        if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES) {
+            selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
+        }
+        if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED) {
+            selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES);
+        }
+        transportController.updateTransport(transport, transport.getId());
         return visitSiteEnum.SUCCESS;
     }
 
