@@ -412,23 +412,26 @@ public class TransportHandler {
     /**
      * This method is used to show specific detailed transport by its ID.
      */
-    private static void showSpecificDetailedTransport() {
+    private static void showSpecificDetailedTransport(Transport transport) {
         Helper.println("Showing specific detailed transport by ID");
         List<Transport> lst = showAllTransports();
         if (lst == null || lst.isEmpty()) {
             return;
         }
-        Helper.print("Please enter the transport ID: ");
-        int transportId = Helper.getUserInputInteger();
-        while (transportId == Helper.UndefinedUserInput || !Helper.isValidId(lst, transportId)) {
-            Helper.print("Invalid transport ID. Please try again: ");
-            transportId = Helper.getUserInputInteger();
-        }
-        Transport transport = TransportManager.getTransportById(transportId);
         if (transport == null) {
-            Helper.println("Transport not found. Please try again.");
-            return;
+            Helper.print("Please enter the transport ID: ");
+            int transportId = Helper.getUserInputInteger();
+            while (transportId == Helper.UndefinedUserInput || !Helper.isValidId(lst, transportId)) {
+                Helper.print("Invalid transport ID. Please try again: ");
+                transportId = Helper.getUserInputInteger();
+            }
+            transport = TransportManager.getTransportById(transportId);
+            if (transport == null) {
+                Helper.println("Transport not found. Please try again.");
+                return;
+            }
         }
+
         Truck truck = TrucksManager.getTruckById(transport.getTruckId());
         if (truck == null) {
             Helper.println("Truck not found. Please try again.");
@@ -467,7 +470,7 @@ public class TransportHandler {
             Helper.println("Transport not found. Please try again.");
             return;
         }
-        Helper.print("Enter the start date and time of the transport (%s):"
+        Helper.print("Enter the start date and time of the transport (%s): "
                 .formatted(Helper.DefaultDateTimeFormat));
         String dateTimeStr = Helper.getUserInputString();
         LocalDateTime startDateTime = Helper.stringToDateTime(dateTimeStr);
@@ -1000,7 +1003,7 @@ public class TransportHandler {
         List<Transport> transports = TransportManager.getAllTransports();
         for (Transport transport : transports) {
             if (transport.getDriverId() == driverId) {
-                Helper.println(transport.toPrettyString());
+                showSpecificDetailedTransport(transport);
             }
         }
     }
@@ -1035,7 +1038,7 @@ public class TransportHandler {
                     showAllTransports();
                     break;
                 case 2:
-                    showSpecificDetailedTransport();
+                    showSpecificDetailedTransport(null);
                     break;
                 case 3:
                     printTransportDrivesForDriver();
