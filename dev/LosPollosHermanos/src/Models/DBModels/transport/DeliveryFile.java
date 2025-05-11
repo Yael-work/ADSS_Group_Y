@@ -2,6 +2,7 @@ package Models.DBModels.transport;
 
 import Models.DBModels.BaseModel;
 import jakarta.persistence.*;
+import org.hibernate.Session;
 
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class DeliveryFile extends BaseModel {
     }
 
     @Override
-    public boolean copyFromOther(BaseModel other) {
+    public boolean copyFromOther(BaseModel other, Session session) {
         if (other instanceof DeliveryFile otherDeliveryFile) {
             this.setDeliveryFileItems(otherDeliveryFile.getDeliveryFileItems());
             return true;

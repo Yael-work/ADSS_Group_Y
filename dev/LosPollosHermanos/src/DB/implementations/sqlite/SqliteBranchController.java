@@ -38,7 +38,7 @@ public class SqliteBranchController implements IBranchController {
             session.beginTransaction();
             Branch existing = session.get(Branch.class, id);
             if (existing == null) return false;
-            existing.copyFromOther(branch);
+            existing.copyFromOther(branch, session);
             session.getTransaction().commit();
             return true;
         } catch (Exception e) {

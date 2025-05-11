@@ -3,6 +3,7 @@ package Models.DBModels.transport;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import Models.DBModels.BaseModel;
 import jakarta.persistence.*;
+import org.hibernate.Session;
 
 @Entity
 @Table(name = "transport_routes")
@@ -156,7 +157,7 @@ public class TransportRoute extends BaseModel {
     }
 
     @Override
-    public boolean copyFromOther(BaseModel other) {
+    public boolean copyFromOther(BaseModel other, Session session) {
         if (other instanceof TransportRoute otherTransportRoute) {
             this.status = otherTransportRoute.status;
             this.deliveryFile = otherTransportRoute.deliveryFile;

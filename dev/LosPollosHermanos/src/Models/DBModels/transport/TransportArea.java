@@ -3,6 +3,7 @@ package Models.DBModels.transport;
 import Models.DBModels.BaseModel;
 import Models.DBModels.suppliers.Supplier;
 import jakarta.persistence.*;
+import org.hibernate.Session;
 
 import java.util.List;
 
@@ -76,7 +77,7 @@ public class TransportArea extends BaseModel {
     }
 
     @Override
-    public boolean copyFromOther(BaseModel other) {
+    public boolean copyFromOther(BaseModel other, Session session) {
         if (other instanceof TransportArea otherTransportArea) {
             this.areaName = otherTransportArea.areaName;
             this.suppliers = otherTransportArea.suppliers;

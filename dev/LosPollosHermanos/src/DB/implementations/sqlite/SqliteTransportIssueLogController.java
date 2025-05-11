@@ -40,7 +40,7 @@ public class SqliteTransportIssueLogController implements ITransportIssueLogCont
             session.beginTransaction();
             TransportIssueLog existingLog = session.get(TransportIssueLog.class, id);
             if (existingLog != null) {
-                existingLog.copyFromOther(transportIssueLog);
+                existingLog.copyFromOther(transportIssueLog, session);
                 session.getTransaction().commit();
                 return true;
             } else {

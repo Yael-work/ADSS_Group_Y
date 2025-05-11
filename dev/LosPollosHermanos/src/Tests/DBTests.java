@@ -677,5 +677,43 @@ public class DBTests {
         return addedId;
     }
 
-    //todo add more tests on the transport!
+    @UseTestingDatabase
+    @Test
+    public void testEditTransport() {
+        int createdId = _testCreateNewTransport();
+        Transport transport = DBManager.getInstance().getTransportController().getTransportById(createdId);
+        assertNotNull(transport, "Transport not found");
+        int createdNewRouteId = _testCreateTransportRoute();
+        TransportRoute newRoute = DBManager.getInstance().getTransportRouteController().getTransportRouteById(createdNewRouteId);
+        assertNotNull(newRoute, "New transport route not found");
+        int createdLogId = _testCreateTransportIssueLog();
+        TransportIssueLog issueLog = DBManager.getInstance().getTransportIssueLogController().getTransportIssueLogById(createdLogId);
+        assertNotNull(issueLog, "Transport issue log not found");
+        issueLog.setRelatedTransportRoute(newRoute);
+        boolean result = DBManager.getInstance().getTransportIssueLogController().updateTransportIssueLog(issueLog, createdLogId);
+        assertTrue(result, "Failed to update transport issue log");
+        TransportIssueLog updatedIssueLog = DBManager.getInstance().getTransportIssueLogController().getTransportIssueLogById(createdLogId);
+        assertNotNull(updatedIssueLog, "Updated transport issue log not found");
+        assertEquals(newRoute.getId(), updatedIssueLog.getRelatedTransportRoute().getId(),
+                "Updated transport route ID mismatch");
+
+        LocalDateTime newPlannedDateTime = Helper.stringToDateTime("2023-10-02 12:00");
+        transport.setPlannedDateTime(newPlannedDateTime);
+        transport.setStatus(TransportStatusEnum.STARTED);
+        transport.getTransportRoutes().add(newRoute);
+        transport.setTransportIssueLogs(List.of(updatedIssueLog));
+
+        result = DBManager.getInstance().getTransportController().updateTransport(transport, createdId);
+        assertTrue(result, "Failed to update transport");
+        Transport updatedTransport = DBManager.getInstance().getTransportController().getTransportById(createdId);
+        assertNotNull(updatedTransport, "Updated transport not found");
+        assertEquals(newPlannedDateTime, updatedTransport.getPlannedDateTime(), "Planned date time mismatch");
+        assertEquals(TransportStatusEnum.STARTED, updatedTransport.getStatus(), "Transport status mismatch");
+        assertEquals(3, updatedTransport.getTransportRoutes().size(), "Transport routes size mismatch");
+        assertEquals(newRoute.getId(), updatedTransport.getTransportRoutes().getLast().getId(),
+                "New transport route ID mismatch");
+        assertEquals(1, updatedTransport.getTransportIssueLogs().size(), "Transport issue logs size mismatch");
+        assertEquals(updatedIssueLog.getId(), updatedTransport.getTransportIssueLogs().getFirst().getId(),
+                "Updated transport issue log ID mismatch");
+    }
 }

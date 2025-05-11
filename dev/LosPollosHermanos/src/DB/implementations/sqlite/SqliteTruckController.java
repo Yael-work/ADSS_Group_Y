@@ -40,7 +40,7 @@ public class SqliteTruckController implements ITruckController {
             session.beginTransaction();
             Truck existingTruck = session.get(Truck.class, id);
             if (existingTruck != null) {
-                existingTruck.copyFromOther(truck);
+                existingTruck.copyFromOther(truck, session);
                 session.getTransaction().commit();
                 return true;
             }

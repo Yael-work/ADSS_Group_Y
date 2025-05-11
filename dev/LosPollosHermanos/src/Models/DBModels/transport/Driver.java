@@ -4,6 +4,7 @@ import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
 import jakarta.persistence.*;
+import org.hibernate.Session;
 
 @Entity
 @Table(name = "drivers")
@@ -95,7 +96,7 @@ public class Driver extends BaseModel {
      * @param other driver object to copy from
      */
     @Override
-    public boolean copyFromOther(BaseModel other) {
+    public boolean copyFromOther(BaseModel other, Session session) {
         if (!(other instanceof Driver otherDriver)) {
             Helper.showError(String.format("%s::Other must be of type %s", this.getClass().getName(), this.getClass().getName()));
             return false;

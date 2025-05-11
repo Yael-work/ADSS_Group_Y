@@ -5,6 +5,7 @@ import Models.DBModels.BaseModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import org.hibernate.Session;
 
 @Entity
 @Table(name = "trucks")
@@ -98,7 +99,7 @@ public class Truck extends BaseModel {
     }
 
     @Override
-    public boolean copyFromOther(BaseModel other) {
+    public boolean copyFromOther(BaseModel other, Session session) {
         if (other instanceof Truck otherTruck) {
             this.plate = otherTruck.plate;
             this.netWeight = otherTruck.netWeight;

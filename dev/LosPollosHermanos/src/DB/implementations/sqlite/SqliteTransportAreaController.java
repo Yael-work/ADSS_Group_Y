@@ -68,7 +68,7 @@ public class SqliteTransportAreaController implements ITransportAreaController {
             session.beginTransaction();
             TransportArea existing = session.get(TransportArea.class, id);
             if (existing == null) return false;
-            existing.copyFromOther(transportArea);
+            existing.copyFromOther(transportArea, session);
             session.getTransaction().commit();
             return true;
         } catch (Exception e) {

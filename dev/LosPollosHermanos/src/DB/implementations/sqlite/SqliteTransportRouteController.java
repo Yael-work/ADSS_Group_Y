@@ -41,7 +41,7 @@ public class SqliteTransportRouteController implements ITransportRouteController
             session.beginTransaction();
             TransportRoute existing = session.get(TransportRoute.class, id);
             if (existing == null) return false;
-            existing.copyFromOther(transportRoute);
+            existing.copyFromOther(transportRoute, session);
             session.getTransaction().commit();
             return true;
         } catch (Exception e) {

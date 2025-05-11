@@ -3,6 +3,7 @@ package Models.DBModels.transport;
 import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
 import jakarta.persistence.*;
+import org.hibernate.Session;
 
 @Entity
 @Table(name = "delivery_file_items")
@@ -29,7 +30,7 @@ public class DeliveryFileItem extends BaseModel {
 
     public DeliveryFileItem(DeliveryFileItem fileItem) {
         super(0, DeliveryFileItem.class.getName());
-        this.copyFromOther(fileItem);
+        this.copyFromOther(fileItem, null);
     }
 
 
@@ -84,7 +85,7 @@ public class DeliveryFileItem extends BaseModel {
      * @param other The other DeliveryFileItem object to copy from.
      */
     @Override
-    public boolean copyFromOther(BaseModel other) {
+    public boolean copyFromOther(BaseModel other, Session session) {
         if (!(other instanceof DeliveryFileItem otherDeliveryFileItem)) {
             Helper.showError(String.format("%s::Other must be of type %s", this.getClass().getName(), this.getClass().getName()));
             return false;

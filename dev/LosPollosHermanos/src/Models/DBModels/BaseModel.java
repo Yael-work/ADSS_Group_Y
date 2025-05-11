@@ -1,6 +1,7 @@
 package Models.DBModels;
 
 import jakarta.persistence.*;
+import org.hibernate.Session;
 
 /**
  * BaseModel is an abstract class that serves as a base for all models in the application.
@@ -61,8 +62,9 @@ public abstract class BaseModel {
     /**
      * Copies the properties of another BaseModel into this one.
      *
-     * @param other The other BaseModel to copy from.
+     * @param other   The other BaseModel to copy from.
+     * @param session The Hibernate session to use for the copy operation.
      * @return true if the copy was successful, false otherwise.
      */
-    public abstract boolean copyFromOther(BaseModel other);
+    public abstract boolean copyFromOther(BaseModel other, Session session);
 }

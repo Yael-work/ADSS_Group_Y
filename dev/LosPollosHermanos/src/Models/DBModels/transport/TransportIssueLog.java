@@ -2,6 +2,7 @@ package Models.DBModels.transport;
 
 import Models.DBModels.BaseModel;
 import jakarta.persistence.*;
+import org.hibernate.Session;
 
 @Entity
 @Table(name = "transport_issue_logs")
@@ -91,7 +92,7 @@ public class TransportIssueLog extends BaseModel {
     }
 
     @Override
-    public boolean copyFromOther(BaseModel other) {
+    public boolean copyFromOther(BaseModel other, Session session) {
         if (other instanceof TransportIssueLog otherTransportIssueLog) {
             this.setCurrentTruck(otherTransportIssueLog.getCurrentTruck());
             this.setNewTruck(otherTransportIssueLog.getNewTruck());

@@ -4,6 +4,7 @@ import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import jakarta.persistence.*;
+import org.hibernate.Session;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -154,19 +155,43 @@ public class Transport extends BaseModel {
     }
 
     @Override
-    public boolean copyFromOther(BaseModel other) {
+    public boolean copyFromOther(BaseModel other, Session session) {
         if (!(other instanceof Transport otherTransport)) {
             Helper.showError(String.format("%s::Other must be of type %s", this.getClass().getName(), this.getClass().getName()));
             return false;
         }
+
         this.plannedDateTime = otherTransport.plannedDateTime;
         this.status = otherTransport.status;
         this.actualStartDatetime = otherTransport.actualStartDatetime;
         this.actualEndDatetime = otherTransport.actualEndDatetime;
         this.truck = otherTransport.truck;
         this.driver = otherTransport.driver;
-        this.transportRoutes = otherTransport.transportRoutes;
-        this.transportIssueLogs = otherTransport.transportIssueLogs;
+
+        // Clear and merge transportRoutes
+        if (this.transportRoutes != null) {
+            this.transportRoutes.clear();
+        }
+        if (otherTransport.transportRoutes != null) {
+            for (TransportRoute route : otherTransport.transportRoutes) {
+                TransportRoute mergedRoute = session.merge(route);
+                mergedRoute.setTransport(this);
+                this.transportRoutes.add(mergedRoute);
+            }
+        }
+
+        // Clear and merge transportIssueLogs
+        if (this.transportIssueLogs != null) {
+            this.transportIssueLogs.clear();
+        }
+        if (otherTransport.transportIssueLogs != null) {
+            for (TransportIssueLog log : otherTransport.transportIssueLogs) {
+                TransportIssueLog mergedLog = session.merge(log);
+                mergedLog.setTransport(this);
+                this.transportIssueLogs.add(mergedLog);
+            }
+        }
+
         return true;
     }
 }

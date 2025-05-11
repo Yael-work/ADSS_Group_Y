@@ -32,6 +32,19 @@ public class SqliteTransportController implements ITransportController {
         }
     }
 
+    private void linkListsForTransport(Transport transport, Session session) {
+        if (transport.getTransportRoutes() != null) {
+            for (TransportRoute route : transport.getTransportRoutes()) {
+                route.setTransport(transport);
+            }
+        }
+        if (transport.getTransportIssueLogs() != null) {
+            for (TransportIssueLog log : transport.getTransportIssueLogs()) {
+                log.setTransport(transport);
+            }
+        }
+    }
+
     @Override
     public int addTransport(Transport transport) {
         if (transport == null || transport.getTransportRoutes() == null) {
@@ -39,14 +52,7 @@ public class SqliteTransportController implements ITransportController {
         }
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            for (TransportRoute route : transport.getTransportRoutes()) {
-                route.setTransport(transport);
-            }
-            if (transport.getTransportIssueLogs() != null) {
-                for (TransportIssueLog issueLog : transport.getTransportIssueLogs()) {
-                    issueLog.setTransport(transport);
-                }
-            }
+            linkListsForTransport(transport, session);
             Transport merged = session.merge(transport);
             session.getTransaction().commit();
             return merged.getId();
@@ -65,7 +71,7 @@ public class SqliteTransportController implements ITransportController {
             session.beginTransaction();
             Transport existingTransport = session.get(Transport.class, id);
             if (existingTransport != null) {
-                existingTransport.copyFromOther(transport);
+                existingTransport.copyFromOther(transport, session);
                 session.getTransaction().commit();
                 return true;
             }

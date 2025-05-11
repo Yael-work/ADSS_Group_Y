@@ -5,6 +5,7 @@ import Models.DBModels.BaseModel;
 import Models.DBModels.transport.APhysicalSite;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import org.hibernate.Session;
 
 //@mohamed TODO complete the class
 @Entity
@@ -34,7 +35,7 @@ public class Supplier extends APhysicalSite {
     }
 
     @Override
-    public boolean copyFromOther(BaseModel other) {
+    public boolean copyFromOther(BaseModel other, Session session) {
         if (!(other instanceof Supplier otherSupplier)) {
             Helper.showError(String.format("%s::Other must be of type %s", this.getClass().getName(), this.getClass().getName()));
             return false;

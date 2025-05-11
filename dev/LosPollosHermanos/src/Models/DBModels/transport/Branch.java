@@ -4,6 +4,7 @@ import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import org.hibernate.Session;
 
 @Entity
 @Table(name = "branches")
@@ -36,7 +37,7 @@ public class Branch extends APhysicalSite {
      *
      * @param other The other Branch object to copy from.
      */
-    public boolean copyFromOther(BaseModel other) {
+    public boolean copyFromOther(BaseModel other, Session session) {
         if (!(other instanceof Branch otherBranch)) {
             Helper.showError(String.format("%s::Other must be of type %s", this.getClass().getName(), this.getClass().getName()));
             return false;

@@ -42,7 +42,7 @@ public class SqliteDriverController implements IDriverController {
             session.beginTransaction();
             Driver existing = session.get(Driver.class, id);
             if (existing == null) return false;
-            existing.copyFromOther(driver);
+            existing.copyFromOther(driver, session);
             session.getTransaction().commit();
             return true;
         } catch (Exception e) {

@@ -41,7 +41,7 @@ public class SqliteSupplierController implements ISupplierController {
             session.beginTransaction();
             Supplier existing = session.get(Supplier.class, id);
             if (existing == null) return false;
-            existing.copyFromOther(supplier);
+            existing.copyFromOther(supplier, session);
             session.getTransaction().commit();
             return true;
         } catch (Exception e) {
