@@ -10,6 +10,8 @@ public class GlobalConfig {
     private static final String DATABASE_CONFIG_TESTING_URL = "hibernate-test.cfg.xml"; // testing only db
     private static boolean testMode = false;
     private static final boolean overrideAndShowSql = false;//change this manually to true to show sql queries
+    public static final String DATABASE_FILE_NAME = "losPollosHermanos.db"; // default database file name
+    public static final String DATABASE_TESTING_FILE_NAME = "losPollosHermanosTestingOnly.db"; // testing only db
 
     /**
      * Sets the test mode for the application.

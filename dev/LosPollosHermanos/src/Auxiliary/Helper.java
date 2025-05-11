@@ -64,7 +64,7 @@ public class Helper {
      * @param logToFile Whether to log the error message to a file or not.
      */
     public static void showError(String message, String trace, boolean logToFile) {
-        String err = String.format("--------- System Error message: {%s} --------- \n %s --------- END TRACE ---------",
+        String err = String.format("--------- System Error message: {%s} ---------\n%s\n--------- END TRACE ---------",
                 message, trace != null ? trace + "\n" : "");
         System.err.println(err);
         if (logToFile) {

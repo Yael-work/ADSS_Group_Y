@@ -1,6 +1,7 @@
 package Presentation.transport;
 
 import Auxiliary.Helper;
+import DB.util.HibernateUtil;
 import Domain.stock.StockManager;
 import Domain.transport.*;
 import Domain.suppliers.SuppliersManager;
@@ -87,6 +88,9 @@ public class TransportPresentation {
             Helper.println("Temporary mock data has already been loaded.");
             return false;
         }
+        // we should delete any existing dbs if the point is to test mock data
+        HibernateUtil.deleteDatabaseFiles();
+
         BranchesManager.addBranch("Branch1", "Address1", "+972 5412311");
         BranchesManager.addBranch("Branch2", "Address2", "+972 5488899");
         BranchesManager.addBranch("Branch3", "Address3", "+972 5412988");
@@ -150,7 +154,10 @@ public class TransportPresentation {
      * This method runs in a loop until the user chooses to exit.
      */
     public static void TransportPresentationHandler() {
-        Helper.print("Load mock data? (y/n): ");
+        Helper.print("""
+                Load mock data?
+                [Warning!!! This will wipe(erase) the current DB, the point of the mock data is to give you a minimal working fresh DB]
+                (y/n):\s""");
         String loadMockData = Helper.getUserInputString();
         while (loadMockData == null || loadMockData.isEmpty() || (
                 !loadMockData.equalsIgnoreCase("y") && !loadMockData.equalsIgnoreCase("n"))) {

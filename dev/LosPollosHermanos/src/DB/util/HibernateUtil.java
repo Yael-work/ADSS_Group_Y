@@ -1,8 +1,11 @@
 package DB.util;
 
 import Auxiliary.GlobalConfig;
+import Auxiliary.Helper;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+
+import java.io.File;
 
 public class HibernateUtil {
     private static SessionFactory sessionFactory = null;
@@ -46,5 +49,38 @@ public class HibernateUtil {
             throw new ExceptionInInitializerError();
         }
         return sessionFactory;
+    }
+
+    /**
+     * Function to delete the database files.
+     *
+     * @return true if the files were deleted successfully, false otherwise
+     */
+    public static boolean deleteDatabaseFiles() {
+        SessionFactory _sessionFactory = getSessionFactory();
+        if (_sessionFactory != null) {
+            _sessionFactory.close();
+            sessionFactory = null;
+        }
+        return deleteDatabaseFiles(GlobalConfig.DATABASE_FILE_NAME) &&
+                deleteDatabaseFiles(GlobalConfig.DATABASE_TESTING_FILE_NAME);
+    }
+
+    /**
+     * Function to delete the database files.
+     *
+     * @param dbFilePath the path to the database file
+     * @return true if the file was deleted successfully, false otherwise
+     */
+    private static boolean deleteDatabaseFiles(String dbFilePath) {
+        try {
+            File dbFile = new File(dbFilePath);
+            if (dbFile.exists()) {
+                return dbFile.delete();
+            }
+        } catch (Exception e) {
+            Helper.showError("Error deleting database file: " + e);
+        }
+        return false;
     }
 }
