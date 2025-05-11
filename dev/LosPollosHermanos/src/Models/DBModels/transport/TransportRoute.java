@@ -11,8 +11,8 @@ public class TransportRoute extends BaseModel {
     @Column(nullable = false)
     private TransportStatusEnum status;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "delivery_file_id", referencedColumnName = "id", nullable = false, unique = false)
+    @OneToOne(optional = false, orphanRemoval = true)
+    @JoinColumn(name = "delivery_file_id", referencedColumnName = "id", nullable = false)
     private DeliveryFile deliveryFile;
 
     @ManyToOne(optional = false)
@@ -160,7 +160,7 @@ public class TransportRoute extends BaseModel {
     public boolean copyFromOther(BaseModel other, Session session) {
         if (other instanceof TransportRoute otherTransportRoute) {
             this.status = otherTransportRoute.status;
-            this.deliveryFile = otherTransportRoute.deliveryFile;
+            this.deliveryFile = session.merge(otherTransportRoute.deliveryFile);
             this.sourceSite = otherTransportRoute.sourceSite;
             this.destinationSite = otherTransportRoute.destinationSite;
             this.sourceContactName = otherTransportRoute.sourceContactName;

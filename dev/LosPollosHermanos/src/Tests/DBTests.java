@@ -716,4 +716,30 @@ public class DBTests {
         assertEquals(updatedIssueLog.getId(), updatedTransport.getTransportIssueLogs().getFirst().getId(),
                 "Updated transport issue log ID mismatch");
     }
+
+    @UseTestingDatabase
+    @Test
+    public void testDeleteTransport() {
+        int createdId = _testCreateNewTransport();
+        Transport transport = DBManager.getInstance().getTransportController().getTransportById(createdId);
+        assertNotNull(transport, "Transport not found");
+
+        assertFalse(transport.getTransportRoutes().isEmpty());
+        for (TransportRoute route : transport.getTransportRoutes()) {
+            assertNotNull(route, "Transport route not found");
+            int deliveryFileId = route.getDeliveryFile().getId();
+            // we can simply delete the route and due to the one-to-one relation, the delivery file will also be deleted
+            assertTrue(DBManager.getInstance().getTransportRouteController().deleteTransportRoute(route.getId()),
+                    "Failed to delete transport route");
+            TransportRoute r = DBManager.getInstance().getTransportRouteController().getTransportRouteById(route.getId());
+            assertNull(r, "Transport route still exists after deletion");
+            DeliveryFile df = DBManager.getInstance().getDeliveryFileController().getDeliveryFileById(deliveryFileId);
+            assertNull(df, "Delivery file still exists after deletion");
+        }
+
+        boolean result = DBManager.getInstance().getTransportController().deleteTransport(createdId);
+        assertTrue(result, "Failed to delete transport");
+        transport = DBManager.getInstance().getTransportController().getTransportById(createdId);
+        assertNull(transport, "Transport still exists after deletion");
+    }
 }
