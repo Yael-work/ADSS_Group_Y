@@ -15,8 +15,8 @@ package Domain.transport;
  *  For each route:
  *      D. Print the route status
  *      E. Pretty print each route with: address from, address to, contact names from and to, contact phones from and to.
- *      F. pretty print the delivery file fo the route.
- * 4. Print the next drive for driver: TODO @tom  - we should delete this option.
+ *      F. pretty print the delivery file for the route.
+ * 4. Print the next drive for driver: //Done Delete for now.
  * 5. Delete transport by ID -> delete all linked inner data.
  * 6. Create transport:
  *   A. Ask for planned date time of transport

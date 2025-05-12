@@ -899,50 +899,56 @@ public class TransportHandler {
     }
 
     /**
-     * This method is used to print the next drive for the driver.
-     */
-    private static void printNextDriveForDriver() {
-        Helper.print("Please enter the driver ID: ");
-        int driverId = Helper.getUserInputInteger();
-        while (driverId == Helper.UndefinedUserInput) {
-            Helper.print("Invalid driver ID. Please try again: ");
-            driverId = Helper.getUserInputInteger();
-        }
-        Driver driver = TransportManager.getDriverById(driverId);
-        if (driver == null) {
-            Helper.println("Driver not found. Please try again.");
-            return;
-        }
-        List<Transport> transports = TransportManager.getAllTransports();
-        for (Transport transport : transports) {
-            if (transport.getDriverId() == driverId && transport.getStatus() == TransportStatusEnum.PENDING) {
-                Helper.println("Next drive for driver ID " + driverId + ": " + transport.toPrettyString());
-                return;
-            }
-        }
-        Helper.println("No next drive found for driver ID " + driverId);
-    }
-
-    /**
      * This method is used to print the transport drives for the driver.
      */
     private static void printTransportDrivesForDriver() {
-        Helper.print("Please enter the driver ID: ");
-        int driverId = Helper.getUserInputInteger();
-        while (driverId == Helper.UndefinedUserInput) {
-            Helper.print("Invalid driver ID. Please try again: ");
-            driverId = Helper.getUserInputInteger();
+        Helper.print("Please enter the transport ID: ");
+        int transportId = Helper.getUserInputInteger();
+        while (transportId == Helper.UndefinedUserInput) {
+            Helper.print("Invalid transport ID. Please try again: ");
+            transportId = Helper.getUserInputInteger();
         }
-        Driver driver = TransportManager.getDriverById(driverId);
-        if (driver == null) {
-            Helper.println("Driver not found. Please try again.");
+        Transport transport = TransportManager.getTransportById(transportId);
+        if (transport == null) {
+            Helper.println("Transport not found. Please try again.");
             return;
         }
-        List<Transport> transports = TransportManager.getAllTransports();
-        for (Transport transport : transports) {
-            if (transport.getDriverId() == driverId) {
-                showSpecificDetailedTransport(transport);
+        List<TransportRoute> routes = transport.getTransportRoutes();
+        if (routes == null || routes.isEmpty()) {
+            Helper.println("No transport routes found for this transport.");
+            return;
+        }
+        for (TransportRoute route : routes) {
+            if (route == null) {
+                Helper.println("Transport route not found. Please try again.");
+                routes.remove(null);
+                continue;
             }
+            if (route.getStatus() != TransportStatusEnum.PENDING) {
+                routes.remove(route);
+            }
+        }
+        if (routes.isEmpty()) {
+            Helper.println("No transport routes found for this transport.");
+            return;
+        }
+        Helper.println("Transport routes for driver:");
+        for (TransportRoute route : routes) {
+            Helper.println("Route ID: " + route.getId() + ", Source: " + route.getSourceSite().getSiteAddress() +
+                    ", Destination: " + route.getDestinationSite().getSiteAddress() + ", contact name source: " + route.getSourceContactName() +
+                    ", contact phone source: " + route.getSourceContactPhone() + " ,contact name destination: " + route.getDestinationContactName() +
+                    ", contact phone destination: " + route.getDestinationContactPhone());
+            Helper.println("");
+            Helper.println("Delivery file items:");
+            DeliveryFile deliveryFile = route.getDeliveryFile();
+            if (deliveryFile != null) {
+                for (DeliveryFileItem item : deliveryFile.getDeliveryFileItems()) {
+                    Helper.println("Item" + item.getStockItemId() + " ,Amount: " + item.getAmount() + " ,Picked up: " + item.getAmountPickedUp());
+                }
+            } else {
+                Helper.println("No delivery file items found.");
+            }
+            Helper.println("--------------------------------");
         }
     }
 
@@ -957,14 +963,13 @@ public class TransportHandler {
             Helper.println("1. Show all transports");
             Helper.println("2. Show specific detailed transport by ID");
             Helper.println("3. Print transport drives for driver - by Transport ID");
-            Helper.println("4. Print the next drive for driver");
-            Helper.println("5. Delete transport by ID");
-            Helper.println("6. Create transport");
-            Helper.println("7. Start transport");
-            Helper.println("8. Visit source");
-            Helper.println("9. Visit destination");
-            Helper.println("10. Edit Unstarted Transport");
-            Helper.println("11. Back to main menu");
+            Helper.println("4. Delete transport by ID");
+            Helper.println("5. Create transport");
+            Helper.println("6. Start transport");
+            Helper.println("7. Visit source");
+            Helper.println("8. Visit destination");
+            Helper.println("9. Edit Unstarted Transport");
+            Helper.println("10. Back to main menu");
 
             do {
                 Helper.print("Please choose an option: ");
@@ -982,27 +987,24 @@ public class TransportHandler {
                     printTransportDrivesForDriver();
                     break;
                 case 4:
-                    printNextDriveForDriver();
-                    break;
-                case 5:
                     deleteTransportById();
                     break;
-                case 6:
+                case 5:
                     createTransportMainRoutine();
                     break;
-                case 7:
+                case 6:
                     startTransport();
                     break;
-                case 8:
+                case 7:
                     visitSource();
                     break;
-                case 9:
+                case 8:
                     visitDestination();
                     break;
-                case 10:
+                case 9:
                     editUnstartedTransport();
                     break;
-                case 11:
+                case 10:
                     exit = true;
                     break;
                 default:
