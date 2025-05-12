@@ -1,4 +1,4 @@
-package DB.implementations;
+package DB.implementations.transport;
 
 import Auxiliary.Helper;
 import DB.interfaces.ISupplierController;

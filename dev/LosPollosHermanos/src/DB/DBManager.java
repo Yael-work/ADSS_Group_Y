@@ -1,7 +1,6 @@
 package DB;
 
-import DB.implementations.*;
-import DB.implementations.sqlite.*;
+import DB.implementations.sqlite.transport.*;
 import DB.interfaces.*;
 
 /**

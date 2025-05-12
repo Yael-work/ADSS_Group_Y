@@ -1,4 +1,4 @@
-package DB.implementations;
+package DB.implementations.transport;
 
 import DB.interfaces.ITransportIssueLogController;
 import Models.DBModels.transport.TransportIssueLog;
