@@ -480,22 +480,23 @@ public class DBTests {
     @UseTestingDatabase
     @Test
     public void testCreateTruck() {
-        _testCreateTruck(false);
+        _testCreateTruck(false, false);
     }
 
-    private int _testCreateTruck(boolean quitIfExists) {
-        Truck truck = DBManager.getInstance().getTruckController().getTruckByPlate("Truck1");
+    private int _testCreateTruck(boolean quitIfExists, boolean randomPlate) {
+        String plate = randomPlate ? "Truck1%s".formatted(Helper.getRandomString(5)) : "Truck1";
+        Truck truck = DBManager.getInstance().getTruckController().getTruckByPlate(plate);
         if (truck != null) {
             if (quitIfExists) {
                 return truck.getId();
             }
             DBManager.getInstance().getTruckController().deleteTruck(truck.getId());
         }
-        truck = new Truck(0, "Truck1", 1000.0, 2000.0, LicenseTypeEnum.C, "Model X");
+        truck = new Truck(0, plate, 1000.0, 2000.0, LicenseTypeEnum.C, "Model X");
         int addedId = DBManager.getInstance().getTruckController().addTruck(truck);
         Truck retrievedTruck = DBManager.getInstance().getTruckController().getTruckById(addedId);
         assertNotNull(retrievedTruck);
-        assertEquals("Truck1", retrievedTruck.getPlate());
+        assertEquals(plate, retrievedTruck.getPlate());
         assertEquals(1000.0, retrievedTruck.getNetWeight());
         assertEquals(2000.0, retrievedTruck.getMaxWeight());
         assertEquals(LicenseTypeEnum.C, retrievedTruck.getRequiredLicenseType());
@@ -557,7 +558,7 @@ public class DBTests {
     private int _testCreateTransportIssueLog() {
         // first we must create a route
         int transportRouteId = _testCreateTransportRoute();
-        int createdTruckId = _testCreateTruck(true);
+        int createdTruckId = _testCreateTruck(true, false);
         Truck truck = DBManager.getInstance().getTruckController().getTruckById(createdTruckId);
         assertNotNull(truck, "Truck not found");
         TransportRoute transportRoute = DBManager.getInstance().getTransportRouteController().getTransportRouteById(transportRouteId);
@@ -645,7 +646,7 @@ public class DBTests {
         LocalDateTime plannedDateTime = Helper.stringToDateTime("2023-10-01 10:00");
         int createdRouteOne = _testCreateTransportRoute();
         int createdRouteTwo = _testCreateTransportRoute();
-        int createdTruck = _testCreateTruck(true);
+        int createdTruck = _testCreateTruck(true, false);
         int createdDriver = _testCreateDriver(true);
 
         TransportRoute transportRouteOne = DBManager.getInstance().getTransportRouteController().getTransportRouteById(createdRouteOne);
@@ -696,12 +697,16 @@ public class DBTests {
         assertNotNull(updatedIssueLog, "Updated transport issue log not found");
         assertEquals(newRoute.getId(), updatedIssueLog.getRelatedTransportRoute().getId(),
                 "Updated transport route ID mismatch");
+        int createdNewTruckResult = _testCreateTruck(false, true);
+        Truck newTruck = DBManager.getInstance().getTruckController().getTruckById(createdNewTruckResult);
+        assertNotNull(newTruck, "New truck not found");
 
         LocalDateTime newPlannedDateTime = Helper.stringToDateTime("2023-10-02 12:00");
         transport.setPlannedDateTime(newPlannedDateTime);
         transport.setStatus(TransportStatusEnum.STARTED);
         transport.getTransportRoutes().add(newRoute);
         transport.setTransportIssueLogs(List.of(updatedIssueLog));
+        transport.setTruck(newTruck);
 
         result = DBManager.getInstance().getTransportController().updateTransport(transport, createdId);
         assertTrue(result, "Failed to update transport");

@@ -165,8 +165,8 @@ public class Transport extends BaseModel {
         this.status = otherTransport.status;
         this.actualStartDatetime = otherTransport.actualStartDatetime;
         this.actualEndDatetime = otherTransport.actualEndDatetime;
-        this.truck = otherTransport.truck;
-        this.driver = otherTransport.driver;
+        this.truck = session.merge(otherTransport.truck);
+        this.driver = session.merge(otherTransport.driver);
 
         // Clear and merge transportRoutes
         if (this.transportRoutes != null) {
