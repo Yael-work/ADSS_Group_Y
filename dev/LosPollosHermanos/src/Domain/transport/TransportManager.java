@@ -7,7 +7,7 @@ package Domain.transport;
  *   + print all linked transport routes -> also print the delivery file of each route
  *   + print all linked issue logs -> also print the issue file of each log
  *
- * 3. Print transport drives for driver - by Transport ID: //TODO @tom
+ * 3. Print transport drives for driver - by Transport ID: //TODO @tom - DONE
  *      This is a printing function that should be used by the driver
  *      meaning that we get the TRANSPORT id and we:
  *   B. get all the routes of the transport
@@ -47,6 +47,7 @@ import Auxiliary.Helper;
 import DB.DBManager;
 import DB.interfaces.IDeliveryFileController;
 import DB.interfaces.ITransportController;
+import DB.interfaces.ITransportIssueLogController;
 import DB.interfaces.ITransportRouteController;
 import Domain.stock.StockManager;
 import Domain.suppliers.SuppliersManager;
@@ -65,6 +66,7 @@ public class TransportManager {
     private static final ITransportController transportController = DBManager.getInstance().getTransportController();
     private static final IDeliveryFileController deliveryFileController = DBManager.getInstance().getDeliveryFileController();
     private static final ITransportRouteController transportRouteController = DBManager.getInstance().getTransportRouteController();
+    private static final ITransportIssueLogController transportIssueLogController = DBManager.getInstance().getTransportIssueLogController();
 
     /**
      * This method is used to create a delivery file.
@@ -664,10 +666,12 @@ public class TransportManager {
                             newTruck, selectedRoute, null);
                     transport.getTransportIssueLogs().add(transportIssueLog);
                     transport.setTruck(newTruck);
+                    transportIssueLogController.updateTransportIssueLog(transportIssueLog, transportIssueLog.getId());
                     transportController.updateTransport(transport, transport.getId());
                 }
                 if (code == 2) {
                     selectedRoute.setDeliveryFile(deliveryFile);
+
                 }
                 selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
                 transport.setStatus(TransportStatusEnum.CONTINUED_WITH_ISSUES);

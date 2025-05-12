@@ -551,7 +551,7 @@ public class TransportHandler {
                     break;
                 }
                 Helper.println("Source not found. Please try again.");
-            } while (!flag);
+            } while (true);
             visitSiteEnum status = TransportManager.visitSource(transport, selectedRoute);
             if (status == visitSiteEnum.OVERLOAD) {
                 do {
@@ -599,7 +599,7 @@ public class TransportHandler {
                             Helper.println("Invalid truck ID. Please try again.");
                             continue;
                         }
-                        if (TransportManager.UpdateTransportIssue(transport, 1, selectedRoute, truckId, null, 0)) {
+                        if (!TransportManager.UpdateTransportIssue(transport, 1, selectedRoute, truckId, null, 0)) {
                             Helper.println("Failed to update transport issue. Please try again.");
                             return;
                         }

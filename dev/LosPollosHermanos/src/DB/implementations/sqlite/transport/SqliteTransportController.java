@@ -76,7 +76,7 @@ public class SqliteTransportController implements ITransportController {
                 return true;
             }
         } catch (Exception e) {
-            Helper.showError("Failed to update transport route", e);
+            Helper.showError("Failed to update transport", e);
         }
         return false;
     }
