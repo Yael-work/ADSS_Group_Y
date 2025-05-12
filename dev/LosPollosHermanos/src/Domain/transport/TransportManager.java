@@ -596,7 +596,7 @@ public class TransportManager {
             selectedRoute.setRecordedWeightAtSite(totalWeight);
             selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
         }
-        for (DeliveryFileItem item : deliveryFileItems){
+        for (DeliveryFileItem item : deliveryFileItems) {
             selectedRoute.getDeliveryFile().getDeliveryFileItems()
                     .stream()
                     .filter(i -> i.getStockItemId() == item.getStockItemId())
@@ -640,7 +640,7 @@ public class TransportManager {
     }
 
     /**
-     * This method is used to update the transport issue.
+     * This method is used to attach an issue to an existing transport.
      *
      * @param transport     - the transport object
      * @param code          - the code indicating the type of issue
@@ -650,7 +650,7 @@ public class TransportManager {
      * @param codeSite      - the code indicating the site type
      * @return - true if the update was successful, false otherwise
      */
-    public static boolean UpdateTransportIssue(Transport transport, int code, TransportRoute selectedRoute, int truckId, DeliveryFile deliveryFile, int codeSite) {
+    public static boolean AttachIssueToExistingTransport(Transport transport, int code, TransportRoute selectedRoute, int truckId, DeliveryFile deliveryFile, int codeSite) {
         if (selectedRoute == null) {
             Helper.println("Selected route is null.");
             return false;
@@ -658,15 +658,21 @@ public class TransportManager {
             if (codeSite == 0) {
                 if (code == 1) {
                     Truck newTruck = truckId == transport.getTruckId() ? null : TrucksManager.getTruckById(truckId);
-                    if (newTruck == null) {
+                    if (newTruck == null) { // todo @TOm why is this checked? we said the issue logs are either changing trucks OR leaving products behind at the relevant route.
                         Helper.showError("Truck with id " + truckId + " not found.");
                         return false;
                     }
-                    TransportIssueLog transportIssueLog = new TransportIssueLog(1, transport.getTruck(),
+                    TransportIssueLog transportIssueLog = new TransportIssueLog(0, transport.getTruck(),
                             newTruck, selectedRoute, null);
+                    int addedLogId = transportIssueLogController.addTransportIssueLog(transportIssueLog);
+                    transportIssueLog = transportIssueLogController.getTransportIssueLogById(addedLogId);
+                    if (transportIssueLog == null) {
+                        Helper.showError("Failed to create transport issue log.");
+                        return false;
+                    }
+
                     transport.getTransportIssueLogs().add(transportIssueLog);
                     transport.setTruck(newTruck);
-                    transportIssueLogController.updateTransportIssueLog(transportIssueLog, transportIssueLog.getId());
                     transportController.updateTransport(transport, transport.getId());
                 }
                 if (code == 2) {

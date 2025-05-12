@@ -599,7 +599,7 @@ public class TransportHandler {
                             Helper.println("Invalid truck ID. Please try again.");
                             continue;
                         }
-                        if (!TransportManager.UpdateTransportIssue(transport, 1, selectedRoute, truckId, null, 0)) {
+                        if (!TransportManager.AttachIssueToExistingTransport(transport, 1, selectedRoute, truckId, null, 0)) {
                             Helper.println("Failed to update transport issue. Please try again.");
                             return;
                         }
@@ -634,7 +634,7 @@ public class TransportHandler {
                                 item.setAmountPickedUp(0);
                             }
                         }
-                        if (TransportManager.UpdateTransportIssue(transport, 2, selectedRoute, 0, deliveryFile, 0)) {
+                        if (TransportManager.AttachIssueToExistingTransport(transport, 2, selectedRoute, 0, deliveryFile, 0)) {
                             Helper.println("Failed to update transport issue. Please try again.");
                             return;
                         }

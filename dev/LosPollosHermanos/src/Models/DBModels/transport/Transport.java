@@ -189,7 +189,6 @@ public class Transport extends BaseModel {
                 TransportIssueLog mergedLog = session.merge(log);
                 mergedLog.setTransport(this);
                 this.transportIssueLogs.add(mergedLog);
-                Helper.println("sus");
             }
         }
 
