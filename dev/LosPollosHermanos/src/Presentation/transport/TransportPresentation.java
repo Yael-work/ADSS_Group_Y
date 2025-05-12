@@ -100,7 +100,7 @@ public class TransportPresentation {
         DriversManager.addDriver("Jane", "Smith", "456789123", "+972 5412988", "C1");
 
         TrucksManager.addTruck("5498875", 3500, 5000, "C1", "Toyota");
-        TrucksManager.addTruck("5491176", 4000, 6000, "C", "Ford");
+        TrucksManager.addTruck("5491176", 100, 300, "C", "Ford");
         TrucksManager.addTruck("5491177", 4500, 7000, "C1", "Mercedes");
 
         SuppliersManager.addSupplier("Supplier1", "Address4", "+972 77788855");

@@ -547,34 +547,57 @@ public class TransportHandler {
                         break;
                     }
                 }
+                if (flag) {
+                    break;
+                }
                 Helper.println("Source not found. Please try again.");
             } while (!flag);
-            if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.OVERLOAD) {
+            visitSiteEnum status = TransportManager.visitSource(transport, selectedRoute);
+            if (status == visitSiteEnum.OVERLOAD) {
                 do {
                     Helper.println("Overload detected. Cannot visit source. The total weight exceeds the truck's capacity.");
                     Helper.println("Choose a different truck (1) or choose which items to discard (2).");
                     String answer = Helper.getUserInputString();
                     do {
-                        if (answer == null || answer.isEmpty() || !answer.matches("[1-2]")) {
+                        if (answer == null || answer.isEmpty() ||
+                                (!answer.equals("1") && !answer.equals("2"))) {
                             Helper.println("Invalid input. Please choose 1 or 2.");
+                            answer = Helper.getUserInputString();
                         }
-                        answer = Helper.getUserInputString();
-                    } while (!answer.matches("[1-2]"));
+                    } while (!answer.equals("1") && !answer.equals("2"));
                     if (answer.equals("1")) {
-                        List<Truck> availableTrucks = TransportManager.getAvailableTrucksByDate(transport.getActualStartDatetime());
+                        List<Truck> availableTrucks = new ArrayList<>();
+                        boolean check = false;
+                        if (!check) {
+                            availableTrucks = TransportManager.getAvailableTrucksByDate(transport.getPlannedDateTime());
+                        }
                         if (availableTrucks.isEmpty()) {
                             Helper.println("No available trucks found.");
+                            if (check) {
+                                Helper.println("Please try again later when trucks will be available.");
+                            }
                             return;
                         }
                         Helper.println("Available trucks:");
-                        for (Truck availableTruck : availableTrucks) {
-                            Helper.println("Truck ID: " + availableTruck.getId() + ", total Weight: " + (availableTruck.getMaxWeight() - availableTruck.getNetWeight()));
+                        for (Truck truck : availableTrucks) {
+                            Helper.println("Truck ID: " + truck.getId() + ", total weight: " + (truck.getMaxWeight() - truck.getNetWeight()));
                         }
                         Helper.print("Please enter the truck ID: ");
                         int truckId = Helper.getUserInputInteger();
                         while (truckId == Helper.UndefinedUserInput) {
                             Helper.print("Invalid truck ID. Please try again: ");
                             truckId = Helper.getUserInputInteger();
+                        }
+                        boolean isValidTruckId = false;
+                        for (Truck truck : availableTrucks) {
+                            if (truck.getId() == truckId) {
+                                isValidTruckId = true;
+                                break;
+                            }
+                        }
+                        if (!isValidTruckId) {
+                            Helper.println("Invalid truck ID. Please try again.");
+                            continue;
                         }
                         if (TransportManager.UpdateTransportIssue(transport, 1, selectedRoute, truckId, null, 0)) {
                             Helper.println("Failed to update transport issue. Please try again.");
@@ -585,7 +608,9 @@ public class TransportHandler {
                             Helper.println("Successfully visited source.");
                             break;
                         } else {
-                            Helper.println("Failed to visit source. Try again.");
+                            Helper.println("Try again. The truck weight is still too high. Please choose a different truck.");
+                            check = true;
+                            availableTrucks.remove(truckId);
                         }
                     } else if (answer.equals("2")) {
                         Helper.println("Choose which items to discard:");
@@ -621,6 +646,13 @@ public class TransportHandler {
                         Helper.println("Failed to visit source. Try again.");
                     }
                 } while (true);
+            } else {
+                if (status == visitSiteEnum.SUCCESS) {
+                    Helper.println("Successfully visited source.");
+                } else {
+                    Helper.println("Failed to visit source. Try again.");
+                }
+                return;
             }
         }
         Helper.println("Failed to visit source. Transport not started or source not found.");

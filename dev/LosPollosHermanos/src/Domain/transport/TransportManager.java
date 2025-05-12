@@ -529,11 +529,11 @@ public class TransportManager {
     public static boolean StartTransport(Transport transport, LocalDateTime startDateTime) {
         if (transport.getStatus() == TransportStatusEnum.PENDING) {
             LocalDateTime plannedDateTime = transport.getPlannedDateTime();
-            if (plannedDateTime != null) {
-                Helper.println("Already planned date: " + plannedDateTime);
+            if (plannedDateTime == null) {
+                Helper.println("Planned date and time is null. Cannot start transport.");
                 return false;
             }
-            Helper.print("Are you sure you want to start the transport? (yes/no)");
+            Helper.print("Are you sure you want to start the transport? (yes/no) ");
             String answer = Helper.getUserInputString();
             if (answer == null || answer.isEmpty()) {
                 Helper.println("Invalid input. Transport start cancelled.");
@@ -584,7 +584,7 @@ public class TransportManager {
                 Helper.println("Stock item not found.");
                 return visitSiteEnum.FAILED;
             }
-            totalWeight += stockItem.getWeight() * item.getAmountPickedUp();
+            totalWeight += stockItem.getWeight() * item.getAmount();
         }
         if (totalWeight > truck.getMaxWeight() - truck.getNetWeight()) {
             return visitSiteEnum.OVERLOAD;
@@ -597,6 +597,16 @@ public class TransportManager {
             selectedRoute.setRecordedWeightAtSite(totalWeight);
             selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
         }
+        for (DeliveryFileItem item : deliveryFileItems){
+            selectedRoute.getDeliveryFile().getDeliveryFileItems()
+                    .stream()
+                    .filter(i -> i.getStockItemId() == item.getStockItemId())
+                    .findFirst()
+                    .ifPresent(i -> {
+                        i.setAmountPickedUp(item.getAmount());
+                    });
+        }
+        transportRouteController.updateTransportRoute(selectedRoute, selectedRoute.getId());
         transportController.updateTransport(transport, transport.getId());
         return visitSiteEnum.SUCCESS;
     }
@@ -625,6 +635,7 @@ public class TransportManager {
         if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED) {
             selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES);
         }
+        transportRouteController.updateTransportRoute(selectedRoute, selectedRoute.getId());
         transportController.updateTransport(transport, transport.getId());
         return visitSiteEnum.SUCCESS;
     }
@@ -663,6 +674,7 @@ public class TransportManager {
                 }
                 selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
                 transport.setStatus(TransportStatusEnum.CONTINUED_WITH_ISSUES);
+                transportRouteController.updateTransportRoute(selectedRoute, selectedRoute.getId());
                 transportController.updateTransport(transport, transport.getId());
                 return true;
             }
