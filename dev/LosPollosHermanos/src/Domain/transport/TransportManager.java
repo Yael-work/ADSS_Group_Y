@@ -8,18 +8,15 @@ package Domain.transport;
  *   + print all linked issue logs -> also print the issue file of each log
  *
  * 3. Print transport drives for driver - by Transport ID: //TODO @tom
- *      This is a printing function the should be used by the driver
- *   A. get transport by id
+ *      This is a printing function that should be used by the driver
+ *      meaning that we get the TRANSPORT id and we:
  *   B. get all the routes of the transport
  *   C. get all the routes of the transport that are not started yet
  *  For each route:
- *      D. Pretty print each route with: address from, address to, contact names from and to, contact phones from and to,
- *      E. pretty print the delivery file.
- *
- * 4. Print the next drive for driver:
- *    We should get the driver ID, and print the NEXT route with details: src address, src contact, src phone, dest address,
- *      dest contact, dest phone, delivery file.
- *
+ *      D. Print the route status
+ *      E. Pretty print each route with: address from, address to, contact names from and to, contact phones from and to.
+ *      F. pretty print the delivery file fo the route.
+ * 4. Print the next drive for driver: TODO @tom  - we should delete this option.
  * 5. Delete transport by ID -> delete all linked inner data.
  * 6. Create transport:
  *   A. Ask for planned date time of transport
