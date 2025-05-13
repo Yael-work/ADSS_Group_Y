@@ -4,6 +4,7 @@ import Models.DBModels.BaseModel;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity

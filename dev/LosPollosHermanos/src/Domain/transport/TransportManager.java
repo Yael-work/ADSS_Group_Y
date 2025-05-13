@@ -74,7 +74,7 @@ public class TransportManager {
      * @param requiredItems - the list of required items
      * @return - the ID of the created delivery file, or Helper.UndefinedId if failed
      */
-    private static int createDeliveryFile(List<StockItem> requiredItems) {
+    public static int createDeliveryFile(List<StockItem> requiredItems) {
         if (requiredItems == null || requiredItems.isEmpty()) {
             Helper.showError("No items to create a delivery file.");
             return Helper.UndefinedId;
@@ -89,6 +89,7 @@ public class TransportManager {
         }
         return deliveryFileController.addDeliveryFile(new DeliveryFile(Helper.UndefinedId, addedItems));
     }
+
 
     /**
      * This method is used to delete a delivery file and its items.
@@ -663,7 +664,7 @@ public class TransportManager {
                         Helper.showError("Truck with id " + truckId + " not found.");
                         return false;
                     }
-                    TransportIssueLog transportIssueLog = new TransportIssueLog(0, transport.getTruck(),
+                    TransportIssueLog transportIssueLog = new TransportIssueLog(Helper.UndefinedId, transport.getTruck(),
                             newTruck, selectedRoute, null);
                     int addedLogId = transportIssueLogController.addTransportIssueLog(transportIssueLog);
                     transportIssueLog = transportIssueLogController.getTransportIssueLogById(addedLogId);
@@ -671,12 +672,23 @@ public class TransportManager {
                         Helper.showError("Failed to create transport issue log.");
                         return false;
                     }
-
                     transport.getTransportIssueLogs().add(transportIssueLog);
                     transport.setTruck(newTruck);
                 }
                 if (code == 2) {
-                    selectedRoute.setDeliveryFile(deliveryFile);
+                    if (deliveryFile == null) {
+                        Helper.showError("Delivery file not found.");
+                        return false;
+                    }
+                    TransportIssueLog transportIssueLog = new TransportIssueLog(Helper.UndefinedId, transport.getTruck(),
+                            null, selectedRoute, deliveryFile);
+                    int addedLogId = transportIssueLogController.addTransportIssueLog(transportIssueLog);
+                    transportIssueLog = transportIssueLogController.getTransportIssueLogById(addedLogId);
+                    if (transportIssueLog == null) {
+                        Helper.showError("Failed to create transport issue log.");
+                        return false;
+                    }
+                    transport.getTransportIssueLogs().add(transportIssueLog);
                 }
                 selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
                 transport.setStatus(TransportStatusEnum.CONTINUED_WITH_ISSUES);
@@ -862,5 +874,24 @@ public class TransportManager {
             return null;
         }
         return driver;
+    }
+
+    /**
+     * This method is used to get a delivery file by ID.
+     *
+     * @param copy - the ID of the delivery file
+     * @return - the delivery file object, or null if not found
+     */
+    public static DeliveryFile getDeliveryFileById(int copy) {
+        if (copy <= Helper.UndefinedId) {
+            Helper.showError("Cant get delivery file with id <= 0");
+            return null;
+        }
+        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(copy);
+        if (deliveryFile == null) {
+            Helper.showError("Cant get delivery file with id=" + copy + ", it does not exist");
+            return null;
+        }
+        return deliveryFile;
     }
 }

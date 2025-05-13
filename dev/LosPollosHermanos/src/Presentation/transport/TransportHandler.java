@@ -621,6 +621,7 @@ public class TransportHandler {
                             Helper.println("Delivery file not found. Please try again.");
                             return;
                         }
+                        List<StockItem> stockItems = new ArrayList<>();
                         for (DeliveryFileItem item : deliveryFile.getDeliveryFileItems()) {
                             if (item != null) {
                                 StockItem stockItem = StockManager.getStockItemById(item.getStockItemId());
@@ -628,19 +629,37 @@ public class TransportHandler {
                                     Helper.println("Stock item not found. Please try again.");
                                     return;
                                 }
-                                Helper.println("Item ID: " + item.getId() + ", Amount: " + item.getAmount() + " , total weight: " +
-                                        stockItem.getWeight() * item.getAmount());
+                                stockItems.add(stockItem);
                             }
                         }
-                        List<Integer> discardedItems = Helper.retrieveIdsListFromInput(deliveryFile.getDeliveryFileItems());
+                        int copy = TransportManager.createDeliveryFile(stockItems);
+                        DeliveryFile copyDeliveryFile = TransportManager.getDeliveryFileById(copy);
+                        if (copyDeliveryFile == null) {
+                            Helper.println("Failed to create delivery file copy. Please try again.");
+                            return;
+                        }
+                        for (DeliveryFileItem item : copyDeliveryFile.getDeliveryFileItems()) {
+                            if (item != null) {
+                                StockItem stockItem = StockManager.getStockItemById(item.getStockItemId());
+                                if (stockItem == null) {
+                                    Helper.println("Stock item not found. Please try again.");
+                                    return;
+                                }
+                                Helper.println("Item ID: " + item.getId() + ", Amount: " + item.getAmount() + ", single weight: " +
+                                        stockItem.getWeight() + ", total weight: " + (stockItem.getWeight() * item.getAmount()));
+                            }
+                        }
+                        List<Integer> discardedItems = Helper.retrieveIdsListFromInput(copyDeliveryFile.getDeliveryFileItems());
                         if (discardedItems.isEmpty()) {
                             Helper.println("No items selected for discard. Please try again.");
                             continue;
                         }
-                        for (DeliveryFileItem item : deliveryFile.getDeliveryFileItems()) {
-                            if (item != null && discardedItems.contains(item.getStockItemId())) {
-                                Helper.println("Item ID: " + item.getId() + ", Amount: " + item.getAmount() + " , total weight: " +
-                                        item.getStockItemId() * item.getAmount());
+                        for (DeliveryFileItem item : copyDeliveryFile.getDeliveryFileItems()) {
+                            if (item != null && discardedItems.contains(item.getId())) {
+                                StockItem stockItem = StockManager.getStockItemById(item.getStockItemId());
+                                assert stockItem != null;
+                                Helper.println("Item ID: " + item.getId() + ", Amount: " + item.getAmount() + ", single weight: " +
+                                        stockItem.getWeight() + ", total weight: " + (stockItem.getWeight() * item.getAmount()));
                                 Helper.print("Please enter the new amount for this item: ");
                                 double newAmount = Helper.getUserInputDouble();
                                 while (newAmount <= 0) {
@@ -648,18 +667,23 @@ public class TransportHandler {
                                     newAmount = Helper.getUserInputDouble();
                                 }
                                 item.setAmount(newAmount);
+                                Helper.println("Item amount updated successfully.");
                             }
+                        }
+                        selectedRoute.setDeliveryFile(copyDeliveryFile);
+                        if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
+                            Helper.println("Successfully visited source.");
+                        } else {
+                            Helper.println("Failed to visit source. Try again.");
                         }
                         if (!TransportManager.AttachIssueToExistingTransport(transport, 2, selectedRoute, 0, deliveryFile, 0)) {
                             Helper.println("Failed to update transport issue. Please try again.");
                             return;
                         }
-                    }
-                    if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
-                        Helper.println("Successfully visited source.");
-                        return;
-                    } else {
-                        Helper.println("Failed to visit source. Try again.");
+                        else {
+                            Helper.println("Transport issue updated successfully.");
+                            return;
+                        }
                     }
                 } while (true);
             } else {
