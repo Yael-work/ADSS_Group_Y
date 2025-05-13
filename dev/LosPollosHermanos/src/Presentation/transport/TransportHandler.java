@@ -554,6 +554,7 @@ public class TransportHandler {
             } while (true);
             visitSiteEnum status = TransportManager.visitSource(transport, selectedRoute);
             if (status == visitSiteEnum.OVERLOAD) {
+                boolean check = false;
                 do {
                     Helper.println("Overload detected. Cannot visit source. The total weight exceeds the truck's capacity.");
                     Helper.println("Choose a different truck (1) or choose which items to discard (2).");
@@ -567,7 +568,6 @@ public class TransportHandler {
                     } while (!answer.equals("1") && !answer.equals("2"));
                     if (answer.equals("1")) {
                         List<Truck> availableTrucks = new ArrayList<>();
-                        boolean check = false;
                         if (!check) {
                             availableTrucks = TransportManager.getAvailableTrucksByDate(transport.getPlannedDateTime());
                         }
@@ -606,22 +606,30 @@ public class TransportHandler {
                         Helper.println("Truck updated successfully.");
                         if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
                             Helper.println("Successfully visited source.");
-                            break;
+                            return;
                         } else {
                             Helper.println("Try again. The truck weight is still too high. Please choose a different truck.");
                             check = true;
                             availableTrucks.remove(truckId);
                         }
-                    } else if (answer.equals("2")) {
-                        Helper.println("Choose which items to discard:");
+                    } else {
+                        Helper.println("Choose item Id to modify the amount of the item to discard.");
                         DeliveryFile deliveryFile = selectedRoute.getDeliveryFile();
+                        //todo - original delivery file will be at TransportIssueLog
+                        //todo - modified delivery file will be at TransportRoute
                         if (deliveryFile == null) {
                             Helper.println("Delivery file not found. Please try again.");
                             return;
                         }
                         for (DeliveryFileItem item : deliveryFile.getDeliveryFileItems()) {
                             if (item != null) {
-                                Helper.println("Item ID: " + item.getStockItemId() + ", Amount: " + item.getAmount());
+                                StockItem stockItem = StockManager.getStockItemById(item.getStockItemId());
+                                if (stockItem == null) {
+                                    Helper.println("Stock item not found. Please try again.");
+                                    return;
+                                }
+                                Helper.println("Item ID: " + item.getId() + ", Amount: " + item.getAmount() + " , total weight: " +
+                                        stockItem.getWeight() * item.getAmount());
                             }
                         }
                         List<Integer> discardedItems = Helper.retrieveIdsListFromInput(deliveryFile.getDeliveryFileItems());
@@ -631,17 +639,25 @@ public class TransportHandler {
                         }
                         for (DeliveryFileItem item : deliveryFile.getDeliveryFileItems()) {
                             if (item != null && discardedItems.contains(item.getStockItemId())) {
-                                item.setAmountPickedUp(0);
+                                Helper.println("Item ID: " + item.getId() + ", Amount: " + item.getAmount() + " , total weight: " +
+                                        item.getStockItemId() * item.getAmount());
+                                Helper.print("Please enter the new amount for this item: ");
+                                double newAmount = Helper.getUserInputDouble();
+                                while (newAmount <= 0) {
+                                    Helper.print("Invalid amount. Please try again: ");
+                                    newAmount = Helper.getUserInputDouble();
+                                }
+                                item.setAmount(newAmount);
                             }
                         }
-                        if (TransportManager.AttachIssueToExistingTransport(transport, 2, selectedRoute, 0, deliveryFile, 0)) {
+                        if (!TransportManager.AttachIssueToExistingTransport(transport, 2, selectedRoute, 0, deliveryFile, 0)) {
                             Helper.println("Failed to update transport issue. Please try again.");
                             return;
                         }
                     }
                     if (TransportManager.visitSource(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
                         Helper.println("Successfully visited source.");
-                        break;
+                        return;
                     } else {
                         Helper.println("Failed to visit source. Try again.");
                     }

@@ -651,14 +651,15 @@ public class TransportManager {
      * @return - true if the update was successful, false otherwise
      */
     public static boolean AttachIssueToExistingTransport(Transport transport, int code, TransportRoute selectedRoute, int truckId, DeliveryFile deliveryFile, int codeSite) {
-        if (selectedRoute == null) {
+        if (selectedRoute == null || transport == null) {
             Helper.println("Selected route is null.");
             return false;
         } else {
             if (codeSite == 0) {
                 if (code == 1) {
-                    Truck newTruck = truckId == transport.getTruckId() ? null : TrucksManager.getTruckById(truckId);
+                    Truck newTruck = TrucksManager.getTruckById(truckId);
                     if (newTruck == null) { // todo @TOm why is this checked? we said the issue logs are either changing trucks OR leaving products behind at the relevant route.
+                        //todo @Ethan - that's the spirit champ!
                         Helper.showError("Truck with id " + truckId + " not found.");
                         return false;
                     }
@@ -673,11 +674,9 @@ public class TransportManager {
 
                     transport.getTransportIssueLogs().add(transportIssueLog);
                     transport.setTruck(newTruck);
-                    transportController.updateTransport(transport, transport.getId());
                 }
                 if (code == 2) {
                     selectedRoute.setDeliveryFile(deliveryFile);
-
                 }
                 selectedRoute.setStatus(TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES);
                 transport.setStatus(TransportStatusEnum.CONTINUED_WITH_ISSUES);
@@ -685,10 +684,10 @@ public class TransportManager {
                 transportController.updateTransport(transport, transport.getId());
                 return true;
             }
-            if (codeSite == 1) {
-                /* Optional for now */
-                return true;
-            }
+//            if (codeSite == 1) {
+//                /* Optional for now */
+//                return true;
+//            }
         }
         return false;
     }
