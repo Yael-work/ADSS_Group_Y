@@ -800,7 +800,7 @@ public class TransportHandler {
             return;
         }
         if (transport.getStatus() != TransportStatusEnum.PENDING) {
-            Helper.println("Transport is already started. Cannot edit.");
+            Helper.println("Transport is already started or canceled. Cannot edit.");
             return;
         }
         do {
@@ -830,6 +830,7 @@ public class TransportHandler {
                             }
                             if (TransportManager.setNewPlannedDateTime(transport, plannedDateTime)) {
                                 Helper.println("Planned date and time updated successfully.");
+                                Helper.println("");
                                 break;
                             } else {
                                 Helper.println("Failed to update planned date and time. Try again.");
@@ -888,6 +889,7 @@ public class TransportHandler {
                     }
                     if (TransportManager.setNewDriver(transport, selectedDriver)) {
                         Helper.println("Driver ID updated successfully.");
+                        Helper.println("");
                     } else {
                         Helper.println("Failed to update driver ID. Try again.");
                     }

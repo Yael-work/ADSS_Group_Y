@@ -776,7 +776,6 @@ public class TransportManager {
         }
         transport.setStatus(TransportStatusEnum.CANCELED);
         transportController.updateTransport(transport, transport.getId());
-        Helper.println("Transport canceled successfully.");
         return true;
     }
 
