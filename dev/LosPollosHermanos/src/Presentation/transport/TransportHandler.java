@@ -718,7 +718,7 @@ public class TransportHandler {
             Helper.println("Transport is already done. Cannot visit destination.");
             return;
         }
-        if (transport.getStatus() == TransportStatusEnum.STARTED) {
+        if (transport.getStatus() == TransportStatusEnum.STARTED || transport.getStatus() == TransportStatusEnum.CONTINUED_WITH_ISSUES) {
             Helper.println("Relevant destinations to visit: ");
             List<TransportRoute> routes = transport.getTransportRoutes();
             TransportRoute selectedRoute = null;
@@ -727,9 +727,9 @@ public class TransportHandler {
                     Helper.println("Transport route not found. Please try again.");
                     continue;
                 }
-                if (transportRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES
-                        || transportRoute.getStatus() != TransportStatusEnum.SOURCE_COMPLETED ||
-                        transportRoute.getStatus() == TransportStatusEnum.DESTINATION_COMPLETED) {
+                if (transportRoute.getStatus() == TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES
+                        || transportRoute.getStatus() == TransportStatusEnum.PENDING
+                        || transportRoute.getStatus() == TransportStatusEnum.DESTINATION_COMPLETED) {
                     continue;
                 }
                 APhysicalSite destinationSite = transportRoute.getDestinationSite();
@@ -760,20 +760,28 @@ public class TransportHandler {
                         break;
                     }
                 }
+                if (flag) {
+                    break;
+                }
                 Helper.println("Destination not found. Please try again.");
-            } while (!flag);
+            } while (true);
             if (TransportManager.visitDestination(transport, selectedRoute) == visitSiteEnum.SUCCESS) {
                 if (TransportManager.checkIfTransportCompleted(transport)) {
                     Helper.println("Successfully visited destination.");
                     Helper.println("Transport is completed successfully.");
                 }
+                else {
+                    Helper.println("Successfully visited destination.");
+                    Helper.println("Transport is not completed yet.");
+                }
             } else {
                 Helper.println("Failed to visit destination. Try again.");
             }
+            return;
         } else {
             Helper.println("Transport is not started yet. Please start the transport first.");
+            return;
         }
-        return;
     }
 
     /**
