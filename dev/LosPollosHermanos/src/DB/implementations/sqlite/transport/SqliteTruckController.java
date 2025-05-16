@@ -1,7 +1,7 @@
 package DB.implementations.sqlite.transport;
 
 import Auxiliary.Helper;
-import DB.interfaces.ITruckController;
+import DB.interfaces.transport.ITruckController;
 import DB.util.HibernateUtil;
 import Models.DBModels.transport.Truck;
 import org.hibernate.Session;

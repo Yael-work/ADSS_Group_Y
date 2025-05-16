@@ -1,10 +1,9 @@
 package Domain.transport;
 
 import Auxiliary.Enums.Models.LicenseTypeEnum;
-import Models.DBModels.transport.TransportArea;
 import Models.DBModels.transport.Truck;
 import DB.DBManager;
-import DB.interfaces.ITruckController;
+import DB.interfaces.transport.ITruckController;
 import Auxiliary.Helper;
 
 import java.util.ArrayList;

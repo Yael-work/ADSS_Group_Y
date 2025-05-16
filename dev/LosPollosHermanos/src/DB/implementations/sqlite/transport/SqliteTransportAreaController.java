@@ -1,7 +1,7 @@
 package DB.implementations.sqlite.transport;
 
 import Auxiliary.Helper;
-import DB.interfaces.ITransportAreaController;
+import DB.interfaces.transport.ITransportAreaController;
 import DB.util.HibernateUtil;
 import Models.DBModels.transport.TransportArea;
 import org.hibernate.Hibernate;

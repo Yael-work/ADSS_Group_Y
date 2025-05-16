@@ -3,7 +3,7 @@ package Domain.transport;
 import Auxiliary.Enums.Domain.UpdateTransportAreaEnum;
 import Auxiliary.Helper;
 import DB.DBManager;
-import DB.interfaces.ITransportAreaController;
+import DB.interfaces.transport.ITransportAreaController;
 import Domain.suppliers.SuppliersManager;
 import Models.DBModels.suppliers.Supplier;
 import Models.DBModels.transport.Branch;

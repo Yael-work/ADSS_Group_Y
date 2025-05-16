@@ -1,7 +1,7 @@
 package DB.implementations.transport;
 
 import Auxiliary.Helper;
-import DB.interfaces.IDeliveryFileController;
+import DB.interfaces.transport.IDeliveryFileController;
 import Models.DBModels.transport.DeliveryFile;
 import Models.DBModels.transport.DeliveryFileItem;
 

@@ -1,7 +1,7 @@
 package DB;
 
 import DB.implementations.sqlite.transport.*;
-import DB.interfaces.*;
+import DB.interfaces.transport.*;
 
 /**
  * DBManager is a singleton class that manages the database controllers for various entities.

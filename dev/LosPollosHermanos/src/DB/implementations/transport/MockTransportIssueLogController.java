@@ -1,6 +1,6 @@
 package DB.implementations.transport;
 
-import DB.interfaces.ITransportIssueLogController;
+import DB.interfaces.transport.ITransportIssueLogController;
 import Models.DBModels.transport.TransportIssueLog;
 
 import java.util.ArrayList;

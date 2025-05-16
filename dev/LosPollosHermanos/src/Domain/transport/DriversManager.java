@@ -2,7 +2,7 @@ package Domain.transport;
 
 import Auxiliary.Enums.Models.LicenseTypeEnum;
 import DB.DBManager;
-import DB.interfaces.IDriverController;
+import DB.interfaces.transport.IDriverController;
 import Models.DBModels.transport.Driver;
 import Auxiliary.Helper;
 

@@ -1,7 +1,7 @@
 package DB.implementations.sqlite.transport;
 
 import Auxiliary.Helper;
-import DB.interfaces.ITransportRouteController;
+import DB.interfaces.transport.ITransportRouteController;
 import DB.util.HibernateUtil;
 import Models.DBModels.transport.TransportRoute;
 import org.hibernate.Session;

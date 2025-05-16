@@ -1,7 +1,7 @@
 package DB.implementations.sqlite.transport;
 
 import Auxiliary.Helper;
-import DB.interfaces.ITransportController;
+import DB.interfaces.transport.ITransportController;
 import DB.util.HibernateUtil;
 import Models.DBModels.transport.Transport;
 import Models.DBModels.transport.TransportIssueLog;

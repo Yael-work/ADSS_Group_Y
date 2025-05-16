@@ -1,7 +1,7 @@
 package DB.implementations.transport;
 
 import Auxiliary.Helper;
-import DB.interfaces.IBranchController;
+import DB.interfaces.transport.IBranchController;
 import Models.DBModels.transport.Branch;
 
 import java.util.ArrayList;

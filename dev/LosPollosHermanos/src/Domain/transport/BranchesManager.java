@@ -1,7 +1,7 @@
 package Domain.transport;
 
 import DB.DBManager;
-import DB.interfaces.IBranchController;
+import DB.interfaces.transport.IBranchController;
 import Models.DBModels.transport.Branch;
 import Auxiliary.Helper;
 

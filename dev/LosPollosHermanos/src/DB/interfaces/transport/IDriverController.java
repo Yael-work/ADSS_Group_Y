@@ -1,4 +1,4 @@
-package DB.interfaces;
+package DB.interfaces.transport;
 
 import Models.DBModels.transport.Driver;
 

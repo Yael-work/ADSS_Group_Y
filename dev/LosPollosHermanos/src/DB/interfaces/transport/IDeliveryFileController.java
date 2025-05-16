@@ -1,4 +1,4 @@
-package DB.interfaces;
+package DB.interfaces.transport;
 
 import Models.DBModels.transport.DeliveryFile;
 import Models.DBModels.transport.DeliveryFileItem;

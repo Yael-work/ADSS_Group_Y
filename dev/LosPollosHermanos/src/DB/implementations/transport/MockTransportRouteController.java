@@ -1,7 +1,7 @@
 package DB.implementations.transport;
 
 import Auxiliary.Helper;
-import DB.interfaces.ITransportRouteController;
+import DB.interfaces.transport.ITransportRouteController;
 import Models.DBModels.transport.TransportRoute;
 
 import java.util.ArrayList;

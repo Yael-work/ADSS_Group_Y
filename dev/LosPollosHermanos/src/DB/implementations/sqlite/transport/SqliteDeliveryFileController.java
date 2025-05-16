@@ -1,7 +1,7 @@
 package DB.implementations.sqlite.transport;
 
 import Auxiliary.Helper;
-import DB.interfaces.IDeliveryFileController;
+import DB.interfaces.transport.IDeliveryFileController;
 import DB.util.HibernateUtil;
 import Models.DBModels.transport.DeliveryFile;
 import Models.DBModels.transport.DeliveryFileItem;

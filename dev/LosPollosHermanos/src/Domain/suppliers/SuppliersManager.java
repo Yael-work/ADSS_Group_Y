@@ -2,7 +2,7 @@ package Domain.suppliers;
 
 import Auxiliary.Helper;
 import DB.DBManager;
-import DB.interfaces.ISupplierController;
+import DB.interfaces.transport.ISupplierController;
 import Models.DBModels.suppliers.Supplier;
 import Models.DTOs.ItemsAtSupplier;
 import Models.DTOs.StockItem;

@@ -2,7 +2,7 @@ package DB.implementations.sqlite.transport;
 
 import Auxiliary.Helper;
 import DB.util.HibernateUtil;
-import DB.interfaces.IDriverController;
+import DB.interfaces.transport.IDriverController;
 import Models.DBModels.transport.Driver;
 import org.hibernate.Session;
 
