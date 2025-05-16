@@ -1,4 +1,4 @@
-package Tests;
+package Tests.transport;
 
 import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Auxiliary.Enums.Models.TransportStatusEnum;
