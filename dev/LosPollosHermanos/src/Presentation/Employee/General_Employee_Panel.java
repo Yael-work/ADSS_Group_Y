@@ -3,7 +3,9 @@ package Presentation.Employee;
 import Models.DBModels.Employees.ARole;
 import Models.DBModels.Employees.Availability;
 import Models.DBModels.Employees.Employee;
+import DB.WorkersDB.ShiftsDB;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,11 +16,12 @@ public class General_Employee_Panel {
 
     private static void printMenu_GeneralEmployee() {
         System.out.println("\nWelcome to the General Employee Panel!\n");
-        System.out.println("Please choose an action (1,2,3 or 4):");
+        System.out.println("Please choose an action (1 to 5):");
         System.out.println("1. Set Upcoming Shifts Availability");
         System.out.println("2. Enter to your Managing Role");
         System.out.println("3. Show Your Personal Information");
-        System.out.println("4. Going back to Login panel");
+        System.out.println("4. Show all Shifts for the next week");
+        System.out.println("5. Going back to Login panel");
     }
 
     public static void moveToPanel_GeneralEmployee(Employee employee) {
@@ -98,6 +101,20 @@ public class General_Employee_Panel {
                     System.out.println("Your Personal Information: " + info);
                     break;
                 case 4:
+                    System.out.println("All Shifts for the next week: ");
+                    if (!ShiftsDB.getUpcomingShifts().isEmpty()) {
+                        for (int i = 0; i < ShiftsDB.getUpcomingShifts().size(); i++) {
+                            if (ShiftsDB.getUpcomingShifts().get(i).getShiftDate().isBefore(LocalDate.now().plusDays(7))) {
+                                System.out.println();
+                                System.out.println(ShiftsDB.getUpcomingShifts().get(i).toString());
+                            }
+                        }
+                    }
+                    else {
+                        System.out.println("There are no upcoming shifts.");
+                    }
+                    break;
+                case 5:
                     System.out.println("Going back to Login panel...\n");
                     return;
 

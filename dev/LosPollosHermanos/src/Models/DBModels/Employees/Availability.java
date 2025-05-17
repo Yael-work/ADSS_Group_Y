@@ -194,8 +194,8 @@ public class Availability {
     public boolean isAvailable(LocalDate shiftDate) {
         // Check if the date is within the next 5 days
         LocalDate today = LocalDate.now();
-        LocalDate fiveDaysFromNow = today.plusDays(5);
-        if (shiftDate.isBefore(today) || shiftDate.isAfter(fiveDaysFromNow)) {
+        LocalDate sevenDaysFromNow = today.plusDays(7);
+        if (shiftDate.isBefore(today) || shiftDate.isAfter(sevenDaysFromNow)) {
             return false; // Not available for dates outside the next 5 days
         }
 

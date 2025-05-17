@@ -1,11 +1,13 @@
 package Models.DBModels.Employees;
 
 
+import Models.DBModels.transport.Branch;
+
 public class Contract {
-    private final int pension_Percentage;
-    private final int sick_Days;
-    private final int vacation_Days;
-    private final int minMonthlyHours;
+    private  int pension_Percentage;
+    private  int sick_Days;
+    private  int vacation_Days;
+    private  int minMonthlyHours;
 
     public Contract(int pension_Percentage, int sick_Days, int vacation_Days, int minMonthlyHours) {
         this.pension_Percentage = pension_Percentage;

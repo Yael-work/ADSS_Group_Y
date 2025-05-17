@@ -122,8 +122,8 @@ public class Employee extends BaseModel {
         );
 
         Availability mockAvailability5 = new Availability(
-                AvailabilityStatus.Day, AvailabilityStatus.Unavailable, AvailabilityStatus.Night,
-                AvailabilityStatus.Night, AvailabilityStatus.Day
+                AvailabilityStatus.Both, AvailabilityStatus.Both, AvailabilityStatus.Both,
+                AvailabilityStatus.Both, AvailabilityStatus.Both
         );
 
         ARole cashier1 = new Cashier(IdGenerator.getNextIdCashier());
@@ -215,7 +215,7 @@ public class Employee extends BaseModel {
     }
 
     public List<Employee> getAllEmployees() {
-       return EmployeesDB.getMockEmployeeDB();
+        return EmployeesDB.getMockEmployeeDB();
     }
 
     public void use_cancel_card() {

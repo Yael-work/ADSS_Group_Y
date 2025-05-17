@@ -3,10 +3,12 @@ package Models.DBModels.Employees;
 
 import DB.WorkersDB.ShiftsDB;
 import Models.DBModels.BaseModel;
+import Models.DBModels.transport.Branch;
 import org.hibernate.Session;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class Shift_Manager extends ARole {
     public Shift_Manager(int id) {
@@ -15,9 +17,9 @@ public class Shift_Manager extends ARole {
     }
 
     public static Status createShift(int id, LocalDate shiftDate, String shiftType,
-                                     Employee shiftManager, List<Employee> assignedEmployees,
-                                     List<Employee> allAvailableEmployees){
-        Shift newShift = new Shift(id, shiftDate, shiftType, shiftManager, assignedEmployees, allAvailableEmployees);
+                                     Employee shiftManager, Map<Employee, String> assignedEmployees,
+                                     List<Employee> allAvailableEmployees, Branch branch){
+        Shift newShift = new Shift(id, shiftDate, shiftType, shiftManager, assignedEmployees, allAvailableEmployees, branch);
         ShiftsDB.addUpcomingShift(newShift);
         return Status.Success;
     }
@@ -27,8 +29,9 @@ public class Shift_Manager extends ARole {
         return Status.Success;
     }
 
-    public static Status addEmployeeToShift(Employee employeeToAdd , Shift shift) {
-        shift.addAssignedEmployee(employeeToAdd);
+
+    public static Status addEmployeeToShift(Employee employeeToAdd, Shift shift, String role) {
+        shift.addAssignedEmployee(employeeToAdd, role);
         return Status.Success;
     }
 
@@ -50,8 +53,3 @@ public class Shift_Manager extends ARole {
         return false;
     }
 }
-
-
-
-
-

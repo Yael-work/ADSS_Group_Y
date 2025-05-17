@@ -3,6 +3,7 @@ package Presentation.Employee;
 import Auxiliary.*;
 import DB.WorkersDB.EmployeesDB;
 import Models.DBModels.Employees.*;
+import Auxiliary.sharedFunctions;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,7 +21,8 @@ public class HR_Lead_Panel {
         System.out.println("3. Set Shift Hours");
         System.out.println("4. Update Required Roles to Shift");
         System.out.println("5. Set All Required Shift Roles");
-        System.out.println("6. Going back to General Employee panel");
+        System.out.println("6. Update Employee's information");
+        System.out.println("7. Going back to General Employee panel");
     }
 
     public static void moveToPanel_HR(Employee HRLead) {
@@ -74,6 +76,13 @@ public class HR_Lead_Panel {
                     }
                     break;
                 case 6:
+                    if (Update_Employee_Information() == Status.Success) {
+                        System.out.println("Employee information updated successfully.");
+                    } else {
+                        System.out.println("Failed to update employee information.");
+                    }
+                    break;
+                case 7:
                     System.out.println("Going back to General Employee panel");
                     return; // Exit the panel
                 default:
@@ -114,7 +123,7 @@ public class HR_Lead_Panel {
         double employeeSalary = promptForSalary(scanner);
 
         int choice=0;
-        do {
+        do { //TODO Code duplication needs to be removed
             System.out.println("Please choose Employee's role number:\n" +
                     "1. Manager\n2. HR Lead\n3. Cashier\n4. Cleaner\n5. Stocker\n6. Security");
 
@@ -131,7 +140,7 @@ public class HR_Lead_Panel {
 
         } while (choice <0 || choice > 6);
 
-        ARole role = promptForRole(choice);
+        ARole role = sharedFunctions.promptForRole(choice);
 
         List<ARole> rolesList = new ArrayList<>();
         rolesList.add(role);
@@ -193,20 +202,7 @@ public class HR_Lead_Panel {
         return salary;
     }
 
-    private static ARole promptForRole(int choice) {
-        ARole role = null;
-        while (role == null) {
-            switch (choice) {
-                case 1: role = new Shift_Manager(IdGenerator.getNextIdManager()); break;
-                case 2: role = new HR_Lead(IdGenerator.getNextIdHR()); break;
-                case 3: role = new Cashier(IdGenerator.getNextIdCashier()); break;
-                case 4: role = new Cleaner(IdGenerator.getNextIdCleaner()); break;
-                case 5: role = new Stocker(IdGenerator.getNextIdStocker()); break;
-                case 6: role = new Security(IdGenerator.getNextIdSecurity()); break;
-            }
-        }
-        return role;
-    }
+
 
     private static BankAccount promptForBankAccount(Scanner scanner) {
         System.out.println("Please Enter Employee's bank information: ");
@@ -229,6 +225,8 @@ public class HR_Lead_Panel {
         int vacation = promptForPositiveInt(scanner, "Vacation days number: ");
         int minHours = promptForPositiveInt(scanner, "Min monthly hours: ");
 
+        // TODO: There's a mismatch between the Contract constructor definition (5 params) and its usage (4 params)
+        // This needs to be addressed in a separate task
         return new Contract(pension, sickDays, vacation, minHours);
     }
 
@@ -270,8 +268,8 @@ public class HR_Lead_Panel {
         do {
             do {
                 continueLoop = false;
-                System.out.println("Please choose the number of ONE Employee's role you want in the shifts from the optional roles list:\n" +
-                        "1. Manager\n2. HR Lead\n3. Cashier\n4. Cleaner\n5. Stocker\n6. Security");
+                System.out.println("Please choose the number of ONE Employee's role you want in the shifts from the optional roles list:");
+                sharedFunctions.DisplayAvailableRoles();
 
                 if (scanner.hasNextInt())
                     choice = scanner.nextInt();
@@ -287,7 +285,7 @@ public class HR_Lead_Panel {
 
             } while (continueLoop);
 
-            String role = promptForRole(choice).getRole();
+            String role = sharedFunctions.promptForRole(choice).getRole();
             int amount = promptForPositiveInt(scanner, "Please Enter the wanted amount of this role: ");
             if (amount == 0 )
                 System.out.println("You cannot set the amount to 0\n");
@@ -340,8 +338,9 @@ public class HR_Lead_Panel {
         int choice=0;
         boolean continueLoop;
         do {
-            System.out.println("Please choose number of a role:\n" +
-                    "1. Manager\n2. HR Lead\n3. Cashier\n4. Cleaner\n5. Stocker\n6. Security");
+            System.out.println("Please choose number of a role:\n");
+            sharedFunctions.DisplayAvailableRoles();
+
 
             if (scanner.hasNextInt())
             {
@@ -363,7 +362,7 @@ public class HR_Lead_Panel {
 
         } while (continueLoop);
 
-        String role = promptForRole(choice).getRole();
+        String role = sharedFunctions.promptForRole(choice).getRole();
 
         if (action == 2 && !Shift.REQUIRED_ROLES_FOR_SHIFT.containsKey(role)) {
             System.out.println("This role does not exist in the shift.\nNo role removed.");
@@ -384,6 +383,111 @@ public class HR_Lead_Panel {
         }
 
         return Status.Success;
+    }
+
+    public static Status Update_Employee_Information() { //TODO code need to be evalutated and changed accordingaly
+        Scanner scanner = new Scanner(System.in);
+
+        // Ask for employee ID
+        System.out.println("Please Enter the ID of the Employee to update: ");
+        String employeeID = scanner.nextLine();
+
+        // Find employee by ID
+        Employee employee = EmployeesDB.findEmployeeById(employeeID);
+        if (employee == null) {
+            System.out.println("Employee not found.");
+            return Status.Failure;
+        }
+
+        // Display employee information
+        System.out.println("Current employee information:");
+        System.out.println(employee.toString());
+
+        // Menu for choosing what to update
+        int choice = 0;
+        do {
+            System.out.println("\nWhat would you like to update?");
+            System.out.println("1. Salary");
+            System.out.println("2. Add Role");
+            System.out.println("3. Availability");
+            System.out.println("4. Go back");
+
+            choice = sharedFunctions.getValidIntChoice(scanner, 1, 4);
+
+            switch (choice) {
+                case 1: // Update salary
+                    double newSalary = promptForSalary(scanner);
+                    employee.setSalary(newSalary);
+                    System.out.println("Salary updated successfully.");
+                    return Status.Success;
+
+                case 2: // Add role
+                    System.out.println("Please choose a role to add:");
+                    sharedFunctions.DisplayAvailableRoles();
+                    int roleChoice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
+
+                    ARole newRole = sharedFunctions.promptForRole(roleChoice);
+                    employee.addNewRoleToList(newRole);
+                    System.out.println("Role added successfully.");
+                    return Status.Success;
+
+                case 3: // Update availability
+                    Availability newAvailability = promptForAvailability(scanner);
+                    employee.setAvailability(newAvailability);
+                    System.out.println("Availability updated successfully.");
+                    return Status.Success;
+
+                case 4: // Go back
+                    System.out.println("No changes made.");
+                    return Status.Failure;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (true);
+    }
+
+    private static Availability promptForAvailability(Scanner scanner) {
+        System.out.println("Please set availability for each day of the week:");
+        System.out.println("Options: 1 = Day, 2 = Night, 3 = Both, 4 = Unavailable");
+
+        AvailabilityStatus sunday = promptForDayAvailability(scanner, "Sunday");
+        AvailabilityStatus monday = promptForDayAvailability(scanner, "Monday");
+        AvailabilityStatus tuesday = promptForDayAvailability(scanner, "Tuesday");
+        AvailabilityStatus wednesday = promptForDayAvailability(scanner, "Wednesday");
+        AvailabilityStatus thursday = promptForDayAvailability(scanner, "Thursday");
+
+        return new Availability(sunday, monday, tuesday, wednesday, thursday);
+    }
+
+    private static AvailabilityStatus promptForDayAvailability(Scanner scanner, String day) {
+        int choice;
+        do {
+            System.out.println("Enter availability for " + day + " (1-4):");
+
+            if (scanner.hasNextInt()) {
+                choice = scanner.nextInt();
+                scanner.nextLine(); // Clear buffer
+            } else {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.next(); // Clear invalid input
+                choice = 0;
+                continue;
+            }
+
+            switch (choice) {
+                case 1:
+                    return AvailabilityStatus.Day;
+                case 2:
+                    return AvailabilityStatus.Night;
+                case 3:
+                    return AvailabilityStatus.Both;
+                case 4:
+                    return AvailabilityStatus.Unavailable;
+                default:
+                    System.out.println("Invalid choice. Please select a number from 1 to 4.");
+            }
+        } while (true);
     }
 
 }

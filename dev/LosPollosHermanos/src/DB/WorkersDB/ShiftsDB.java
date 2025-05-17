@@ -1,7 +1,9 @@
 package DB.WorkersDB;
 
 import Models.DBModels.Employees.Shift;
+import Models.DBModels.transport.Branch;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
@@ -32,6 +34,24 @@ public class ShiftsDB {
         }
         return null;
     }
+    public static Shift findShiftByDateTimeAndBranch(LocalDate date, LocalTime eta, Branch branch) {
+        for (Shift shift : upcomingShiftsDB) {
+            //TODO make sure the if condition is correct
+            if (shift.getBranch() == null || !shift.getBranch().equals(branch)) {
+                continue;
+            }
+            if (shift.getShiftDate().equals(date)) {
+                LocalTime start = shift.getStartShiftTime();
+                LocalTime end = shift.getEndShiftTime();
+                if (!start.isAfter(eta) && !end.isBefore(eta)) {
+                    return shift;
+                }
+            }
+        }
+        return null;
+    }
+
+
     public static void moveShiftToPast() {
         LocalDate today = LocalDate.now();
         List<Shift> shiftsToMove = new ArrayList<>();

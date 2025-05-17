@@ -1,6 +1,8 @@
 package Auxiliary;
 
 
+import Models.DBModels.Employees.*;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -55,4 +57,45 @@ public class sharedFunctions {
         return shiftType.equalsIgnoreCase("Day") || shiftType.equalsIgnoreCase("Night");
     }
 
+    public static ARole promptForRole(int choice) {
+        ARole role = null;
+        while (role == null) {
+            switch (choice) {
+                case 1: role = new Shift_Manager(IdGenerator.getNextIdManager()); break;
+                case 2: role = new HR_Lead(IdGenerator.getNextIdHR()); break;
+                case 3: role = new Cashier(IdGenerator.getNextIdCashier()); break;
+                case 4: role = new Cleaner(IdGenerator.getNextIdCleaner()); break;
+                case 5: role = new Stocker(IdGenerator.getNextIdStocker()); break;
+                case 6: role = new Security(IdGenerator.getNextIdSecurity()); break;
+                default:
+                    System.out.println("Invalid choice. Promotion cancelled.");
+                    return null;
+            }
+        }
+        return role;
+    }
+    public static void DisplayAvailableRoles() {
+        System.out.println("1. Shift Manager");
+        System.out.println("2. HR Lead");
+        System.out.println("3. Cashier");
+        System.out.println("4. Cleaner");
+        System.out.println("5. Stocker");
+        System.out.println("6. Security");
+    }
+
+    public static int getValidIntChoice(Scanner scanner, int from, int to) {
+        while (true) {
+            try {
+                int choice = scanner.nextInt();
+                if (choice >= from && choice <= to) {
+                    return choice;
+                } else {
+                    System.out.printf("Invalid choice. Please enter a number between %d and %d.%n", from, to);
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.nextLine(); // clear invalid input
+            }
+        }
+    }
 }

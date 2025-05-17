@@ -4,6 +4,7 @@ import Auxiliary.IdGenerator;
 import DB.WorkersDB.EmployeesDB;
 import DB.WorkersDB.ShiftsDB;
 import Models.DBModels.BaseModel;
+import Models.DBModels.transport.Branch;
 import org.hibernate.Session;
 
 import java.time.LocalDate;
@@ -31,14 +32,15 @@ public class Shift extends BaseModel {
     private LocalTime startShiftTime;
     private LocalTime endShiftTime;
     private Employee shiftManager;
-    private List<Employee> assignedEmployees;
+    private Map<Employee,String> assignedEmployees;
     private List<Employee> allAvailableEmployees;
     private Map<String, Integer> requiredRoles;
     private static int shiftCounter = 1;
+    private Branch branch;
 
     public Shift(int id, LocalDate shiftDate, String shiftType,
-                 Employee shiftManager, List<Employee> assignedEmployees,
-                 List<Employee> allAvailableEmployees) {
+                 Employee shiftManager, Map<Employee,String> assignedEmployees,
+                 List<Employee> allAvailableEmployees , Branch branch) {
         super(id, Shift.class.getName());
         this.shiftID = generateSequentialShiftId();
         this.shiftDate = shiftDate;
@@ -49,8 +51,20 @@ public class Shift extends BaseModel {
         this.startShiftTime = startShiftTime;
         this.endShiftTime = endShiftTime;
         this.shiftManager = shiftManager;
-        this.assignedEmployees = assignedEmployees;
-        this.allAvailableEmployees = allAvailableEmployees;
+        this.branch = branch;
+
+        // Create a new list for available employees to avoid modifying the input list
+        this.allAvailableEmployees = new ArrayList<>(allAvailableEmployees);
+
+        // Create a new map for assigned employees to avoid modifying the input map
+        this.assignedEmployees = new HashMap<>(assignedEmployees);
+
+        // Remove assigned employees from the available list
+        // An employee cannot be both assigned and available at the same time
+        for (Employee employee : this.assignedEmployees.keySet()) {
+            this.allAvailableEmployees.remove(employee);
+        }
+
         this.requiredRoles = new HashMap<>(getRequiredRoles());
     }
     public String getShiftID() {
@@ -117,31 +131,30 @@ public class Shift extends BaseModel {
     }
 
 
-    public List<Employee> getAssignedEmployees() {
+    public Map<Employee,String> getAssignedEmployees() {
         return assignedEmployees;
     }
 
+    public List<Employee> getAllAvailableEmployees() {return allAvailableEmployees;}
+
     public void addAssignedEmployee(Employee employee) {
-        this.assignedEmployees.add(employee);
-        if (this.assignedEmployees.size() == this.requiredRoles.size()) {
-            System.out.println("Now All required roles are filled.");
-        } else if (this.assignedEmployees.size() > this.requiredRoles.size()) {
-            System.out.println("Now More roles than required.");
-        }
-        else {
-            System.out.println("Now Not all required roles are filled.");
-        }
+        // Get the first role from the employee's role list
+        String roleName = employee.getRolesList().isEmpty() ? "Unknown" : employee.getRolesList().get(0).getRole();
+        this.assignedEmployees.put(employee, roleName);
+        this.allAvailableEmployees.remove(employee);
+    }
+
+    public void addAssignedEmployee(Employee employee, String role) {
+        this.assignedEmployees.put(employee, role);
+        this.allAvailableEmployees.remove(employee);
     }
 
     public void removeAssignedEmployee(Employee employee) {
         this.assignedEmployees.remove(employee);
-        if (this.assignedEmployees.size() == this.requiredRoles.size()) {
-            System.out.println("Now all required roles are filled.");
-        } else if (this.assignedEmployees.size() > this.requiredRoles.size()) {
-            System.out.println("Now More roles than required.");
-        }
-        else {
-            System.out.println("Now Not all required roles are filled.");
+        if (allAvailableEmployees.contains(employee)) {
+            System.out.println("Employee is already available.");
+        } else {
+            this.allAvailableEmployees.add(employee);
         }
     }
 
@@ -164,6 +177,53 @@ public class Shift extends BaseModel {
         return "SHIFT-" + (shiftCounter++);
     }
 
+    @Override
+    public String toString() {
+        return "ShiftID= '" + shiftID + '\'' +
+                ", ShiftDate= " + shiftDate +
+                ", ShiftType= '" + shiftType + '\'';
+    }
+
+    @Override
+    public boolean copyFromOther(BaseModel other, Session session) {
+        return false;
+    }
+
+    private static boolean isEmployeeAvailableForShift(Employee employee, LocalDate shiftDate, String shiftType) {
+        if (employee == null) {
+            return false;
+        }
+
+        Availability availability = employee.getAvailability();
+        if (availability == null) {
+            return false;
+        }
+
+        // First check if the employee is available on this date
+        if (!availability.isAvailable(shiftDate)) {
+            return false;
+        }
+
+        // Then check if the employee is available for this shift type
+        AvailabilityStatus status;
+        switch (shiftDate.getDayOfWeek()) {
+            case SUNDAY -> status = availability.getSunday();
+            case MONDAY -> status = availability.getMonday();
+            case TUESDAY -> status = availability.getTuesday();
+            case WEDNESDAY -> status = availability.getWednesday();
+            case THURSDAY -> status = availability.getThursday();
+            default -> status = AvailabilityStatus.Unavailable;
+        }
+
+        // Check if the employee's availability status matches the shift type
+        return switch (status) {
+            case Day -> shiftType.equals("Day");
+            case Night -> shiftType.equals("Night");
+            case Both -> true; // Available for both day and night shifts
+            default -> false; // Unavailable or Skip
+        };
+    }
+
     public static void createShiftsDB() {
         List<Employee> allEmployees = EmployeesDB.getMockEmployeeDB();
 
@@ -171,60 +231,148 @@ public class Shift extends BaseModel {
             System.out.println("No employees found to create shifts.");
             return;
         }
-        // Create mock available and assigned employees
+
+        // Create mock available and assigned employees for shift 1 (Day shift on 2025-5-22)
         List<Employee> availableEmployees1 = new ArrayList<>();
-        List<Employee> assignedEmployees1 = new ArrayList<>();
+        Map<Employee, String> assignedEmployees1 = new HashMap<>();
+        LocalDate shift1Date = LocalDate.of(2025, 5, 22);
+        String shift1Type = "Day";
 
-        availableEmployees1.add(EmployeesDB.findEmployeeById("EMP002"));
-        availableEmployees1.add(EmployeesDB.findEmployeeById("EMP003"));
-        availableEmployees1.add(EmployeesDB.findEmployeeById("EMP005"));
-        assignedEmployees1.add(EmployeesDB.findEmployeeById("EMP002"));
-        assignedEmployees1.add(EmployeesDB.findEmployeeById("EMP005"));
+        // First add all potentially available employees
+        Employee emp002 = EmployeesDB.findEmployeeById("EMP002");
+        Employee emp003 = EmployeesDB.findEmployeeById("EMP003");
+        Employee emp005 = EmployeesDB.findEmployeeById("EMP005");
 
+        // Check if employees are actually available for this shift based on their availability status
+        if (isEmployeeAvailableForShift(emp002, shift1Date, shift1Type)) {
+            availableEmployees1.add(emp002);
+        }
+        if (isEmployeeAvailableForShift(emp003, shift1Date, shift1Type)) {
+            availableEmployees1.add(emp003);
+        }
+        if (isEmployeeAvailableForShift(emp005, shift1Date, shift1Type)) {
+            availableEmployees1.add(emp005);
+        }
+
+        // Get the first role from the employee's role list
+        String role002 = emp002.getRolesList().isEmpty() ? "Unknown" : emp002.getRolesList().get(0).getRole();
+        String role005 = emp005.getRolesList().isEmpty() ? "Unknown" : emp005.getRolesList().get(0).getRole();
+
+        // Only assign employees who are available
+        if (isEmployeeAvailableForShift(emp002, shift1Date, shift1Type)) {
+            assignedEmployees1.put(emp002, role002);
+            // Remove from available list since they're now assigned
+            availableEmployees1.remove(emp002);
+        }
+        if (isEmployeeAvailableForShift(emp005, shift1Date, shift1Type)) {
+            assignedEmployees1.put(emp005, role005);
+            // Remove from available list since they're now assigned
+            availableEmployees1.remove(emp005);
+        }
+
+        // Create mock available and assigned employees for shift 2 (Night shift on 2025-5-21)
         List<Employee> availableEmployees2 = new ArrayList<>();
-        List<Employee> assignedEmployees2 = new ArrayList<>();
+        Map<Employee, String> assignedEmployees2 = new HashMap<>();
+        LocalDate shift2Date = LocalDate.of(2025, 5, 21);
+        String shift2Type = "Night";
 
-        availableEmployees1.add(EmployeesDB.findEmployeeById("EMP002"));
-        availableEmployees1.add(EmployeesDB.findEmployeeById("EMP004"));
-        availableEmployees1.add(EmployeesDB.findEmployeeById("EMP005"));
-        assignedEmployees1.add(EmployeesDB.findEmployeeById("EMP002"));
-        assignedEmployees1.add(EmployeesDB.findEmployeeById("EMP004"));
+        // First add all potentially available employees
+        Employee emp002_2 = EmployeesDB.findEmployeeById("EMP002");
+        Employee emp004 = EmployeesDB.findEmployeeById("EMP004");
+        Employee emp005_2 = EmployeesDB.findEmployeeById("EMP005");
 
+        // Check if employees are actually available for this shift based on their availability status
+        if (isEmployeeAvailableForShift(emp002_2, shift2Date, shift2Type)) {
+            availableEmployees2.add(emp002_2);
+        }
+        if (isEmployeeAvailableForShift(emp004, shift2Date, shift2Type)) {
+            availableEmployees2.add(emp004);
+        }
+        if (isEmployeeAvailableForShift(emp005_2, shift2Date, shift2Type)) {
+            availableEmployees2.add(emp005_2);
+        }
+
+        String role002_2 = emp002_2.getRolesList().isEmpty() ? "Unknown" : emp002_2.getRolesList().get(0).getRole();
+        String role004 = emp004.getRolesList().isEmpty() ? "Unknown" : emp004.getRolesList().get(0).getRole();
+
+        // Only assign employees who are available
+        if (isEmployeeAvailableForShift(emp002_2, shift2Date, shift2Type)) {
+            assignedEmployees2.put(emp002_2, role002_2);
+            // Remove from available list since they're now assigned
+            availableEmployees2.remove(emp002_2);
+        }
+        if (isEmployeeAvailableForShift(emp004, shift2Date, shift2Type)) {
+            assignedEmployees2.put(emp004, role004);
+            // Remove from available list since they're now assigned
+            availableEmployees2.remove(emp004);
+        }
+
+        // Create mock available and assigned employees for shift 3 (Day shift on 2025-5-20)
         List<Employee> availableEmployees3 = new ArrayList<>();
-        List<Employee> assignedEmployees3 = new ArrayList<>();
+        Map<Employee, String> assignedEmployees3 = new HashMap<>();
+        LocalDate shift3Date = LocalDate.of(2025, 5, 20);
+        String shift3Type = "Day";
 
-        availableEmployees1.add(EmployeesDB.findEmployeeById("EMP001"));
-        availableEmployees1.add(EmployeesDB.findEmployeeById("EMP002"));
-        availableEmployees1.add(EmployeesDB.findEmployeeById("EMP004"));
-        availableEmployees1.add(EmployeesDB.findEmployeeById("EMP003"));
-        assignedEmployees1.add(EmployeesDB.findEmployeeById("EMP002"));
-        assignedEmployees1.add(EmployeesDB.findEmployeeById("EMP001"));
+        // First add all potentially available employees
+        Employee emp001 = EmployeesDB.findEmployeeById("EMP001");
+        Employee emp002_3 = EmployeesDB.findEmployeeById("EMP002");
+        Employee emp003_3 = EmployeesDB.findEmployeeById("EMP003");
+        Employee emp004_3 = EmployeesDB.findEmployeeById("EMP004");
+
+        // Check if employees are actually available for this shift based on their availability status
+        if (isEmployeeAvailableForShift(emp001, shift3Date, shift3Type)) {
+            availableEmployees3.add(emp001);
+        }
+        if (isEmployeeAvailableForShift(emp002_3, shift3Date, shift3Type)) {
+            availableEmployees3.add(emp002_3);
+        }
+        if (isEmployeeAvailableForShift(emp003_3, shift3Date, shift3Type)) {
+            availableEmployees3.add(emp003_3);
+        }
+        if (isEmployeeAvailableForShift(emp004_3, shift3Date, shift3Type)) {
+            availableEmployees3.add(emp004_3);
+        }
+
+        String role002_3 = emp002_3.getRolesList().isEmpty() ? "Unknown" : emp002_3.getRolesList().get(0).getRole();
+        String role001 = emp001.getRolesList().isEmpty() ? "Unknown" : emp001.getRolesList().get(0).getRole();
+
+        // Only assign employees who are available
+        if (isEmployeeAvailableForShift(emp002_3, shift3Date, shift3Type)) {
+            assignedEmployees3.put(emp002_3, role002_3);
+            // Remove from available list since they're now assigned
+            availableEmployees3.remove(emp002_3);
+        }
+        if (isEmployeeAvailableForShift(emp001, shift3Date, shift3Type)) {
+            assignedEmployees3.put(emp001, role001);
+            // Remove from available list since they're now assigned
+            availableEmployees3.remove(emp001);
+        }
 
         Shift shift1 = new Shift(
                 IdGenerator.getNextIdShift(),
-                LocalDate.of(2025, 5, 1),
+                LocalDate.of(2025, 5, 22),
                 "Day",
                 EmployeesDB.findEmployeeById("EMP002"), // Manager
                 assignedEmployees1,
-                availableEmployees1
+                availableEmployees1,null
         );
 
         Shift shift2 = new Shift(
                 IdGenerator.getNextIdShift(),
-                LocalDate.of(2025, 4, 27),
+                LocalDate.of(2025, 5, 21),
                 "Night",
                 EmployeesDB.findEmployeeById("EMP002"), // Manager
                 assignedEmployees2,
-                availableEmployees2
+                availableEmployees2,null
         );
 
         Shift shift3 = new Shift(
                 IdGenerator.getNextIdShift(),
-                LocalDate.of(2025, 4, 29),
+                LocalDate.of(2025, 5, 20),
                 "Day",
                 EmployeesDB.findEmployeeById("EMP002"), // Manager
                 assignedEmployees3,
-                availableEmployees3
+                availableEmployees3,null
         );
 
         // Assuming you have a DB class to hold shifts
@@ -234,8 +382,7 @@ public class Shift extends BaseModel {
     }
 
 
-    @Override
-    public boolean copyFromOther(BaseModel other, Session session) {
-        return false;
+    public Branch getBranch() {
+        return branch;
     }
 }

@@ -1,5 +1,6 @@
 package Presentation.Employee;
 
+import Auxiliary.sharedFunctions;
 import DB.WorkersDB.EmployeesDB;
 import DB.WorkersDB.ShiftsDB;
 import Models.DBModels.Employees.Employee;
@@ -19,20 +20,12 @@ public class System_Login_Panel {
         int choice;
         Employee enteredEmployee = null;
         do {
-            //TODO DEAL WITH NO NUMBER INPUT
             continueLoop = false;
             System.out.println("\nPlease choose an action (1 or 2):");
             System.out.println("1. Enter to your Employee Role");
             System.out.println("2. Exit System");
 
-            if (scanner.hasNextInt())
-                choice = scanner.nextInt();
-            else {
-                System.out.println("Invalid input. Please enter a number.");
-                scanner.next(); // Clear the invalid input
-                continueLoop = true;
-                continue;
-            }
+            choice = sharedFunctions.getValidIntChoice(scanner, 1, 2);
 
             switch (choice){
                 case 1:
@@ -63,15 +56,27 @@ public class System_Login_Panel {
 
 
     public static void EmployeesPresentationHandler() {
-        System.out.println("Loading mock data...");
-        Employee.createEmployeesDB();
-        // Load mock ShiftsDB data
-        Shift.createShiftsDB();
-        // Move past shifts to pastShiftsDB before any employee interaction
-        ShiftsDB.moveShiftToPast();
-        // Clean up old shifts (older than 7 years) on application startup
-        ShiftsDB.removeOldPastShifts();
-
+        while(true) {
+            System.out.println("Would you like to load mock data? (yes/no)");
+            Scanner scanner = new Scanner(System.in);
+            String answer = scanner.nextLine().trim().toLowerCase();
+            if (answer.equals("yes")) {
+                System.out.println("Loading mock data...");
+                Employee.createEmployeesDB();
+                Shift.createShiftsDB();
+                // Move past shifts to pastShiftsDB before any employee interaction
+                ShiftsDB.moveShiftToPast();
+                // Clean up old shifts (older than 7 years) on application startup
+                ShiftsDB.removeOldPastShifts();
+                break;
+            }
+            if (answer.equals("no")) {
+                System.out.println("Skipping mock data loading.");
+                break;
+            } else {
+                System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+            }
+        }
         do {
             printLoginPanel();
         } while (true);

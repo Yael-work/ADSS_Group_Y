@@ -3,11 +3,14 @@ package Presentation.Employee;
 import Auxiliary.IdGenerator;
 import DB.WorkersDB.EmployeesDB;
 import DB.WorkersDB.ShiftsDB;
+import DB.implementations.transport.MockBranchController;
 import Models.DBModels.Employees.*;
+import Models.DBModels.transport.Branch;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -33,7 +36,7 @@ public class Manager_Panel {
         Scanner scanner = new Scanner(System.in);
         do {
             printMenu_Manager();
-            int choice = getValidIntChoice(scanner, 1, 6);
+            int choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
 
             switch (choice) {
                 case 1 -> createNewShift(employee);
@@ -69,10 +72,16 @@ public class Manager_Panel {
             return;
         }
 
-
         String shiftType = sharedFunctions.getShiftTypeFromUser(scanner);
 
-        List<Employee> assignedEmployeesToShift = new ArrayList<>();
+        // Get branch from user
+        Branch branch = getShiftBranchFromUser(scanner);
+        if (branch == null) {
+            System.out.println("No branch selected. Shift creation cancelled.");
+            return;
+        }
+
+        Map<Employee, String> assignedEmployeesToShift = new HashMap<>();
         List<Employee> allAvailableEmployees = new ArrayList<>();
 
         for (Employee emp : manager.getAllEmployees()) {
@@ -94,7 +103,8 @@ public class Manager_Panel {
                 shiftType,
                 manager,
                 assignedEmployeesToShift,
-                allAvailableEmployees
+                allAvailableEmployees,
+                branch
         ) == Status.Success) {
             System.out.println("Shift created successfully.");
         } else {
@@ -106,7 +116,7 @@ public class Manager_Panel {
     // main method to assign employees to shift roles
     // it will iterate over all roles and take input from the user
     // to select employees for each role
-    private static void assignEmployeesToShiftRoles(Scanner scanner, List<Employee> allAvailableEmployees, List<Employee> assignedEmployeesToShift) {
+    private static void assignEmployeesToShiftRoles(Scanner scanner, List<Employee> allAvailableEmployees, Map<Employee, String> assignedEmployeesToShift) {
         for (Map.Entry<String, Integer> entry : Shift.getRequiredRoles().entrySet()) {
             String role = entry.getKey();
             int requiredCount = entry.getValue();
@@ -129,7 +139,7 @@ public class Manager_Panel {
 
     // This method will be used to select employees for a specific role
     // It will display the available employees and allow the user to select them
-    private static void selectEmployeesForRole(Scanner scanner, String role, int requiredCount, List<Employee> availableEmployees, List<Employee> assignedEmployees) {
+    private static void selectEmployeesForRole(Scanner scanner, String role, int requiredCount, List<Employee> availableEmployees, Map<Employee, String> assignedEmployees) {
         int selectedCount = 0;
         System.out.println("\nFor " + role + " needed: " + requiredCount + " employees");
 
@@ -146,7 +156,7 @@ public class Manager_Panel {
             System.out.println("Example: 1. Employee ID: 12345 - John Doe -> select 1");
             System.out.print("Enter your choice: ");
 
-            int choice = getValidIntChoice(scanner, 0, availableEmployees.size());
+            int choice = sharedFunctions.getValidIntChoice(scanner, 0, availableEmployees.size());
 
             if (choice == 0) {
                 System.out.println("Skipping remaining selections for role: " + role);
@@ -155,12 +165,12 @@ public class Manager_Panel {
             // subtract 1 from choice to get the index (starts from 0)
             Employee selectedEmployee = availableEmployees.get(choice - 1);
 
-            if (assignedEmployees.contains(selectedEmployee)) {
+            if (assignedEmployees.containsKey(selectedEmployee)) {
                 System.out.println("Employee already assigned. Choose a different one.");
                 continue;
             }
 
-            assignedEmployees.add(selectedEmployee);
+            assignedEmployees.put(selectedEmployee, role);
             availableEmployees.remove(selectedEmployee);
             selectedCount++;
 
@@ -170,6 +180,40 @@ public class Manager_Panel {
                 System.out.println("\nYou need to select more " + (requiredCount - selectedCount) + " employees for the role: " + role);
             }
         }
+    }
+    private static Branch getShiftBranchFromUser(Scanner scanner) {
+        // Display all available branches first
+        System.out.println("Available branches:");
+        List<Integer> branchIds = MockBranchController.getInstance().getAllIds();
+
+        if (branchIds.isEmpty()) {
+            System.out.println("No branches available. Please create a branch first.");
+            return null;
+        }
+
+        for (int i = 0; i < branchIds.size(); i++) {
+            int branchId = branchIds.get(i);
+            Branch branch = MockBranchController.getInstance().getBranchById(branchId);
+            if (branch != null) {
+                System.out.println((i + 1) + ". Branch ID: " + branchId + " - Branch Name: " + branch.getSiteName());
+            }
+        }
+
+        // Ask user to select a branch
+        System.out.println("Please enter the number of the branch you want to select:");
+        int choice = sharedFunctions.getValidIntChoice(scanner, 1, branchIds.size());
+
+        // Get the selected branch
+        int selectedBranchId = branchIds.get(choice - 1);
+        Branch selectedBranch = MockBranchController.getInstance().getBranchById(selectedBranchId);
+
+        if (selectedBranch == null) {
+            System.out.println("Error retrieving branch. Please try again.");
+            return getShiftBranchFromUser(scanner);
+        }
+
+        System.out.println("Selected branch: " + selectedBranch.getSiteName());
+        return selectedBranch;
     }
 
     // This method will print the available employees with their index
@@ -183,21 +227,7 @@ public class Manager_Panel {
         }
     }
 
-    private static int getValidIntChoice(Scanner scanner, int from, int to) {
-        while (true) {
-            try {
-                int choice = scanner.nextInt();
-                if (choice >= from && choice <= to) {
-                    return choice;
-                } else {
-                    System.out.printf("Invalid choice. Please enter a number between %d and %d.%n", from, to);
-                }
-            } catch (Exception e) {
-                System.out.println("Invalid input. Please enter a valid number.");
-                scanner.nextLine(); // clear invalid input
-            }
-        }
-    }
+
 
     //case 2 in switch case printMenu_Manager
     private static void removeEmployeeFromShift(Employee employee) {
@@ -227,7 +257,7 @@ public class Manager_Panel {
         String shiftId = null;
 
         for (Shift shift : ShiftsDB.getUpcomingShifts()) {
-            if (shift.getAssignedEmployees().stream().anyMatch(emp -> emp.getEmployeeID().equals(employeeId))) {
+            if (shift.getAssignedEmployees().keySet().stream().anyMatch(emp -> emp.getEmployeeID().equals(employeeId))) {
                 System.out.println(shift.getShiftID() + " - " + shift.getShiftDate() + " - " + shift.getShiftType());
                 shiftsFound++;
                 shiftId = shift.getShiftID();
@@ -246,15 +276,21 @@ public class Manager_Panel {
                 System.out.println("Employee with ID " + employeeId + " has been removed from the shift.");
             }
         } else {
-            System.out.println("Multiple shifts found for employee with ID " + employeeId + ". Please specify the shift ID:");
-            String shiftIdToRemoveFrom = scanner.nextLine();
+            System.out.println("Multiple shifts found for employee with ID " + employeeId + ". Please specify the shift ID");
+            while (true) {
+                System.out.println("Valid shift ID example (uppercase): 'SHIFT-1' \n Enter shift ID:");
+                String shiftIdToRemoveFrom = scanner.nextLine();
 
-            Shift shift = findShiftById(shiftIdToRemoveFrom);
-            if (shift != null) {
-                if (Shift_Manager.removeEmployeeFromShift(toRemove, shift) == Status.Success) {
-                    System.out.println("Employee with ID " + employeeId + " has been removed from the shift.");
+                Shift shift = findShiftById(shiftIdToRemoveFrom);
+                if (shift != null) {
+                    if (Shift_Manager.removeEmployeeFromShift(toRemove, shift) == Status.Success) {
+                        System.out.println("Employee with ID " + employeeId + " has been removed from the shift.");
+                    } else {
+                        System.out.println("Failed to remove employee from the shift.");
+                    }
+                    break;
                 } else {
-                    System.out.println("Failed to remove employee from the shift.");
+                    System.out.println("Inavlid input - Please Enter a valid shift ID.");
                 }
             }
         }
@@ -286,24 +322,39 @@ public class Manager_Panel {
             System.out.println("Employee " + employeeToAssign.getName() + " is not available for this shift date.");
             return;
         }
+        if (!shift.getAllAvailableEmployees().contains(employeeToAssign) &&
+                shift.getAssignedEmployees().containsKey(employeeToAssign)) {
+            System.out.println("Employee " + employeeToAssign.getName() + " is already assigned to this shift.");
+            return;
+        }
 
-        // Check if employee has a role required for the shift
-        boolean hasRequiredRole = false;
-        for (Map.Entry<String, Integer> entry : Shift.getRequiredRoles().entrySet()) {
-            String role = entry.getKey();
-            if (employeeToAssign.getRolesList().stream().anyMatch(r -> r.getRole().equals(role))) {
-                hasRequiredRole = true;
+        // Display available roles and ask user to select one
+        System.out.println("Select the corresponding number to the desired Role to add:");
+        sharedFunctions.DisplayAvailableRoles();
+
+        int choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
+        scanner.nextLine(); // Clear the buffer
+
+        // Get the selected role
+        ARole selectedRole = sharedFunctions.promptForRole(choice);
+        String roleName = selectedRole.getRole();
+
+        // Check if employee has the selected role
+        boolean hasSelectedRole = false;
+        for (ARole role : employeeToAssign.getRolesList()) {
+            if (role.getRole().equals(roleName)) {
+                hasSelectedRole = true;
                 break;
             }
         }
 
-        if (!hasRequiredRole) {
-            System.out.println("Employee " + employeeToAssign.getName() + " does not have any of the required roles for this shift.");
+        if (!hasSelectedRole) {
+            System.out.println("Employee " + employeeToAssign.getName() + " does not have the role " + roleName);
             return;
         }
 
-        if (Shift_Manager.addEmployeeToShift(employeeToAssign, shift) == Status.Success) {
-            System.out.println("Employee " + employeeToAssign.getName() + " added to shift " + shiftId);
+        if (Shift_Manager.addEmployeeToShift(employeeToAssign, shift, roleName) == Status.Success) {
+            System.out.println("Employee " + employeeToAssign.getName() + " added to shift " + shiftId + " with role " + roleName);
         } else {
             System.out.println("Failed to add employee to the shift.");
         }
@@ -325,51 +376,18 @@ public class Manager_Panel {
             return;
         }
 
-        // Display available roles
         System.out.println("Choose a role to promote the employee to:");
-        System.out.println("1. Cashier");
-        System.out.println("2. Shift Manager");
-        System.out.println("3. HR Lead");
-        System.out.println("4. Stocker");
-        System.out.println("5. Security");
-        System.out.println("6. Cleaner");
+        sharedFunctions.DisplayAvailableRoles();
 
-        int choice = getValidIntChoice(scanner, 1, 6);
+        int choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
         scanner.nextLine(); // Clear the buffer
 
         ARole roleToAdd;
         String roleName;
 
         // Use switch case to handle role selection
-        switch (choice) {
-            case 1:
-                roleToAdd = new Cashier(IdGenerator.getNextIdCashier());
-                roleName = "Cashier";
-                break;
-            case 2:
-                roleToAdd = new Shift_Manager(IdGenerator.getNextIdManager());
-                roleName = "Shift Manager";
-                break;
-            case 3:
-                roleToAdd = new HR_Lead(IdGenerator.getNextIdHR());
-                roleName = "HR Lead";
-                break;
-            case 4:
-                roleToAdd = new Stocker(IdGenerator.getNextIdStocker());
-                roleName = "Stocker";
-                break;
-            case 5:
-                roleToAdd = new Security(IdGenerator.getNextIdSecurity());
-                roleName = "Security";
-                break;
-            case 6:
-                roleToAdd = new Cleaner(IdGenerator.getNextIdCleaner());
-                roleName = "Cleaner";
-                break;
-            default:
-                System.out.println("Invalid choice. Promotion cancelled.");
-                return;
-        }
+        roleToAdd = sharedFunctions.promptForRole(choice);
+        roleName = roleToAdd.getRole();
 
 
         if (Shift_Manager.promote_Employee(employeeToPromote, roleToAdd) == Status.Success){
