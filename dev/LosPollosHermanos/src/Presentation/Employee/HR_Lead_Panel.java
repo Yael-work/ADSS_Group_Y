@@ -15,7 +15,7 @@ public class HR_Lead_Panel {
 
     private static void printMenu_HR() {
         System.out.println("\nWelcome to the HR Panel!\n");
-        System.out.println("Please choose an action (1,2,3,4,5 or 6):");
+        System.out.println("Please choose an action (1,2,3,4,5,6 or 7):");
         System.out.println("1. Terminate Employee from System");
         System.out.println("2. Add New Employee to System");
         System.out.println("3. Set Shift Hours");

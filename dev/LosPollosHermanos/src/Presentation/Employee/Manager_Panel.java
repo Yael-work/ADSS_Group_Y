@@ -23,7 +23,7 @@ public class Manager_Panel {
 
     private static void printMenu_Manager() {
         System.out.println("\nWelcome to the Manager Panel!\n");
-        System.out.println("Please choose an action (1,2,3,4 or 5):");
+        System.out.println("Please choose an action (1,2,3,4,5 or 6):");
         System.out.println("1. create New Shift");
         System.out.println("2. Remove Employee from Shift");
         System.out.println("3. Add Employee to Shift");
