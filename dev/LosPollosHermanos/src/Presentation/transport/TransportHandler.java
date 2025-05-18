@@ -19,10 +19,11 @@ public class TransportHandler {
     /**
      * This method is used to get the date and time for transport from the user.
      *
-     * @return The planned date and time of transport.
+     * @return A list of LocalDateTime objects representing the start and end date and time of transport.
      */
-    private static LocalDateTime getDateForTransport() {
-        Helper.println(String.format("Please enter the planned date and time of transport (%s):",
+    private static List<LocalDateTime> getDateForTransport() {
+        List<LocalDateTime> localDateTimes = new ArrayList<>();
+        Helper.println(String.format("Please enter the planned *start* date and time of transport (%s):",
                 Helper.DefaultDateTimeFormat));
         String dateTimeStr = Helper.getUserInputString();
         LocalDateTime dateTime = Helper.stringToDateTime(dateTimeStr);
@@ -31,7 +32,18 @@ public class TransportHandler {
             dateTimeStr = Helper.getUserInputString();
             dateTime = Helper.stringToDateTime(dateTimeStr);
         }
-        return dateTime;
+        localDateTimes.add(dateTime);
+        Helper.println(String.format("Please enter the planned *end* date and time of transport (%s):",
+                Helper.DefaultDateTimeFormat));
+        dateTimeStr = Helper.getUserInputString();
+        dateTime = Helper.stringToDateTime(dateTimeStr);
+        while (dateTime == null) {
+            Helper.print("Invalid date and time format. Please try again: ");
+            dateTimeStr = Helper.getUserInputString();
+            dateTime = Helper.stringToDateTime(dateTimeStr);
+        }
+        localDateTimes.add(dateTime);
+        return localDateTimes;
     }
 
 
@@ -131,17 +143,19 @@ public class TransportHandler {
     /**
      * This method is used to perform the actual transport creation process.
      *
-     * @param plannedDateTime        The planned date and time of transport.
+     * @param plannedStartDateTime   The planned start date and time of transport.
+     * @param plannedEndDateTime     The planned end date and time of transport.
      * @param createdTransportRoutes The list of created transport routes.
      * @return True if the transport creation was successful, false otherwise.
      */
-    private static boolean performActualTransportCreation(LocalDateTime plannedDateTime,
+    private static boolean performActualTransportCreation(LocalDateTime plannedStartDateTime,
+                                                          LocalDateTime plannedEndDateTime,
                                                           List<TransportRoute> createdTransportRoutes) {
         if (createdTransportRoutes == null || createdTransportRoutes.isEmpty()) {
             Helper.println("No transport routes created. Cannot proceed with transport creation.");
             return false;
         }
-        List<Truck> trucks = TransportManager.getAvailableTrucksByDate(plannedDateTime);
+        List<Truck> trucks = TransportManager.getAvailableTrucksByDate(plannedStartDateTime, plannedEndDateTime);
         boolean truckAndDriverSelectionSuccess = trucks.isEmpty();
         if (truckAndDriverSelectionSuccess) {
             Helper.println("No trucks available for the selected date and time.");
@@ -190,7 +204,7 @@ public class TransportHandler {
         }
         do {
             Helper.println(String.format("Select a truck for the transport (Only available trucks are visible for the" +
-                    " date %s):", plannedDateTime));
+                    " date %s-%s):", plannedStartDateTime, plannedEndDateTime));
             trucks.forEach(truck -> Helper.println(truck.toPrettyString()));
             Helper.print("Please enter the truck ID: ");
             int truckId = Helper.getUserInputInteger();
@@ -206,8 +220,8 @@ public class TransportHandler {
                 Helper.println("You have selected truck: " + selectedTruck.toPrettyString());
             }
 
-            List<Driver> drivers = TransportManager.getAvailableDriversByDateAndLicense(plannedDateTime,
-                    selectedTruck.getRequiredLicenseType());
+            List<Driver> drivers = TransportManager.getAvailableDriversByDateAndLicense(plannedStartDateTime,
+                    plannedEndDateTime, selectedTruck.getRequiredLicenseType());
             if (drivers.isEmpty()) {
                 Helper.println("No drivers available for the selected date and time and license type of %s"
                         .formatted(selectedTruck.getRequiredLicenseType()));
@@ -215,7 +229,7 @@ public class TransportHandler {
             }
             Helper.println(String.format("Select a driver for the transport" +
                     "(Only available drivers with suitable license are visible for the" +
-                    " date %s):", plannedDateTime));
+                    " date %s-%s):", plannedStartDateTime, plannedEndDateTime));
             drivers.forEach(driver -> Helper.println(driver.toPrettyString()));
             Helper.print("Please enter the driver ID: ");
             int driverId = Helper.getUserInputInteger();
@@ -229,8 +243,8 @@ public class TransportHandler {
             } else {
                 Helper.println("You have selected driver: " + selectedDriver.toPrettyString());
                 Helper.println("Generating transport...");
-                int createdTransportId = TransportManager.createTransport(plannedDateTime, selectedTruck,
-                        selectedDriver, createdTransportRoutes);
+                int createdTransportId = TransportManager.createTransport(plannedStartDateTime, plannedEndDateTime,
+                        selectedTruck, selectedDriver, createdTransportRoutes);
                 Transport createdTransport = TransportManager.getTransportById(createdTransportId);
                 if (createdTransport == null) {
                     Helper.println("Failed to create transport.");
@@ -252,8 +266,8 @@ public class TransportHandler {
     private static void createTransportMainRoutine() {
         List<TransportRoute> createdTransportRoutes = new ArrayList<>();
         Helper.println("Transport Creation:");
-        LocalDateTime dateTime = getDateForTransport();
-        if (dateTime == null) {
+        List<LocalDateTime> dateTimes = getDateForTransport();
+        if (dateTimes.isEmpty() || dateTimes.size() < 2) {
             Helper.println("Invalid date and time. Please try again.");
             return;
         }
@@ -262,7 +276,7 @@ public class TransportHandler {
             Helper.println("No transport routes created. Cannot proceed with transport creation.");
             return;
         }
-        if (performActualTransportCreation(dateTime, createdTransportRoutes)) {
+        if (performActualTransportCreation(dateTimes.get(0), dateTimes.get(1), createdTransportRoutes)) {
             Helper.println("Transport created successfully.");
         } else {
             Helper.println("Failed to create transport.");
@@ -569,7 +583,8 @@ public class TransportHandler {
                     if (answer.equals("1")) {
                         List<Truck> availableTrucks = new ArrayList<>();
                         if (!check) {
-                            availableTrucks = TransportManager.getAvailableTrucksByDate(transport.getPlannedStartDateTime());
+                            availableTrucks = TransportManager.getAvailableTrucksByDate(transport.getPlannedStartDateTime(),
+                                    transport.getPlannedEndDateTime());
                         }
                         if (availableTrucks.isEmpty()) {
                             Helper.println("No available trucks found.");
@@ -679,8 +694,7 @@ public class TransportHandler {
                         if (!TransportManager.AttachIssueToExistingTransport(transport, 2, selectedRoute, 0, deliveryFile, 0)) {
                             Helper.println("Failed to update transport issue. Please try again.");
                             return;
-                        }
-                        else {
+                        } else {
                             Helper.println("Transport issue updated successfully.");
                             return;
                         }
@@ -769,8 +783,7 @@ public class TransportHandler {
                 if (TransportManager.checkIfTransportCompleted(transport)) {
                     Helper.println("Successfully visited destination.");
                     Helper.println("Transport is completed successfully.");
-                }
-                else {
+                } else {
                     Helper.println("Successfully visited destination.");
                     Helper.println("Transport is not completed yet.");
                 }

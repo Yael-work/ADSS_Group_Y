@@ -280,14 +280,16 @@ public class TransportManager {
      * Method return ONLY the available trucks for the given date.
      * Available trucks are those that are not assigned to any transport on the given date (excluding the time part).
      *
-     * @param targetDateTime - the date to check for available trucks
+     * @param targetStartDateTime - the date to check for available trucks
+     * @param targetEndDateTime   - the date to check for available trucks
      * @return - a list of available trucks
      */
-    public static List<Truck> getAvailableTrucksByDate(LocalDateTime targetDateTime) {
+    public static List<Truck> getAvailableTrucksByDate(LocalDateTime targetStartDateTime, LocalDateTime targetEndDateTime) {
+        //todo @Ethan handle end date!!!
         List<Truck> availableTrucks = TrucksManager.getAllTrucks();
         List<Transport> transports = getAllTransports();
         // Extract the target date (without time)
-        LocalDate targetDate = targetDateTime.toLocalDate();
+        LocalDate targetDate = targetStartDateTime.toLocalDate();
 
         // Find all truck IDs that are already assigned to transport on that date
         Set<Integer> busyTruckIds = transports.stream()
@@ -310,14 +312,17 @@ public class TransportManager {
      * Method return ONLY the available drivers for the given date.
      * Available drivers are those that are not assigned to any transport on the given date (excluding the time part).
      *
-     * @param targetDateTime - the date to check for available drivers
+     * @param targetStartDateTime - the date to check for available drivers
+     * @param targetEndDateTime   - the date to check for available drivers
      * @return - a list of available drivers
      */
-    public static List<Driver> getAvailableDriversByDateAndLicense(LocalDateTime targetDateTime, LicenseTypeEnum truckLicenseType) {
+    public static List<Driver> getAvailableDriversByDateAndLicense(LocalDateTime targetStartDateTime, LocalDateTime targetEndDateTime,
+                                                                   LicenseTypeEnum truckLicenseType) {
+        //TODO @ethan handle end date!!!
         List<Driver> availableDrivers = DriversManager.getAllDrivers();
         List<Transport> transports = getAllTransports();
         // Extract the target date (without time)
-        LocalDate targetDate = targetDateTime.toLocalDate();
+        LocalDate targetDate = targetStartDateTime.toLocalDate();
 
         // Find all driver IDs that are already assigned to transport on that date
         Set<Integer> busyDriverIds = transports.stream()
@@ -341,20 +346,22 @@ public class TransportManager {
     /**
      * This method is used to create transport.
      *
-     * @param plannedDateTime - the planned date and time for the transport
-     * @param truck           - the truck to be used for the transport
-     * @param driver          - the driver for the transport
-     * @param transportRoutes - the list of transport routes for the transport
+     * @param plannedStartDateTime - the planned start date and time for the transport
+     * @param plannedEndDateTime   - the planned end date and time for the transport
+     * @param truck                - the truck to be used for the transport
+     * @param driver               - the driver for the transport
+     * @param transportRoutes      - the list of transport routes for the transport
      * @return - the ID of the created transport, or Helper.UndefinedId if failed
      */
-    public static int createTransport(LocalDateTime plannedDateTime, Truck truck, Driver driver, List<TransportRoute> transportRoutes) {
-        if (plannedDateTime == null || truck == null || driver == null || transportRoutes == null
+    public static int createTransport(LocalDateTime plannedStartDateTime, LocalDateTime plannedEndDateTime, Truck truck, Driver driver, List<TransportRoute> transportRoutes) {
+        if (plannedStartDateTime == null || truck == null || driver == null || transportRoutes == null
                 || transportRoutes.isEmpty()) {
             Helper.showError("Invalid input for creating transport.");
             return Helper.UndefinedId;
         }
-        Transport transport = new Transport(Helper.UndefinedId, plannedDateTime, TransportStatusEnum.PENDING,
-                truck, driver, transportRoutes, null, null, null);
+        Transport transport = new Transport(Helper.UndefinedId, plannedStartDateTime, plannedEndDateTime,
+                TransportStatusEnum.PENDING, truck, driver, transportRoutes, null, null,
+                null);
         int transportId = transportController.addTransport(transport);
         if (transportId <= Helper.UndefinedId) {
             Helper.showError("Failed to create transport.");

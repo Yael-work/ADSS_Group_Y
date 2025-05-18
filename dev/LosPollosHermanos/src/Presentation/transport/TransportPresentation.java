@@ -116,16 +116,19 @@ public class TransportPresentation {
                 SuppliersManager.getSuppliers().subList(0, BranchesManager.getExistingBranches().size() - 1).stream().map(BaseModel::getId).toList());
 
         Branch firstBranch = BranchesManager.getBranchByName("Branch1");
+        assert firstBranch != null;
         List<StockItem> selectedItems = StockManager.mockSearchAndReturnRelevantStockItems("", firstBranch.getId());
-        LocalDateTime plannedDateTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime plannedStartDateTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime plannedEndDateTime = plannedStartDateTime.plusHours(4);
         CreateNewTransportRoutesResult routesCreationResult =
                 TransportManager.createNewTransportRoutes(firstBranch.getId(), selectedItems);
         List<TransportRoute> createdTransportRoutesIds = new ArrayList<>(routesCreationResult.getCreatedTransportRoutes());
-        List<Truck> trucks = TransportManager.getAvailableTrucksByDate(plannedDateTime);
+        List<Truck> trucks = TransportManager.getAvailableTrucksByDate(plannedStartDateTime, plannedEndDateTime);
         Truck selectedTruck = null;
         Driver selectedDriver = null;
         for (Truck truck : trucks) {
-            List<Driver> drivers = TransportManager.getAvailableDriversByDateAndLicense(plannedDateTime, truck.getRequiredLicenseType());
+            List<Driver> drivers = TransportManager.getAvailableDriversByDateAndLicense(plannedStartDateTime, plannedEndDateTime,
+                    truck.getRequiredLicenseType());
             if (drivers != null && !drivers.isEmpty()) {
                 selectedTruck = truck;
                 selectedDriver = drivers.getFirst();
@@ -139,8 +142,8 @@ public class TransportPresentation {
             Helper.showError("No available trucks or drivers found.");
             return false;
         }
-        int createdTransportId = TransportManager.createTransport(plannedDateTime, selectedTruck, selectedDriver,
-                createdTransportRoutesIds);
+        int createdTransportId = TransportManager.createTransport(plannedStartDateTime, plannedEndDateTime,
+                selectedTruck, selectedDriver, createdTransportRoutesIds);
 
         if (createdTransportId > 0) {
             mockDataLoaded = true;

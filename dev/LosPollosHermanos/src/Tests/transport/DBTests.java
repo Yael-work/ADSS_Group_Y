@@ -643,7 +643,8 @@ public class DBTests {
     }
 
     private int _testCreateNewTransport() {
-        LocalDateTime plannedDateTime = Helper.stringToDateTime("2023-10-01 10:00");
+        LocalDateTime plannedStartDateTime = Helper.stringToDateTime("2023-10-01 10:00");
+        LocalDateTime plannedEndDateTime = Helper.stringToDateTime("2023-10-01 16:00");
         int createdRouteOne = _testCreateTransportRoute();
         int createdRouteTwo = _testCreateTransportRoute();
         int createdTruck = _testCreateTruck(true, false);
@@ -658,7 +659,7 @@ public class DBTests {
         Driver driver = DBManager.getInstance().getDriverController().getDriverById(createdDriver);
         assertNotNull(driver, "Driver not found");
 
-        Transport transport = new Transport(0, plannedDateTime, TransportStatusEnum.PENDING, truck, driver,
+        Transport transport = new Transport(0, plannedStartDateTime, plannedEndDateTime, TransportStatusEnum.PENDING, truck, driver,
                 List.of(transportRouteOne, transportRouteTwo), null, null, null);
         int addedId = DBManager.getInstance().getTransportController().addTransport(transport);
         assertTrue(addedId > 0, "Failed to add transport");
@@ -666,7 +667,8 @@ public class DBTests {
                 "Transport not found");
         Transport retrievedTransport = DBManager.getInstance().getTransportController().getTransportById(addedId);
         assertNotNull(retrievedTransport, "Retrieved transport not found");
-        assertEquals(plannedDateTime, retrievedTransport.getPlannedStartDateTime(), "Planned date time mismatch");
+        assertEquals(plannedStartDateTime, retrievedTransport.getPlannedStartDateTime(), "Planned date time mismatch");
+        assertEquals(plannedEndDateTime, retrievedTransport.getPlannedEndDateTime(), "Planned end date time mismatch");
         assertEquals(TransportStatusEnum.PENDING, retrievedTransport.getStatus(), "Transport status mismatch");
         assertEquals(truck.getId(), retrievedTransport.getTruck().getId(), "Truck ID mismatch");
         assertEquals(driver.getId(), retrievedTransport.getDriver().getId(), "Driver ID mismatch");

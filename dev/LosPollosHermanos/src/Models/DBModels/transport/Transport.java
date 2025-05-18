@@ -15,6 +15,8 @@ public class Transport extends BaseModel {
     @Column(nullable = false)
     private LocalDateTime plannedStartDateTime;
     @Column(nullable = false)
+    private LocalDateTime plannedEndDateTime;
+    @Column(nullable = false)
     private TransportStatusEnum status;
     @Column()
     private LocalDateTime actualStartDatetime;
@@ -34,11 +36,12 @@ public class Transport extends BaseModel {
     @OneToMany(mappedBy = "transport", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TransportIssueLog> transportIssueLogs;
 
-    public Transport(int id, LocalDateTime plannedDateTime, TransportStatusEnum status, Truck truck, Driver driver,
+    public Transport(int id, LocalDateTime plannedStartDateTime, LocalDateTime plannedEndDateTime, TransportStatusEnum status, Truck truck, Driver driver,
                      List<TransportRoute> transportRoutes, List<TransportIssueLog> transportIssueLogs,
                      LocalDateTime actualStartDatetime, LocalDateTime actualEndDatetime) {
         super(id, Transport.class.getName());
-        this.plannedStartDateTime = plannedDateTime;
+        this.plannedStartDateTime = plannedStartDateTime;
+        this.plannedEndDateTime = plannedEndDateTime;
         this.status = status;
         this.actualStartDatetime = actualStartDatetime;
         this.actualEndDatetime = actualEndDatetime;
@@ -57,8 +60,16 @@ public class Transport extends BaseModel {
         return plannedStartDateTime;
     }
 
+    public LocalDateTime getPlannedEndDateTime() {
+        return plannedEndDateTime;
+    }
+
     public void setPlannedStartDateTime(LocalDateTime plannedDateTime) {
         this.plannedStartDateTime = plannedDateTime;
+    }
+
+    public void setPlannedEndDateTime(LocalDateTime plannedEndDateTime) {
+        this.plannedEndDateTime = plannedEndDateTime;
     }
 
     public TransportStatusEnum getStatus() {
