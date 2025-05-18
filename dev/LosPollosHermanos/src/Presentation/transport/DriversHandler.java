@@ -45,6 +45,9 @@ public class DriversHandler {
             Helper.showError("Error creating new driver.");
             return false;
         }
+        else{
+            //todo @ethan link with employees module
+        }
         return true;
     }
 

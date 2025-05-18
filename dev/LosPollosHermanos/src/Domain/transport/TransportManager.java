@@ -362,6 +362,7 @@ public class TransportManager {
         Transport transport = new Transport(Helper.UndefinedId, plannedStartDateTime, plannedEndDateTime,
                 TransportStatusEnum.PENDING, truck, driver, transportRoutes, null, null,
                 null);
+        //todo @ethan need to check that a stocker exists at the branch at the plannedEndTiem + check that the driver is free - then assign the driver to a shift for the given time frame.
         int transportId = transportController.addTransport(transport);
         if (transportId <= Helper.UndefinedId) {
             Helper.showError("Failed to create transport.");
@@ -666,8 +667,7 @@ public class TransportManager {
             if (codeSite == 0) {
                 if (code == 1) {
                     Truck newTruck = TrucksManager.getTruckById(truckId);
-                    if (newTruck == null) { // todo @TOm why is this checked? we said the issue logs are either changing trucks OR leaving products behind at the relevant route.
-                        //todo @Ethan - that's the spirit champ!
+                    if (newTruck == null) {
                         Helper.showError("Truck with id " + truckId + " not found.");
                         return false;
                     }
