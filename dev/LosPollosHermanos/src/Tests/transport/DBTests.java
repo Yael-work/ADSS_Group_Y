@@ -666,7 +666,7 @@ public class DBTests {
                 "Transport not found");
         Transport retrievedTransport = DBManager.getInstance().getTransportController().getTransportById(addedId);
         assertNotNull(retrievedTransport, "Retrieved transport not found");
-        assertEquals(plannedDateTime, retrievedTransport.getPlannedDateTime(), "Planned date time mismatch");
+        assertEquals(plannedDateTime, retrievedTransport.getPlannedStartDateTime(), "Planned date time mismatch");
         assertEquals(TransportStatusEnum.PENDING, retrievedTransport.getStatus(), "Transport status mismatch");
         assertEquals(truck.getId(), retrievedTransport.getTruck().getId(), "Truck ID mismatch");
         assertEquals(driver.getId(), retrievedTransport.getDriver().getId(), "Driver ID mismatch");
@@ -702,7 +702,7 @@ public class DBTests {
         assertNotNull(newTruck, "New truck not found");
 
         LocalDateTime newPlannedDateTime = Helper.stringToDateTime("2023-10-02 12:00");
-        transport.setPlannedDateTime(newPlannedDateTime);
+        transport.setPlannedStartDateTime(newPlannedDateTime);
         transport.setStatus(TransportStatusEnum.STARTED);
         transport.getTransportRoutes().add(newRoute);
         transport.setTransportIssueLogs(List.of(updatedIssueLog));
@@ -712,7 +712,7 @@ public class DBTests {
         assertTrue(result, "Failed to update transport");
         Transport updatedTransport = DBManager.getInstance().getTransportController().getTransportById(createdId);
         assertNotNull(updatedTransport, "Updated transport not found");
-        assertEquals(newPlannedDateTime, updatedTransport.getPlannedDateTime(), "Planned date time mismatch");
+        assertEquals(newPlannedDateTime, updatedTransport.getPlannedStartDateTime(), "Planned date time mismatch");
         assertEquals(TransportStatusEnum.STARTED, updatedTransport.getStatus(), "Transport status mismatch");
         assertEquals(3, updatedTransport.getTransportRoutes().size(), "Transport routes size mismatch");
         assertEquals(newRoute.getId(), updatedTransport.getTransportRoutes().getLast().getId(),

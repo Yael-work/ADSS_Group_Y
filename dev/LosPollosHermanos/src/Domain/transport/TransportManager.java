@@ -294,7 +294,7 @@ public class TransportManager {
                 .filter(t -> {
                     TransportStatusEnum status = t.getStatus();
                     boolean isActive = status == TransportStatusEnum.PENDING || status == TransportStatusEnum.STARTED;
-                    return isActive && t.getPlannedDateTime().toLocalDate().equals(targetDate);
+                    return isActive && t.getPlannedStartDateTime().toLocalDate().equals(targetDate);
                 })
                 .map(Transport::getTruckId)
                 .collect(Collectors.toSet());
@@ -324,7 +324,7 @@ public class TransportManager {
                 .filter(t -> {
                     TransportStatusEnum status = t.getStatus();
                     boolean isActive = status == TransportStatusEnum.PENDING || status == TransportStatusEnum.STARTED;
-                    return isActive && t.getPlannedDateTime().toLocalDate().equals(targetDate);
+                    return isActive && t.getPlannedStartDateTime().toLocalDate().equals(targetDate);
                 })
                 .map(Transport::getDriverId)
                 .collect(Collectors.toSet());
@@ -528,7 +528,7 @@ public class TransportManager {
 
     public static boolean StartTransport(Transport transport, LocalDateTime startDateTime) {
         if (transport.getStatus() == TransportStatusEnum.PENDING) {
-            LocalDateTime plannedDateTime = transport.getPlannedDateTime();
+            LocalDateTime plannedDateTime = transport.getPlannedStartDateTime();
             if (plannedDateTime == null) {
                 Helper.println("Planned date and time is null. Cannot start transport.");
                 return false;
@@ -750,7 +750,7 @@ public class TransportManager {
             Helper.println("New planned date and time cannot be null.");
             return false;
         }
-        transport.setPlannedDateTime(newPlannedDateTime);
+        transport.setPlannedStartDateTime(newPlannedDateTime);
         transportController.updateTransport(transport, transport.getId());
         return true;
     }

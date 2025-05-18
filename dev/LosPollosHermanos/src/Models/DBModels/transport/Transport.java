@@ -13,7 +13,7 @@ import java.util.List;
 @Table(name = "transports")
 public class Transport extends BaseModel {
     @Column(nullable = false)
-    private LocalDateTime plannedDateTime;
+    private LocalDateTime plannedStartDateTime;
     @Column(nullable = false)
     private TransportStatusEnum status;
     @Column()
@@ -38,7 +38,7 @@ public class Transport extends BaseModel {
                      List<TransportRoute> transportRoutes, List<TransportIssueLog> transportIssueLogs,
                      LocalDateTime actualStartDatetime, LocalDateTime actualEndDatetime) {
         super(id, Transport.class.getName());
-        this.plannedDateTime = plannedDateTime;
+        this.plannedStartDateTime = plannedDateTime;
         this.status = status;
         this.actualStartDatetime = actualStartDatetime;
         this.actualEndDatetime = actualEndDatetime;
@@ -53,12 +53,12 @@ public class Transport extends BaseModel {
         super(0, Transport.class.getName());
     }
 
-    public LocalDateTime getPlannedDateTime() {
-        return plannedDateTime;
+    public LocalDateTime getPlannedStartDateTime() {
+        return plannedStartDateTime;
     }
 
-    public void setPlannedDateTime(LocalDateTime plannedDateTime) {
-        this.plannedDateTime = plannedDateTime;
+    public void setPlannedStartDateTime(LocalDateTime plannedDateTime) {
+        this.plannedStartDateTime = plannedDateTime;
     }
 
     public TransportStatusEnum getStatus() {
@@ -136,14 +136,14 @@ public class Transport extends BaseModel {
 
     @Override
     public String toString() {
-        return "Transport{" + "id=" + getId() + ", plannedDateTime=" + plannedDateTime + ", status=" + status + ", truckId=" + getTruckId() + ", driverId=" + getDriverId() + ", transportRouteIds=" + getTransportRouteIds() + ", transportIssueLogIds=" + getTransportIssueLogIds() + ", actualStartDatetime=" + actualStartDatetime + ", actualEndDatetime=" + actualEndDatetime + '}';
+        return "Transport{" + "id=" + getId() + ", plannedDateTime=" + plannedStartDateTime + ", status=" + status + ", truckId=" + getTruckId() + ", driverId=" + getDriverId() + ", transportRouteIds=" + getTransportRouteIds() + ", transportIssueLogIds=" + getTransportIssueLogIds() + ", actualStartDatetime=" + actualStartDatetime + ", actualEndDatetime=" + actualEndDatetime + '}';
     }
 
     @Override
     public String toPrettyString() {
         return String.format("""
                 ID: %d
-                Planned DateTime: %s
+                Planned Start DateTime: %s
                 Status: %s
                 Truck ID: %d
                 Driver ID: %d
@@ -151,7 +151,7 @@ public class Transport extends BaseModel {
                 Transport Issue Log IDs: %s
                 Actual Start DateTime: %s
                 Actual End DateTime: %s
-                """, getId(), plannedDateTime, status, getTruckId(), getDriverId(), getTransportRouteIds(), getTransportIssueLogIds(), actualStartDatetime, actualEndDatetime);
+                """, getId(), plannedStartDateTime, status, getTruckId(), getDriverId(), getTransportRouteIds(), getTransportIssueLogIds(), actualStartDatetime, actualEndDatetime);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class Transport extends BaseModel {
             return false;
         }
 
-        this.plannedDateTime = otherTransport.plannedDateTime;
+        this.plannedStartDateTime = otherTransport.plannedStartDateTime;
         this.status = otherTransport.status;
         this.actualStartDatetime = otherTransport.actualStartDatetime;
         this.actualEndDatetime = otherTransport.actualEndDatetime;

@@ -401,7 +401,7 @@ public class TransportHandler {
         Helper.println("All Transports:");
         for (Transport transport : transports) {
             Helper.println(String.format("Transport ID: %d, on date: %s", transport.getId(),
-                    transport.getPlannedDateTime().format(Helper.DefaultDateTimeFormatter)));
+                    transport.getPlannedStartDateTime().format(Helper.DefaultDateTimeFormatter)));
         }
         return transports;
     }
@@ -569,7 +569,7 @@ public class TransportHandler {
                     if (answer.equals("1")) {
                         List<Truck> availableTrucks = new ArrayList<>();
                         if (!check) {
-                            availableTrucks = TransportManager.getAvailableTrucksByDate(transport.getPlannedDateTime());
+                            availableTrucks = TransportManager.getAvailableTrucksByDate(transport.getPlannedStartDateTime());
                         }
                         if (availableTrucks.isEmpty()) {
                             Helper.println("No available trucks found.");
