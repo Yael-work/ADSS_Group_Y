@@ -33,7 +33,6 @@ public class HibernateUtil {
             Logger hibernateLogger = Logger.getLogger("org.hibernate");
             hibernateLogger.setLevel(Level.OFF);
 
-            // Optional: silence child loggers too
             for (Handler handler : hibernateLogger.getHandlers()) {
                 handler.setLevel(Level.OFF);
             }
