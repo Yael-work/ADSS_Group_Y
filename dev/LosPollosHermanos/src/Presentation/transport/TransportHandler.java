@@ -1,5 +1,6 @@
 package Presentation.transport;
 
+import Auxiliary.Enums.Domain.CreateNewTransportResultEnum;
 import Auxiliary.Enums.Models.TransportStatusEnum;
 import Auxiliary.Enums.Models.visitSiteEnum;
 import Auxiliary.Helper;
@@ -7,6 +8,7 @@ import Domain.stock.StockManager;
 import Domain.transport.*;
 import Models.DBModels.transport.*;
 import Models.DTOs.StockItem;
+import Models.DTOs.transport.CreateNewTransportResult;
 import Models.DTOs.transport.CreateNewTransportRoutesResult;
 
 import java.time.LocalDateTime;
@@ -243,14 +245,58 @@ public class TransportHandler {
             } else {
                 Helper.println("You have selected driver: " + selectedDriver.toPrettyString());
                 Helper.println("Generating transport...");
-                int createdTransportId = TransportManager.createTransport(plannedStartDateTime, plannedEndDateTime,
+                CreateNewTransportResult result = TransportManager.createTransport(plannedStartDateTime, plannedEndDateTime,
                         selectedTruck, selectedDriver, createdTransportRoutes);
-                Transport createdTransport = TransportManager.getTransportById(createdTransportId);
-                if (createdTransport == null) {
-                    Helper.println("Failed to create transport.");
+                boolean stopHandlingStocker = false;
+                do {
+                    if (result.getResultEnum() == CreateNewTransportResultEnum.StockerUnavailable) {
+                        Helper.println(String.format("no available stocker at the planned end time %s for branch %s",
+                                plannedEndDateTime,
+                                createdTransportRoutes.getFirst().getDestinationSite().toString()));
+                        Helper.print("Enter a different date and time for the transport?: ");
+                        String answer = Helper.getUserInputString();
+                        while (answer == null || answer.isEmpty() ||
+                                (!answer.equalsIgnoreCase("yes") && !answer.equalsIgnoreCase("no"))) {
+                            Helper.print("Invalid input. Please enter 'yes' or 'no': ");
+                            answer = Helper.getUserInputString();
+                        }
+                        if (answer.equalsIgnoreCase("yes")) {
+                            plannedStartDateTime = null;
+                            plannedEndDateTime = null;
+                            do {
+                                Helper.println("Please enter the new date and time for the transport:");
+                                List<LocalDateTime> newDateTimes = getDateForTransport();
+                                if (newDateTimes.isEmpty() || newDateTimes.size() < 2) {
+                                    Helper.println("Invalid date and time. Please try again.");
+                                    continue;
+                                }
+                                plannedStartDateTime = newDateTimes.get(0);
+                                plannedEndDateTime = newDateTimes.get(1);
+                            }
+                            while (plannedStartDateTime == null || plannedEndDateTime == null);
+                        } else {
+                            Helper.println("Transport creation canceled.");
+                            TransportManager.deleteTransportRoutes(createdTransportRoutes);
+                            return false;
+                        }
+                        result = TransportManager.createTransport(plannedStartDateTime, plannedEndDateTime,
+                                selectedTruck, selectedDriver, createdTransportRoutes);
+                    } else {
+                        stopHandlingStocker = true;
+                    }
+                } while (!stopHandlingStocker);
+                if (result.getResultEnum() == CreateNewTransportResultEnum.Success) {
+                    Transport createdTransport = TransportManager.getTransportById(result.getCreatedTransportId());
+                    if (createdTransport == null) {
+                        Helper.println("Failed to create transport.");
+                        return false;
+                    }
+                    Helper.println("You have created transport: " + createdTransport.toPrettyString());
+                } else {
+                    Helper.println("Failed to create transport. Please try again.");
+                    TransportManager.deleteTransportRoutes(createdTransportRoutes);
                     return false;
                 }
-                Helper.println("You have created transport: " + createdTransport.toPrettyString());
                 truckAndDriverSelectionSuccess = true;
             }
         } while (!truckAndDriverSelectionSuccess);
