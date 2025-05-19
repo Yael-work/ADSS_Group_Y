@@ -206,7 +206,8 @@ public class TransportHandler {
         }
         do {
             Helper.println(String.format("Select a truck for the transport (Only available trucks are visible for the" +
-                    " date %s-%s):", plannedStartDateTime, plannedEndDateTime));
+                            " date %s-%s):", plannedStartDateTime.format(Helper.DefaultDateTimeFormatter),
+                    plannedEndDateTime.format(Helper.DefaultDateTimeFormatter)));
             trucks.forEach(truck -> Helper.println(truck.toPrettyString()));
             Helper.print("Please enter the truck ID: ");
             int truckId = Helper.getUserInputInteger();
@@ -1040,7 +1041,7 @@ public class TransportHandler {
                 count++;
             }
         }
-        if (count == routes.size()){
+        if (count == routes.size()) {
             Helper.println("All sources are completed. Please continue to the destination.");
             return;
         }

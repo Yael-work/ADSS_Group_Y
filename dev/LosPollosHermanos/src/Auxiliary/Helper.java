@@ -259,6 +259,18 @@ public class Helper {
                         || licenseType.equals(LicenseTypeEnum.CPlusE));
     }
 
+    /**
+     * This method is used to check if a given date and time is in between two other date and time.
+     *
+     * @param dateTime - The date and time to be checked.
+     * @param start    - The start date and time.
+     * @param end      - The end date and time.
+     * @return - true if the date and time is in between, false otherwise.
+     */
+    public static boolean isDateTimeInBetween(LocalDateTime dateTime, LocalDateTime start, LocalDateTime end) {
+        return (dateTime.isAfter(start) || dateTime.isEqual(start)) && (dateTime.isBefore(end) || dateTime.isEqual(end));
+    }
+
 
     /**
      * This method is used to check if a given license type is valid for a truck.

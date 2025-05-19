@@ -243,26 +243,32 @@ public class TransportManager {
 
 
     /**
-     * Method return ONLY the available trucks for the given date.
-     * Available trucks are those that are not assigned to any transport on the given date (excluding the time part).
+     * Method return ONLY the available trucks for the given dates.
+     * Available trucks are those that are not assigned to any transport on the given dates.
      *
-     * @param targetStartDateTime - the date to check for available trucks
-     * @param targetEndDateTime   - the date to check for available trucks
+     * @param targetPlannedStartDateTime - the date to check for available trucks
+     * @param targetPlannedEndDateTime   - the date to check for available trucks
      * @return - a list of available trucks
      */
-    public static List<Truck> getAvailableTrucksByDate(LocalDateTime targetStartDateTime, LocalDateTime targetEndDateTime) {
-        //todo @Ethan handle end date!!!
+    public static List<Truck> getAvailableTrucksByDate(LocalDateTime targetPlannedStartDateTime,
+                                                       LocalDateTime targetPlannedEndDateTime) {
         List<Truck> availableTrucks = TrucksManager.getAllTrucks();
         List<Transport> transports = getAllTransports();
-        // Extract the target date (without time)
-        LocalDate targetDate = targetStartDateTime.toLocalDate();
 
-        // Find all truck IDs that are already assigned to transport on that date
+        // Find all truck IDs that are already assigned to transport on this date frame
         Set<Integer> busyTruckIds = transports.stream()
                 .filter(t -> {
                     TransportStatusEnum status = t.getStatus();
                     boolean isActive = status == TransportStatusEnum.PENDING || status == TransportStatusEnum.STARTED;
-                    return isActive && t.getPlannedStartDateTime().toLocalDate().equals(targetDate);
+                    boolean currentStartInBetweenFrame = Helper.isDateTimeInBetween(t.getPlannedStartDateTime(),
+                            targetPlannedStartDateTime, targetPlannedEndDateTime);
+                    boolean currentEndInBetweenFrame = Helper.isDateTimeInBetween(t.getPlannedEndDateTime(),
+                            targetPlannedStartDateTime, targetPlannedEndDateTime);
+
+                    return isActive && (currentStartInBetweenFrame || currentEndInBetweenFrame ||
+                            (t.getPlannedStartDateTime().isBefore(targetPlannedStartDateTime) &&
+                                    /*This is an edge case if the entire trucks frame is longer than the target planned start+end*/
+                                    t.getPlannedEndDateTime().isAfter(targetPlannedEndDateTime)));
                 })
                 .map(Transport::getTruckId)
                 .collect(Collectors.toSet());
@@ -276,36 +282,20 @@ public class TransportManager {
 
     /**
      * Method return ONLY the available drivers for the given date.
-     * Available drivers are those that are not assigned to any transport on the given date (excluding the time part).
+     * Available drivers are those that are not assigned to any shifts on the given dates.
      *
      * @param targetStartDateTime - the date to check for available drivers
      * @param targetEndDateTime   - the date to check for available drivers
      * @return - a list of available drivers
      */
-    public static List<Driver> getAvailableDriversByDateAndLicense(LocalDateTime targetStartDateTime, LocalDateTime targetEndDateTime,
+    public static List<Driver> getAvailableDriversByDateAndLicense(LocalDateTime targetStartDateTime,
+                                                                   LocalDateTime targetEndDateTime,
                                                                    LicenseTypeEnum truckLicenseType) {
-        //TODO @ethan handle end date!!!
-        List<Driver> availableDrivers = DriversManager.getAllDrivers();
-        List<Transport> transports = getAllTransports();
-        // Extract the target date (without time)
-        LocalDate targetDate = targetStartDateTime.toLocalDate();
-
-        // Find all driver IDs that are already assigned to transport on that date
-        Set<Integer> busyDriverIds = transports.stream()
-                .filter(t -> {
-                    TransportStatusEnum status = t.getStatus();
-                    boolean isActive = status == TransportStatusEnum.PENDING || status == TransportStatusEnum.STARTED;
-                    return isActive && t.getPlannedStartDateTime().toLocalDate().equals(targetDate);
-                })
-                .map(Transport::getDriverId)
-                .collect(Collectors.toSet());
-
-        // Filter out busy drivers
-        return availableDrivers.stream()
-                .filter(driver -> !busyDriverIds.contains(driver.getId())
-                        && Helper.isLicenseTypeValidPerTruck(driver.getLicenseType(),
-                        truckLicenseType))
-                .collect(Collectors.toList());
+        List<Driver> availableDriversWithProperLicense = DriversManager.getAllDrivers().stream()
+                .filter(driver -> Helper.isLicenseTypeValidPerTruck(driver.getLicenseType(), truckLicenseType))
+                .toList();
+        return /*TODO @ethan link with employees module and check for each specific driver that is not blocked due to a shift by start and end*/
+                availableDriversWithProperLicense;
     }
 
 
