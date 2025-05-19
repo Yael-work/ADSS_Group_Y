@@ -1121,7 +1121,7 @@ public class TransportHandler {
                     visitSource();
                     break;
                 case 8:
-                    visitDestination(); //TODO @Tom - check if the transport completed fully!!
+                    visitDestination();
                     break;
                 case 9:
                     editUnstartedTransport();
