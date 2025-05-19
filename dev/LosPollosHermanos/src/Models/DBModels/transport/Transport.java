@@ -147,7 +147,8 @@ public class Transport extends BaseModel {
 
     @Override
     public String toString() {
-        return "Transport{" + "id=" + getId() + ", plannedDateTime=" + plannedStartDateTime + ", status=" + status + ", truckId=" + getTruckId() + ", driverId=" + getDriverId() + ", transportRouteIds=" + getTransportRouteIds() + ", transportIssueLogIds=" + getTransportIssueLogIds() + ", actualStartDatetime=" + actualStartDatetime + ", actualEndDatetime=" + actualEndDatetime + '}';
+        return "Transport{" + "id=" + getId() + ", plannedStartDateTime=" + plannedStartDateTime + ", plannedEndDateTime=" + plannedEndDateTime +
+                ", status=" + status + ", truckId=" + getTruckId() + ", driverId=" + getDriverId() + ", transportRouteIds=" + getTransportRouteIds() + ", transportIssueLogIds=" + getTransportIssueLogIds() + ", actualStartDatetime=" + actualStartDatetime + ", actualEndDatetime=" + actualEndDatetime + '}';
     }
 
     @Override
@@ -155,6 +156,7 @@ public class Transport extends BaseModel {
         return String.format("""
                 ID: %d
                 Planned Start DateTime: %s
+                Planned End DateTime: %s
                 Status: %s
                 Truck ID: %d
                 Driver ID: %d
@@ -162,7 +164,7 @@ public class Transport extends BaseModel {
                 Transport Issue Log IDs: %s
                 Actual Start DateTime: %s
                 Actual End DateTime: %s
-                """, getId(), plannedStartDateTime, status, getTruckId(), getDriverId(), getTransportRouteIds(), getTransportIssueLogIds(), actualStartDatetime, actualEndDatetime);
+                """, getId(), plannedStartDateTime, plannedEndDateTime, status, getTruckId(), getDriverId(), getTransportRouteIds(), getTransportIssueLogIds(), actualStartDatetime, actualEndDatetime);
     }
 
     @Override
@@ -173,6 +175,7 @@ public class Transport extends BaseModel {
         }
 
         this.plannedStartDateTime = otherTransport.plannedStartDateTime;
+        this.plannedEndDateTime = otherTransport.plannedEndDateTime;
         this.status = otherTransport.status;
         this.actualStartDatetime = otherTransport.actualStartDatetime;
         this.actualEndDatetime = otherTransport.actualEndDatetime;

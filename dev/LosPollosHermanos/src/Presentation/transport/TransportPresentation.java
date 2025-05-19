@@ -1,5 +1,6 @@
 package Presentation.transport;
 
+import Auxiliary.Enums.Domain.CreateNewTransportResultEnum;
 import Auxiliary.Helper;
 import DB.util.HibernateUtil;
 import Domain.stock.StockManager;
@@ -11,6 +12,7 @@ import Models.DBModels.transport.Driver;
 import Models.DBModels.transport.TransportRoute;
 import Models.DBModels.transport.Truck;
 import Models.DTOs.StockItem;
+import Models.DTOs.transport.CreateNewTransportResult;
 import Models.DTOs.transport.CreateNewTransportRoutesResult;
 
 import java.time.LocalDateTime;
@@ -142,10 +144,11 @@ public class TransportPresentation {
             Helper.showError("No available trucks or drivers found.");
             return false;
         }
-        int createdTransportId = TransportManager.createTransport(plannedStartDateTime, plannedEndDateTime,
+        CreateNewTransportResult createdTransportResult = TransportManager.createTransport(plannedStartDateTime, plannedEndDateTime,
                 selectedTruck, selectedDriver, createdTransportRoutesIds);
 
-        if (createdTransportId > 0) {
+        if (createdTransportResult.getResultEnum() == CreateNewTransportResultEnum.Success &&
+                createdTransportResult.getCreatedTransportId() > 0) {
             mockDataLoaded = true;
             return true;
         }

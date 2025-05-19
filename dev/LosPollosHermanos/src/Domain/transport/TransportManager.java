@@ -1,44 +1,6 @@
 package Domain.transport;
 
-
-/*
- * 1. V Show all transports -> by id and date
- * 2. V Show specific detailed transport by ID -> all the static details (status, date...)
- *   + print all linked transport routes -> also print the delivery file of each route
- *   + print all linked issue logs -> also print the issue file of each log
- *
- * 3. Print transport drives for driver - by Transport ID: //TODO @tom - DONE
- *      This is a printing function that should be used by the driver
- *      meaning that we get the TRANSPORT id and we:
- *   B. get all the routes of the transport
- *   C. get all the routes of the transport that are not started yet
- *  For each route:
- *      D. Print the route status
- *      E. Pretty print each route with: address from, address to, contact names from and to, contact phones from and to.
- *      F. pretty print the delivery file for the route.
- * 4. Print the next drive for driver: //Done Delete for now.
- * 5. Delete transport by ID -> delete all linked inner data.
- * 6. Create transport:
- *   A. Ask for planned date time of transport
- *   B. Ask to add branch(es) to the transport:
- *       for each branch:
- *       [a]. Search for item by name or barcode [happens in presentation - we will provide the items to the manager]
- *       [b]. search for all transport areas that contains this branch
- *       [c]. extract all the suppliers that are linked to the areas -> remove duplicates from the list!
- *       [d]. make a list of items that each supplier can provide - see if there are any items that are UNPROVIDED for
- *           [[*]]. if there are any items that are UNPROVIDED for, look for other suppliers that can provide them
- *               from general supplier list (exclude all the suppliers that we listed in step [c]).
- *       [e]. in case there are still items that are UNPROVIDED for, we will  alert the user and ask if he wants
- *           to perform the transport anyway.
- *       [f]. if the user agrees, create a transport route between each supplier and the branch with the relevant items.
- *   C. Ask to pick a suitable truck.
- *   D. Ask to pick a driver - note - the driver must have the proper license!
- * 7. Start transport:TODO
- * 8. Visit source:TODO
- * 9. Visit destination:TODO
- * 10. EditUnstartedTransport:TODO
- * */
-
+import Auxiliary.Enums.Domain.CreateNewTransportResultEnum;
 import Auxiliary.Enums.Domain.CreateNewTransportRouteResultEnum;
 import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Auxiliary.Enums.Models.TransportStatusEnum;
@@ -55,6 +17,7 @@ import Models.DBModels.suppliers.Supplier;
 import Models.DBModels.transport.*;
 import Models.DTOs.ItemsAtSupplier;
 import Models.DTOs.StockItem;
+import Models.DTOs.transport.CreateNewTransportResult;
 import Models.DTOs.transport.CreateNewTransportRoutesResult;
 
 import java.time.LocalDate;
@@ -62,6 +25,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The TransportManager class is responsible for managing transport-related operations.
+ */
 public class TransportManager {
     private static final ITransportController transportController = DBManager.getInstance().getTransportController();
     private static final IDeliveryFileController deliveryFileController = DBManager.getInstance().getDeliveryFileController();
@@ -225,7 +191,7 @@ public class TransportManager {
      */
     public static boolean deleteTransportRoutes(List<TransportRoute> routes) {
         if (routes == null || routes.isEmpty()) {
-            Helper.showError("Cant delete transport, it does not exist");
+            Helper.showError("Cant delete transport routes, they do not exist");
             return false;
         } else {
             for (TransportRoute route : routes) {
@@ -353,16 +319,23 @@ public class TransportManager {
      * @param transportRoutes      - the list of transport routes for the transport
      * @return - the ID of the created transport, or Helper.UndefinedId if failed
      */
-    public static int createTransport(LocalDateTime plannedStartDateTime, LocalDateTime plannedEndDateTime, Truck truck, Driver driver, List<TransportRoute> transportRoutes) {
+    public static CreateNewTransportResult createTransport(LocalDateTime plannedStartDateTime, LocalDateTime plannedEndDateTime, Truck truck, Driver driver, List<TransportRoute> transportRoutes) {
         if (plannedStartDateTime == null || truck == null || driver == null || transportRoutes == null
                 || transportRoutes.isEmpty()) {
             Helper.showError("Invalid input for creating transport.");
-            return Helper.UndefinedId;
+            return new CreateNewTransportResult(Helper.UndefinedId,
+                    CreateNewTransportResultEnum.InvalidInput);
+        }
+        boolean doesStockerExistAtPlannedEndTime = true;//todo @ethan link with employees by branch name(extracted from the routes) and the plannedEndDateTime!
+        if (!doesStockerExistAtPlannedEndTime) {
+            Helper.println("No stocker available at the planned end time.");
+            return new CreateNewTransportResult(Helper.UndefinedId,
+                    CreateNewTransportResultEnum.StockerUnavailable);
         }
         Transport transport = new Transport(Helper.UndefinedId, plannedStartDateTime, plannedEndDateTime,
                 TransportStatusEnum.PENDING, truck, driver, transportRoutes, null, null,
                 null);
-        //todo @ethan need to check that a stocker exists at the branch at the plannedEndTiem + check that the driver is free - then assign the driver to a shift for the given time frame.
+
         int transportId = transportController.addTransport(transport);
         if (transportId <= Helper.UndefinedId) {
             Helper.showError("Failed to create transport.");
@@ -371,7 +344,8 @@ public class TransportManager {
             } else {
                 Helper.showError("Failed to delete transport routes");
             }
-            return Helper.UndefinedId;
+            return new CreateNewTransportResult(Helper.UndefinedId,
+                    CreateNewTransportResultEnum.TransportCreationFailed);
         } else {
             for (TransportRoute route : transportRoutes) {
                 if (route != null) {
@@ -396,7 +370,8 @@ public class TransportManager {
                 }
             }
         }
-        return transportId;
+        return new CreateNewTransportResult(transportId,
+                CreateNewTransportResultEnum.Success);
     }
 
 
