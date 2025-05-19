@@ -980,6 +980,7 @@ public class TransportHandler {
             Helper.println("No transport routes found for this transport.");
             return;
         }
+        int count = 0;
         for (TransportRoute route : routes) {
             if (route == null) {
                 Helper.println("Transport route not found. Please try again.");
@@ -989,6 +990,13 @@ public class TransportHandler {
             if (route.getStatus() != TransportStatusEnum.PENDING) {
                 routes.remove(route);
             }
+            if (route.getStatus() == TransportStatusEnum.SOURCE_COMPLETED || route.getStatus() == TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES) {
+                count++;
+            }
+        }
+        if (count == routes.size()){
+            Helper.println("All sources are completed. Please continue to the destination.");
+            return;
         }
         if (routes.isEmpty()) {
             Helper.println("No transport routes found for this transport.");
@@ -1046,7 +1054,7 @@ public class TransportHandler {
                     showSpecificDetailedTransport(null);
                     break;
                 case 3:
-                    printTransportDrivesForDriver(); //TODO @Tom -check the option for if all the sources are visited and update correctly.
+                    printTransportDrivesForDriver();
                     break;
                 case 4:
                     deleteTransportById();
