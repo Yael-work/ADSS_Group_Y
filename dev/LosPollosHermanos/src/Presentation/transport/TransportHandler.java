@@ -1046,7 +1046,7 @@ public class TransportHandler {
                     showSpecificDetailedTransport(null);
                     break;
                 case 3:
-                    printTransportDrivesForDriver();
+                    printTransportDrivesForDriver(); //TODO @Tom -check the option for if all the sources are visited and update correctly.
                     break;
                 case 4:
                     deleteTransportById();
@@ -1058,10 +1058,11 @@ public class TransportHandler {
                     startTransport();
                     break;
                 case 7:
-                    visitSource();
+                    visitSource(); //TODO @Tom -check the option for if all the sources are visited and update correctly - inform the user that
+                    //there no left sources to visit them.
                     break;
                 case 8:
-                    visitDestination();
+                    visitDestination(); //TODO @Tom - check if the transport completed fully!!
                     break;
                 case 9:
                     editUnstartedTransport();
