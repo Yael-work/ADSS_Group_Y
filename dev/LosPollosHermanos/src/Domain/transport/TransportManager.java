@@ -623,27 +623,33 @@ public class TransportManager {
      * This method is used to visit the destination site.
      *
      * @param transport     - the transport object
-     * @param selectedRoute - the selected transport route
+     * @param selectedRoute - the selected transport routes
      * @return - an enum indicating the result of the visit
      */
-    public static visitSiteEnum visitDestination(Transport transport, TransportRoute selectedRoute) {
-        DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(selectedRoute.getDeliveryFile().getId());
-        if (deliveryFile == null) {
-            Helper.println("Delivery file not found.");
+    public static visitSiteEnum visitDestination(Transport transport, List<TransportRoute> selectedRoute) {
+        if (selectedRoute == null || selectedRoute.isEmpty()) {
+            Helper.println("Selected route is null or empty.");
             return visitSiteEnum.FAILED;
         }
-        List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
-        if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
-            Helper.println("No items in the delivery file.");
-            return visitSiteEnum.FAILED;
+        for (TransportRoute route : selectedRoute) {
+            DeliveryFile deliveryFile = deliveryFileController.getDeliveryFileById(route.getDeliveryFile().getId());
+            if (deliveryFile == null) {
+                Helper.println("Delivery file not found.");
+                return visitSiteEnum.FAILED;
+            }
+            List<DeliveryFileItem> deliveryFileItems = deliveryFile.getDeliveryFileItems();
+            if (deliveryFileItems == null || deliveryFileItems.isEmpty()) {
+                Helper.println("No items in the delivery file.");
+                return visitSiteEnum.FAILED;
+            }
+            if (route.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES) {
+                route.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
+            }
+            if (route.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED) {
+                route.setStatus(TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES);
+            }
+            transportRouteController.updateTransportRoute(route, route.getId());
         }
-        if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES) {
-            selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED);
-        }
-        if (selectedRoute.getStatus() != TransportStatusEnum.DESTINATION_COMPLETED) {
-            selectedRoute.setStatus(TransportStatusEnum.DESTINATION_COMPLETED_WITH_ISSUES);
-        }
-        transportRouteController.updateTransportRoute(selectedRoute, selectedRoute.getId());
         transportController.updateTransport(transport, transport.getId());
         return visitSiteEnum.SUCCESS;
     }

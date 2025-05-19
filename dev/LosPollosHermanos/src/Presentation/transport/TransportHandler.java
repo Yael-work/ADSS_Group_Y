@@ -521,6 +521,7 @@ public class TransportHandler {
         if (transport.getStatus() == TransportStatusEnum.STARTED) {
             Helper.println("Relevant sources to visit: ");
             List<TransportRoute> routes = transport.getTransportRoutes();
+            int count = 0;
             TransportRoute selectedRoute = null;
             for (TransportRoute transportRoute : routes) {
                 if (transportRoute == null) {
@@ -530,6 +531,10 @@ public class TransportHandler {
                 if (transportRoute.getStatus() == TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES
                         || transportRoute.getStatus() == TransportStatusEnum.SOURCE_COMPLETED
                         || transportRoute.getStatus() == TransportStatusEnum.DESTINATION_COMPLETED) {
+                    if (transportRoute.getStatus() == TransportStatusEnum.SOURCE_COMPLETED_WITH_ISSUES
+                            || transportRoute.getStatus() == TransportStatusEnum.SOURCE_COMPLETED) {
+                        count++;
+                    }
                     continue;
                 }
                 APhysicalSite sourceSite = transportRoute.getSourceSite();
@@ -538,6 +543,10 @@ public class TransportHandler {
                     return;
                 }
                 Helper.println("Source ID: " + sourceSite.getId() + ", Address: " + transportRoute.getSourceSite());
+            }
+            if (count == routes.size()){
+                Helper.println("All sources have been visited. Cannot visit source.");
+                return;
             }
             Helper.println("Enter the ID of the source you want to visit: ");
             boolean flag = false;
@@ -629,8 +638,6 @@ public class TransportHandler {
                     } else {
                         Helper.println("Choose item Id to modify the amount of the item to discard.");
                         DeliveryFile deliveryFile = selectedRoute.getDeliveryFile();
-                        //todo - original delivery file will be at TransportIssueLog
-                        //todo - modified delivery file will be at TransportRoute
                         if (deliveryFile == null) {
                             Helper.println("Delivery file not found. Please try again.");
                             return;
@@ -734,7 +741,7 @@ public class TransportHandler {
         if (transport.getStatus() == TransportStatusEnum.STARTED || transport.getStatus() == TransportStatusEnum.CONTINUED_WITH_ISSUES) {
             Helper.println("Relevant destinations to visit: ");
             List<TransportRoute> routes = transport.getTransportRoutes();
-            TransportRoute selectedRoute = null;
+            List<TransportRoute> selectedRoute = new ArrayList<>();
             for (TransportRoute transportRoute : routes) {
                 if (transportRoute == null) {
                     Helper.println("Transport route not found. Please try again.");
@@ -768,9 +775,8 @@ public class TransportHandler {
                     APhysicalSite destination = tr.getDestinationSite();
                     if (destination != null && destination.getId() == destinationID) {
                         Helper.println("Visiting destination: " + destination.toPrettyString());
-                        selectedRoute = tr;
+                        selectedRoute.add(tr);
                         flag = true;
-                        break;
                     }
                 }
                 if (flag) {
@@ -994,7 +1000,7 @@ public class TransportHandler {
                 count++;
             }
         }
-        if (count == routes.size()){
+        if (count == routes.size()) {
             Helper.println("All sources are completed. Please continue to the destination.");
             return;
         }
@@ -1066,8 +1072,7 @@ public class TransportHandler {
                     startTransport();
                     break;
                 case 7:
-                    visitSource(); //TODO @Tom -check the option for if all the sources are visited and update correctly - inform the user that
-                    //there no left sources to visit them.
+                    visitSource();
                     break;
                 case 8:
                     visitDestination(); //TODO @Tom - check if the transport completed fully!!
