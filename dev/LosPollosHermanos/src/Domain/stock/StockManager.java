@@ -16,6 +16,7 @@ public class StockManager {
      * @return A list of relevant stock items.
      */
     public static ArrayList<StockItem> mockSearchAndReturnRelevantStockItems(String searchString, int branchId) {
+        stockItems.clear();
         // Mock implementation to simulate searching and returning relevant stock items
         stockItems.add(new StockItem(1, "Item1", branchId, 10, "1213165" , 1));
         stockItems.add(new StockItem(2, "Item2", branchId, 20, "barcode132132" , 50));

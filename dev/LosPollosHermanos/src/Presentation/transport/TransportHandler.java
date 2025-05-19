@@ -285,7 +285,7 @@ public class TransportHandler {
 
     /**
      * This method is used to create a new transport route.
-     * It handles the selection of branches and stock items,
+     * It handles the selection of a branch and stock items,
      * and the creation of transport routes.
      */
     private static void HelperForCreateTransportRoutes(List<TransportRoute> createdTransportRoutes) {
@@ -295,14 +295,17 @@ public class TransportHandler {
             return;
         }
         String userInput;
+        for (Branch branch : branches) {
+            Helper.println(String.format("Branch ID: %d, Branch Name: %s", branch.getId(), branch.getSiteName()));
+        }
+        Helper.print("Select the branch to create transport for or write 'cancel' to cancel this operation: ");
+        userInput = Helper.getUserInputString();
+        if (userInput == null || userInput.equalsIgnoreCase("cancel")) {
+            Helper.println("Transport creation canceled.");
+            return;
+        }
         do {
-            for (Branch branch : branches) {
-                Helper.println(String.format("Branch ID: %d, Branch Name: %s", branch.getId(), branch.getSiteName()));
-            }
-            Helper.print("Select the current branch to create transport for, " +
-                    "or write 'continue' to proceed with the transport creation: ");
-            userInput = Helper.getUserInputString();
-            if (userInput != null && !userInput.equalsIgnoreCase("continue")) {
+            if (userInput != null && !userInput.equalsIgnoreCase("cancel")) {
                 int branchId = getBranchIdForTransport(userInput, branches);
                 if (branchId == Helper.UndefinedId) {
                     continue;
@@ -365,7 +368,7 @@ public class TransportHandler {
                     }
                 }
             }
-        } while (userInput == null || !userInput.equalsIgnoreCase("continue"));
+        } while (userInput == null || !userInput.equalsIgnoreCase("cancel"));
     }
 
     /**
