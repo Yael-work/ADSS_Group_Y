@@ -27,7 +27,7 @@ public class System_Login_Panel {
 
             choice = sharedFunctions.getValidIntChoice(scanner, 1, 2);
 
-            switch (choice){
+            switch (choice) {
                 case 1:
                     scanner.nextLine(); // Clear the buffer
                     System.out.println("Please Enter Your ID: ");
@@ -40,23 +40,20 @@ public class System_Login_Panel {
                     break;
                 case 2:
                     System.out.println("Exiting the system...");
-                    System.exit(0);
-                    break;
+                    continueLoop = false;
+                    return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     continueLoop = true;
             }
-
         } while (continueLoop);
 
         General_Employee_Panel.moveToPanel_GeneralEmployee(enteredEmployee);
     }
 
 
-
-
     public static void EmployeesPresentationHandler() {
-        while(true) {
+        while (true) {
             System.out.println("Would you like to load mock data? (yes/no)");
             Scanner scanner = new Scanner(System.in);
             String answer = scanner.nextLine().trim().toLowerCase();
@@ -77,8 +74,6 @@ public class System_Login_Panel {
                 System.out.println("Invalid input. Please enter 'yes' or 'no'.");
             }
         }
-        do {
-            printLoginPanel();
-        } while (true);
+        printLoginPanel();
     }
 }
