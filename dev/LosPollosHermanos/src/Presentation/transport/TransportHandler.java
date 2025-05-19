@@ -302,73 +302,69 @@ public class TransportHandler {
         userInput = Helper.getUserInputString();
         if (userInput == null || userInput.equalsIgnoreCase("cancel")) {
             Helper.println("Transport creation canceled.");
-            return;
-        }
-        do {
-            if (userInput != null && !userInput.equalsIgnoreCase("cancel")) {
-                int branchId = getBranchIdForTransport(userInput, branches);
-                if (branchId == Helper.UndefinedId) {
-                    continue;
-                }
-                userInput = null;
+        } else {
+            int branchId = getBranchIdForTransport(userInput, branches);
+            if (branchId == Helper.UndefinedId) {
+                Helper.println("Invalid branch ID. Please try again.");
+                return;
+            }
 
-                List<StockItem> selectedItems = getStockItemsUserSelectionOfBranchForTransport(branchId);
-                Helper.println("The items you selected for this transport are:");
-                for (StockItem selectedItem : selectedItems) {
-                    Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
-                            selectedItem.getStockItemId(), selectedItem.getItemName(), selectedItem.getAmount()));
+            List<StockItem> selectedItems = getStockItemsUserSelectionOfBranchForTransport(branchId);
+            Helper.println("The items you selected for this transport are:");
+            for (StockItem selectedItem : selectedItems) {
+                Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
+                        selectedItem.getStockItemId(), selectedItem.getItemName(), selectedItem.getAmount()));
+            }
+            Helper.println("Generating routes from suppliers to branch...");
+            CreateNewTransportRoutesResult routesCreationResult =
+                    TransportManager.createNewTransportRoutes(branchId, selectedItems);
+            switch (routesCreationResult.getResultEnum()) {
+                case Success -> {
+                    Helper.println("Transport routes created successfully for branch " + branchId);
+                    createdTransportRoutes.addAll(routesCreationResult.getCreatedTransportRoutes());
                 }
-                Helper.println("Generating routes from suppliers to branch...");
-                CreateNewTransportRoutesResult routesCreationResult =
-                        TransportManager.createNewTransportRoutes(branchId, selectedItems);
-                switch (routesCreationResult.getResultEnum()) {
-                    case Success -> {
+                case SomeItemsUnprovided -> {
+                    Helper.println("Some items could not be provided by the suppliers for this branch");
+                    Helper.println("Please check the following items:");
+                    for (StockItem unprovidedItem : routesCreationResult.getUnprovidedItems()) {
+                        Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
+                                unprovidedItem.getStockItemId(),
+                                unprovidedItem.getItemName(), unprovidedItem.getAmount()));
+                    }
+                    Helper.print("Would you like to add this branch with the unprovided items to the transport? " +
+                            "(yes/no): ");
+                    String proceedInput = Helper.getUserInputString();
+                    while (proceedInput == null
+                            || (!proceedInput.equalsIgnoreCase("yes")
+                            && !proceedInput.equalsIgnoreCase("no"))) {
+                        Helper.print("Invalid input. Please enter 'yes' or 'no': ");
+                        proceedInput = Helper.getUserInputString();
+                    }
+                    if (proceedInput.equalsIgnoreCase("yes")) {
                         Helper.println("Transport routes created successfully for branch " + branchId);
                         createdTransportRoutes.addAll(routesCreationResult.getCreatedTransportRoutes());
-                    }
-                    case SomeItemsUnprovided -> {
-                        Helper.println("Some items could not be provided by the suppliers for this branch");
-                        Helper.println("Please check the following items:");
-                        for (StockItem unprovidedItem : routesCreationResult.getUnprovidedItems()) {
-                            Helper.println(String.format("Item ID: %d, Item Name: %s, Amount: %.2f",
-                                    unprovidedItem.getStockItemId(),
-                                    unprovidedItem.getItemName(), unprovidedItem.getAmount()));
-                        }
-                        Helper.print("Would you like to add this branch with the unprovided items to the transport? " +
-                                "(yes/no): ");
-                        String proceedInput = Helper.getUserInputString();
-                        while (proceedInput == null
-                                || (!proceedInput.equalsIgnoreCase("yes")
-                                && !proceedInput.equalsIgnoreCase("no"))) {
-                            Helper.print("Invalid input. Please enter 'yes' or 'no': ");
-                            proceedInput = Helper.getUserInputString();
-                        }
-                        if (proceedInput.equalsIgnoreCase("yes")) {
-                            Helper.println("Transport routes created successfully for branch " + branchId);
-                            createdTransportRoutes.addAll(routesCreationResult.getCreatedTransportRoutes());
-                        } else {
-                            Helper.println("Branch will not be added to the transport.");
-                            List<TransportRoute> routes = routesCreationResult.getCreatedTransportRoutes();
-                            if (routes != null && !routes.isEmpty()) {
-                                if (!TransportManager.deleteTransportRoutes(routes)) {
-                                    Helper.println("Failed to delete created routes.");
-                                } else {
-                                    Helper.println("Created routes deleted successfully.");
-                                }
+                    } else {
+                        Helper.println("Branch will not be added to the transport.");
+                        List<TransportRoute> routes = routesCreationResult.getCreatedTransportRoutes();
+                        if (routes != null && !routes.isEmpty()) {
+                            if (!TransportManager.deleteTransportRoutes(routes)) {
+                                Helper.println("Failed to delete created routes.");
+                            } else {
+                                Helper.println("Created routes deleted successfully.");
                             }
                         }
                     }
-                    case UNDEFINED -> {
-                        Helper.println("Failed to create transport routes for branch " + branchId);
-                        List<TransportRoute> routesIds = routesCreationResult.getCreatedTransportRoutes();
-                        if (routesIds != null && !routesIds.isEmpty()) {
-                            TransportManager.deleteTransportRoutes(routesIds);
-                            Helper.println("Deleting created routes...");
-                        }
+                }
+                case UNDEFINED -> {
+                    Helper.println("Failed to create transport routes for branch " + branchId);
+                    List<TransportRoute> routesIds = routesCreationResult.getCreatedTransportRoutes();
+                    if (routesIds != null && !routesIds.isEmpty()) {
+                        TransportManager.deleteTransportRoutes(routesIds);
+                        Helper.println("Deleting created routes...");
                     }
                 }
             }
-        } while (userInput == null || !userInput.equalsIgnoreCase("cancel"));
+        }
     }
 
     /**
