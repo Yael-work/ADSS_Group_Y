@@ -6,6 +6,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import java.io.File;
+import java.util.logging.*;
+import java.lang.management.ManagementFactory;
 
 public class HibernateUtil {
     private static SessionFactory sessionFactory = null;
@@ -26,6 +28,16 @@ public class HibernateUtil {
      * @return SessionFactory
      */
     private static SessionFactory buildSessionFactory() {
+        if (!ManagementFactory.getRuntimeMXBean().getInputArguments()
+                .toString().contains("-agentlib:jdwp")) {
+            Logger hibernateLogger = Logger.getLogger("org.hibernate");
+            hibernateLogger.setLevel(Level.OFF);
+
+            for (Handler handler : hibernateLogger.getHandlers()) {
+                handler.setLevel(Level.OFF);
+            }
+        }
+
         try {
             return new Configuration().configure(GlobalConfig.getDatabaseConfigUrl()).setProperty("hibernate.show_sql",
                     GlobalConfig.logSql()).buildSessionFactory();
@@ -33,6 +45,7 @@ public class HibernateUtil {
             System.err.println("Failed to create SessionFactory: " + e);
             throw new ExceptionInInitializerError(e);
         }
+
     }
 
     /**

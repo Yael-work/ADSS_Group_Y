@@ -1,9 +1,7 @@
-import Presentation.Employee.System_Login_Panel;
-import Presentation.transport.TransportPresentation;
+import Presentation.GeneralPresentation;
 
 public class Main {
     public static void main(String[] args) {
-        //TransportPresentation.TransportPresentationHandler();
-        System_Login_Panel.EmployeesPresentationHandler();
+        GeneralPresentation.runner();
     }
 }

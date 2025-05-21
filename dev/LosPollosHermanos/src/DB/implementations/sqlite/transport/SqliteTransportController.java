@@ -152,7 +152,7 @@ public class SqliteTransportController implements ITransportController {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
             List<Transport> transports = session.createQuery("FROM Transport WHERE " +
-                            "plannedDateTime BETWEEN :startDate AND :endDate", Transport.class)
+                            "plannedStartDateTime BETWEEN :startDate AND :endDate", Transport.class)
                     .setParameter("startDate", startDate)
                     .setParameter("endDate", endDate)
                     .getResultList();
