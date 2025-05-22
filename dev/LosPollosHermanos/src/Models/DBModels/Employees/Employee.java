@@ -23,8 +23,8 @@ public class Employee extends BaseModel {
     private String name;
     @Column(nullable = false)
     private LocalDate recruitment_Date;
-    @Column(nullable = false)
-    private List<ARole> allRoles;
+
+    private final List<ARole> allRoles;
 
     @OneToOne
     @JoinColumn(name = "bank_account_id",referencedColumnName = "id", nullable = false)

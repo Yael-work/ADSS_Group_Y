@@ -68,7 +68,6 @@ public class TransportIssueLog extends BaseModel {
     public TransportRoute getRelatedTransportRoute() {
         return relatedTransportRoute;
     }
-
     public void setRelatedTransportRoute(TransportRoute relatedTransportRoute) {
         this.relatedTransportRoute = relatedTransportRoute;
     }
