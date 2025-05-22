@@ -1,9 +1,11 @@
 package Presentation.Employee;
 
+import Auxiliary.Enums.Domain.Status;
 import Auxiliary.IdGenerator;
 import DB.WorkersDB.EmployeesDB;
 import DB.WorkersDB.ShiftsDB;
 import DB.implementations.transport.MockBranchController;
+import Domain.Employees.*;
 import Models.DBModels.Employees.*;
 import Models.DBModels.transport.Branch;
 
@@ -54,7 +56,7 @@ public class Manager_Panel {
     }
 
     private static void useCancelCard(Employee manager) {
-        manager.use_cancel_card();
+        EmployeeManager.use_cancel_card();
     }
 
 
@@ -84,8 +86,8 @@ public class Manager_Panel {
         Map<Employee, String> assignedEmployeesToShift = new HashMap<>();
         List<Employee> allAvailableEmployees = new ArrayList<>();
 
-        for (Employee emp : manager.getAllEmployees()) {
-            if (emp.getAvailability().isAvailable(shiftDate)) {
+        for (Employee emp : EmployeeManager.getAllEmployees()) {
+            if (AvailabilityManager.isAvailable(shiftDate,emp)) {
                 allAvailableEmployees.add(emp);
             }
         }
@@ -272,7 +274,7 @@ public class Manager_Panel {
         if (shiftsFound == 1) {
             Shift shift = findShiftById(shiftId);
             if (shift != null) {
-                shift.removeAssignedEmployee(toRemove);
+                shiftsManager.removeAssignedEmployee(toRemove,shift);
                 System.out.println("Employee with ID " + employeeId + " has been removed from the shift.");
             }
         } else {
@@ -318,7 +320,7 @@ public class Manager_Panel {
         }
 
         // Check if employee is available for the shift date
-        if (!employeeToAssign.getAvailability().isAvailable(shift.getShiftDate())) {
+        if (!AvailabilityManager.isAvailable(shift.getShiftDate(), employeeToAssign)) {
             System.out.println("Employee " + employeeToAssign.getName() + " is not available for this shift date.");
             return;
         }

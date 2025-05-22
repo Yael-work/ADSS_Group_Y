@@ -1,6 +1,7 @@
-package Models.DBModels.Employees;
+package Domain.Employees;
 
 import Models.DBModels.BaseModel;
+import Models.DBModels.Employees.ARole;
 import org.hibernate.Session;
 
 public class Cashier extends ARole {

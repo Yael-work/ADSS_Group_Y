@@ -60,7 +60,7 @@ public class System_Login_Panel {
             if (answer.equals("yes")) {
                 System.out.println("Loading mock data...");
                 Employee.createEmployeesDB();
-                Shift.createShiftsDB();
+                //Shift.createShiftsDB();
                 // Move past shifts to pastShiftsDB before any employee interaction
                 ShiftsDB.moveShiftToPast();
                 // Clean up old shifts (older than 7 years) on application startup

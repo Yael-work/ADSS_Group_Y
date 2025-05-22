@@ -11,6 +11,9 @@ public class IdGenerator {
     public static int employee_counter = 0;
     public static int shift_counter = 0;
     public static int ARole_counter = 0;
+    public static int availability_counter = 0;
+    public static int bank_account_counter = 0;
+    public static int contract_counter = 0;
 
     public static synchronized int getNextIdManager() {
         return ++manager_counter;
@@ -44,7 +47,18 @@ public class IdGenerator {
         return ++shift_counter;
     }
 
-    public static synchronized int getNextIdARole() {
-        return ++ARole_counter;
+    public static synchronized int getNextIdARole() { return ++ARole_counter; }
+
+    public static synchronized int getNextIdAvailability() {
+        return ++availability_counter;
     }
+
+    public static synchronized int getNextIdBankAccount() {
+        return ++bank_account_counter;
+    }
+
+    public static synchronized int getNextIdContract() {
+        return ++contract_counter;
+    }
+
 }

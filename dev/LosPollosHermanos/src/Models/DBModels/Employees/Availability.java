@@ -1,6 +1,12 @@
 package Models.DBModels.Employees;
 
+import Auxiliary.Enums.Models.AvailabilityStatus;
 import DB.WorkersDB.EmployeesDB;
+import Models.DBModels.BaseModel;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import org.hibernate.Session;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -12,18 +18,31 @@ import java.util.Scanner;
  * Tracks availability status for Sunday through Thursday and whether each day's
  * availability has been updated for the current week.
  */
-public class Availability {
+@Entity
+@Table (name = "Availabilitys")
+public class Availability extends BaseModel {
+    @Column(nullable = false)
     private AvailabilityStatus sunday;
+    @Column(nullable = false)
     private AvailabilityStatus monday;
+    @Column(nullable = false)
     private AvailabilityStatus tuesday;
+    @Column(nullable = false)
     private AvailabilityStatus wednesday;
+    @Column(nullable = false)
     private AvailabilityStatus thursday;
+
     // boolean values to track if the availability has been updated
     // to support incremental availability updates until Thursday
+    @Column(nullable = false)
     private boolean updatedSun;
+    @Column(nullable = false)
     private boolean updatedMon;
+    @Column(nullable = false)
     private boolean updatedTue;
+    @Column(nullable = false)
     private boolean updatedWed;
+    @Column(nullable = false)
     private boolean updatedThu;
 
 
@@ -52,204 +71,11 @@ public class Availability {
         this.updatedThu = false;
     }
 
-    /**
-     * Sets the availability for upcoming shifts for the given employee.
-     * If today is Thursday, availability updates are closed for the week.
-     *
-     * @param employee The employee whose availability is being set
-     */
-    public static void set_Upcoming_Shifts_Availability(Employee employee) {
-        if (LocalDate.now().getDayOfWeek() == DayOfWeek.THURSDAY) {
-            System.out.println("Availability updates are closed for this week.");
-            System.out.println("Please wait until tomorrow to submit your availability for next week.");
-            startNewWeek();
-            return;
-        }
-
-        Scanner scanner = new Scanner(System.in);
-
-        Availability availability = employee.getAvailability();
-
-        if (availability == null) {
-            availability = new Availability(
-                    AvailabilityStatus.Unavailable, AvailabilityStatus.Unavailable,
-                    AvailabilityStatus.Unavailable, AvailabilityStatus.Unavailable,
-                    AvailabilityStatus.Unavailable
-            );
-        }
-
-        System.out.println("Select Availability for the upcoming shifts");
-        System.out.println("Unavailable = 0");
-        System.out.println("Day = 1");
-        System.out.println("Night = 2");
-        System.out.println("Both = 3");
-        System.out.println("Skip = 4 *NOTE if shift remains unfilled until Thursday, it will be filled as Unavailable");
-
-        String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"};
-        for (String day : days) {
-            System.out.printf("%s availability:\n", day);
-            AvailabilityStatus status = getUserInput(scanner);
-
-            switch (day) {
-                case "Sunday" -> {
-                    if (status != AvailabilityStatus.Skip) {
-                        availability.setSunday(status);
-                        availability.setUpdatedSun(true);
-                    }
-                    else {
-                        if (!availability.isUpdatedSun())
-                            availability.setSunday(AvailabilityStatus.Unavailable);
-                    }
-                }
-                case "Monday" -> {
-                    if (status != AvailabilityStatus.Skip) {
-                        availability.setMonday(status);
-                        availability.setUpdatedMon(true);
-                    }
-                    else {
-                        if (!availability.isUpdatedMon())
-                            availability.setMonday(AvailabilityStatus.Unavailable);
-                    }
-                }
-                case "Tuesday" -> {
-                    if (status != AvailabilityStatus.Skip) {
-                        availability.setTuesday(status);
-                        availability.setUpdatedTue(true);
-                    }
-                    else {
-                        if (!availability.isUpdatedTue())
-                            availability.setTuesday(AvailabilityStatus.Unavailable);
-                    }
-                }
-                case "Wednesday" -> {
-                    if (status != AvailabilityStatus.Skip) {
-                        availability.setWednesday(status);
-                        availability.setUpdatedWed(true);
-                    }
-                    else {
-                        if (!availability.isUpdatedWed())
-                            availability.setWednesday(AvailabilityStatus.Unavailable);
-                    }
-                }
-                case "Thursday" -> {
-                    if (status != AvailabilityStatus.Skip) {
-                        availability.setThursday(status);
-                        availability.setUpdatedThu(true);
-                    }
-                    else {
-                        if (!availability.isUpdatedThu())
-                            availability.setThursday(AvailabilityStatus.Unavailable);
-                    }
-                }
-            }
-        }
-        employee.setAvailability(availability);
-        System.out.println("Availability updated successfully.");
-    }
-
-    /**
-     * Gets user input for availability status.
-     * Prompts the user to enter a number between 0 and 4 representing their availability.
-     *
-     * @param scanner The Scanner object to read user input
-     * @return The selected AvailabilityStatus
-     */
-    public static AvailabilityStatus getUserInput(Scanner scanner) {
-        while (true) {
-            System.out.println("Enter (0: Unavailable, 1: Day, 2: Night, 3: Both, 4: Skip): ");
-            if (!scanner.hasNextInt()) {
-                System.out.println("Invalid input. Please enter a number between 0 and 4.");
-                scanner.next(); // consume bad input
-                continue;
-            }
-            int input = scanner.nextInt();
-            scanner.nextLine(); // consume newline
-
-            switch (input) {
-                case 0:
-                    return AvailabilityStatus.Unavailable;
-                case 1:
-                    return AvailabilityStatus.Day;
-                case 2:
-                    return AvailabilityStatus.Night;
-                case 3:
-                    return AvailabilityStatus.Both;
-                case 4:
-                    return AvailabilityStatus.Skip;
-                default:
-                    System.out.println("Number must be between 0 and 4. Try again.");
-            }
-        }
+    public Availability() {
+        super(0, Availability.class.getName());
     }
 
 
-
-    /**
-     * Checks if the employee is available for a given date.
-     * Availability is only checked for dates within the next 5 days.
-     *
-     * @param shiftDate The date to check availability for
-     * @return true if the employee is available on the given date, false otherwise
-     */
-    public boolean isAvailable(LocalDate shiftDate) {
-        // Check if the date is within the next 5 days
-        LocalDate today = LocalDate.now();
-        LocalDate sevenDaysFromNow = today.plusDays(7);
-        if (shiftDate.isBefore(today) || shiftDate.isAfter(sevenDaysFromNow)) {
-            return false; // Not available for dates outside the next 5 days
-        }
-
-        // Check the day of the week and return availability status
-        switch (shiftDate.getDayOfWeek()) {
-            case SUNDAY -> {
-                return getSunday() != AvailabilityStatus.Unavailable;
-            }
-            case MONDAY -> {
-                return getMonday() != AvailabilityStatus.Unavailable;
-            }
-            case TUESDAY -> {
-                return getTuesday() != AvailabilityStatus.Unavailable;
-            }
-            case WEDNESDAY -> {
-                return getWednesday() != AvailabilityStatus.Unavailable;
-            }
-            case THURSDAY -> {
-                return getThursday() != AvailabilityStatus.Unavailable;
-            }
-            default -> {
-                return false; // Not available for other days
-            }
-        }
-    }
-    public static void startNewWeek() {
-        System.out.println("Starting a new week for availability tracking.");
-
-        // Get all employees and reset their availability update flags
-        try {
-            List<Employee> allEmployees = EmployeesDB.getMockEmployeeDB();
-            for (Employee employee : allEmployees) {
-                Availability availability = employee.getAvailability();
-                if (availability != null) {
-                    availability.resetUpdateFlags();
-                    employee.setAvailability(availability);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error resetting availability update flags: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Resets the update flags for this availability instance.
-     * Call this method to start tracking a new week's availability updates.
-     */
-    public void resetUpdateFlags() {
-        setUpdatedSun(false);
-        setUpdatedMon(false);
-        setUpdatedTue(false);
-        setUpdatedWed(false);
-        setUpdatedThu(false);
-    }
 
     // Getter and setter methods for all private fields
 
@@ -341,5 +167,10 @@ public class Availability {
                 ", tuesday= " + getTuesday() +
                 ", wednesday= " + getWednesday() +
                 ", thursday= " + getThursday();
+    }
+
+    @Override
+    public boolean copyFromOther(BaseModel other, Session session) {
+        return false;
     }
 }

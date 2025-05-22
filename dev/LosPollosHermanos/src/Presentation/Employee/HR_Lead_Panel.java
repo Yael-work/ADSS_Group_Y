@@ -1,7 +1,10 @@
 package Presentation.Employee;
 
 import Auxiliary.*;
+import Auxiliary.Enums.Domain.Status;
+import Auxiliary.Enums.Models.AvailabilityStatus;
 import DB.WorkersDB.EmployeesDB;
+import Domain.Employees.*;
 import Models.DBModels.Employees.*;
 import Auxiliary.sharedFunctions;
 
@@ -227,7 +230,7 @@ public class HR_Lead_Panel {
 
         // TODO: There's a mismatch between the Contract constructor definition (5 params) and its usage (4 params)
         // This needs to be addressed in a separate task
-        return new Contract(pension, sickDays, vacation, minHours);
+        return new Contract(IdGenerator.getNextIdContract(),pension, sickDays, vacation, minHours);
     }
 
     private static int promptForPositiveInt(Scanner scanner, String message) {
@@ -427,7 +430,7 @@ public class HR_Lead_Panel {
                     int roleChoice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
 
                     ARole newRole = sharedFunctions.promptForRole(roleChoice);
-                    employee.addNewRoleToList(newRole);
+                    EmployeeManager.addNewRoleToList(newRole, employee);
                     System.out.println("Role added successfully.");
                     return Status.Success;
 

@@ -1,8 +1,12 @@
-package Models.DBModels.Employees;
+package Domain.Employees;
 
 
 import DB.WorkersDB.ShiftsDB;
 import Models.DBModels.BaseModel;
+import Models.DBModels.Employees.ARole;
+import Models.DBModels.Employees.Employee;
+import Models.DBModels.Employees.Shift;
+import Auxiliary.Enums.Domain.Status;
 import Models.DBModels.transport.Branch;
 import org.hibernate.Session;
 
@@ -25,13 +29,13 @@ public class Shift_Manager extends ARole {
     }
 
     public static Status removeEmployeeFromShift(Employee employeeToRemove , Shift shift) {
-        shift.removeAssignedEmployee(employeeToRemove);
+        shiftsManager.removeAssignedEmployee(employeeToRemove, shift);
         return Status.Success;
     }
 
 
     public static Status addEmployeeToShift(Employee employeeToAdd, Shift shift, String role) {
-        shift.addAssignedEmployee(employeeToAdd, role);
+        shiftsManager.addAssignedEmployee(employeeToAdd, role, shift);
         return Status.Success;
     }
 
@@ -44,7 +48,7 @@ public class Shift_Manager extends ARole {
                 return Status.Failure;
             }
         }
-        employeeToPromote.addNewRoleToList(newRole);
+        EmployeeManager.addNewRoleToList(newRole,employeeToPromote);
         return Status.Success;
     }
 

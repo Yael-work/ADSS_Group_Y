@@ -1,7 +1,7 @@
 package Presentation.Employee;
 
 import Models.DBModels.Employees.ARole;
-import Models.DBModels.Employees.Availability;
+import Domain.Employees.AvailabilityManager;
 import Models.DBModels.Employees.Employee;
 import DB.WorkersDB.ShiftsDB;
 
@@ -42,7 +42,7 @@ public class General_Employee_Panel {
 
             switch (choice) {
                 case 1:
-                    Availability.set_Upcoming_Shifts_Availability(employee);
+                    AvailabilityManager.set_Upcoming_Shifts_Availability(employee);
                     break;
                 case 2:
                     boolean Manger = false;

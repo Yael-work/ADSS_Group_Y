@@ -1,5 +1,7 @@
 package Models.DBModels.Employees;
+import Auxiliary.Enums.Models.AvailabilityStatus;
 import Auxiliary.IdGenerator;
+import Domain.Employees.*;
 import Models.DBModels.BaseModel;
 
 import java.time.LocalDate;
@@ -7,16 +9,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import DB.WorkersDB.EmployeesDB;
+import jakarta.persistence.*;
 import org.hibernate.Session;
 
+@Entity
+@Table(name = "Employees")
 public class Employee extends BaseModel {
+    @Column(nullable = false)
     private double salary;
-    private final String employeeID;
-    private final String name;
-    private final LocalDate recruitment_Date;
+    @Column(nullable = false , unique = true)
+    private String employeeID;
+    @Column(nullable = false)
+    private String name;
+    @Column(nullable = false)
+    private LocalDate recruitment_Date;
+    @Column(nullable = false)
     private List<ARole> allRoles;
-    private final BankAccount bank_info;
+
+    @OneToOne
+    @JoinColumn(name = "bank_account_id",referencedColumnName = "id", nullable = false)
+    private BankAccount bank_info;
+
+    @OneToOne
+    @JoinColumn(name = "contract_id",referencedColumnName = "id", nullable = false)
     private Contract employee_condition;
+
+    @OneToOne
+    @JoinColumn(name = "availability_id",referencedColumnName = "id", nullable = false)
     private Availability availability;
 
 
@@ -32,6 +51,11 @@ public class Employee extends BaseModel {
         this.employee_condition = employee_condition;
         this.availability = availability;
     }
+
+    public Employee() {
+        super(0,Employee.class.getName());
+    }
+
     //salary setters and getter will be used in the future !
     public double getSalary() {
         return salary;
@@ -54,15 +78,13 @@ public class Employee extends BaseModel {
     public void setAvailability(Availability availability) {
         this.availability = availability;
     }
-
-    public void addNewRoleToList(ARole newRole) {
-        for (int i = 0; i < allRoles.size(); i++) {
-            if (allRoles.get(i).getRole().equals(newRole.getRole())) {
-                return;
-            }
-        }
-        this.allRoles.add(newRole);
+    public List<ARole> getAllRoles() {
+        return allRoles;
     }
+    public void setAllRoles(List<ARole> allRoles) {
+        this.allRoles = allRoles;
+    }
+
 
 
     @Override
@@ -97,9 +119,9 @@ public class Employee extends BaseModel {
         BankAccount mockBank5 = new BankAccount("Discount", "072111", "321");
         BankAccount mockBank6 = new BankAccount("Bank-Yahav", "0725431", "972");
 
-        Contract fullTimeContract = new Contract(7, 14, 21, 160);
-        Contract partTimeContract = new Contract(5, 10, 14, 80);
-        Contract flexibleContract = new Contract( 6, 12, 18, 120);
+        Contract fullTimeContract = new Contract(IdGenerator.getNextIdContract(),7, 14, 21, 160);
+        Contract partTimeContract = new Contract(IdGenerator.getNextIdContract(),5, 10, 14, 80);
+        Contract flexibleContract = new Contract(IdGenerator.getNextIdContract(), 6, 12, 18, 120);
 
         Availability mockAvailability1 = new Availability(
                 AvailabilityStatus.Day, AvailabilityStatus.Day, AvailabilityStatus.Day,
@@ -212,13 +234,5 @@ public class Employee extends BaseModel {
         EmployeesDB.addEmployeeToDB(emp4);
         EmployeesDB.addEmployeeToDB(emp5);
         EmployeesDB.addEmployeeToDB(emp6);
-    }
-
-    public List<Employee> getAllEmployees() {
-        return EmployeesDB.getMockEmployeeDB();
-    }
-
-    public void use_cancel_card() {
-        System.out.println("Cancel card used");
     }
 }

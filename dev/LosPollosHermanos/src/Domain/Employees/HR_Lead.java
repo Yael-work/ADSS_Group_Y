@@ -1,7 +1,11 @@
-package Models.DBModels.Employees;
+package Domain.Employees;
 
 import DB.WorkersDB.EmployeesDB;
 import Models.DBModels.BaseModel;
+import Models.DBModels.Employees.ARole;
+import Models.DBModels.Employees.Employee;
+import Models.DBModels.Employees.Shift;
+import Auxiliary.Enums.Domain.Status;
 import org.hibernate.Session;
 
 import java.time.LocalTime;
@@ -40,9 +44,9 @@ public class HR_Lead extends ARole {
 
     public static void Update_Required_Role_to_Shift(int action ,int roleAmount, String roleName) {
         if (action == 1) {
-            Shift.addRequiredRoles(roleName, roleAmount);
+            shiftsManager.addRequiredRoles(roleName, roleAmount);
         } else if (action == 2) {
-            Shift.removeRequiredRole(roleName);
+            shiftsManager.removeRequiredRole(roleName);
         }
     }
 
