@@ -1,14 +1,15 @@
 package DB.implementations.sqlite.employees;
-
 import Auxiliary.Enums.Domain.Status;
 import Auxiliary.Helper;
-import DB.implementations.sqlite.transport.SqliteBranchController;
+import DB.interfaces.employees.IEmployeeController;
 import DB.util.HibernateUtil;
 import Models.DBModels.Employees.Employee;
-import Models.DBModels.transport.Branch;
 import org.hibernate.Session;
 
-public class SqliteEmployeesController {
+import java.util.ArrayList;
+import java.util.List;
+
+public class SqliteEmployeesController implements IEmployeeController {
     private static SqliteEmployeesController instance;
 
     public static SqliteEmployeesController getInstance() {
@@ -49,12 +50,23 @@ public class SqliteEmployeesController {
     }
 
     // This method is used to find an employee by their ID
-    public static Employee findEmployeeById(String id) {
-        for (Employee employee : mockEmployeeDB) {
-            if (employee.getEmployeeID().trim().equals(id.trim())) {
-                return employee;
-            }
+    public Employee findEmployeeById(String id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(Employee.class, id);
+        } catch (Exception e) {
+            Helper.showError("Failed to get employee by ID", e);
+            return null;
         }
-        return null;
     }
+
+    @Override
+    public List<Integer> getAllIds() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("SELECT id FROM Employee", Integer.class).list();
+        } catch (Exception e) {
+            Helper.showError("Failed to get all employees IDs", e);
+            return new ArrayList<>();
+        }
+    }
+
 }
