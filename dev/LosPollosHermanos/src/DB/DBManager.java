@@ -21,7 +21,6 @@ public class DBManager {
     private final IBranchController branchController;
     private final ITransportIssueLogController transportIssueLogController;
     private final ITransportRouteController transportRouteController;
-    private final IEmployeeController employeeController;
 
     private DBManager() {
         this.deliveryFileController = SqliteDeliveryFileController.getInstance();
@@ -33,7 +32,6 @@ public class DBManager {
         this.transportRouteController = SqliteTransportRouteController.getInstance();
         this.transportIssueLogController = SqliteTransportIssueLogController.getInstance();
         this.transportController = SqliteTransportController.getInstance();
-        this.employeeController = SqliteEmployeesController.getInstance();
     }
 
     /**
@@ -47,15 +45,6 @@ public class DBManager {
         }
         return instance;
     }
-
-    /**
-     * Returns the employee controller.
-     *
-     * @return The employee controller.
-     */
-    public final IEmployeeController getEmployeeController() {
-        return employeeController;
-        }
 
     /**
      * Returns the delivery file controller.
