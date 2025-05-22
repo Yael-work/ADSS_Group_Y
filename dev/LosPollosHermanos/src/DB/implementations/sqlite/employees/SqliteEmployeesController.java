@@ -33,7 +33,7 @@ public class SqliteEmployeesController implements IEmployeeController {
 
 
     // This method is used to remove an employee by their ID
-    public Status removeEmployeeByIdFromDB(String id) {
+    public Status removeEmployeeFromDB(String id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
             Employee employee = session.get(Employee.class, id);
@@ -60,12 +60,15 @@ public class SqliteEmployeesController implements IEmployeeController {
     }
 
     @Override
-    public List<Integer> getAllIds() {
+    public List<String> getAllIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("SELECT id FROM Employee", Integer.class).list();
+            session.beginTransaction();
+            List<String> ids = session.createQuery("SELECT id FROM Employee", String.class).getResultList();
+            session.getTransaction().commit();
+            return ids;
         } catch (Exception e) {
             Helper.showError("Failed to get all employees IDs", e);
-            return new ArrayList<>();
+            return null;
         }
     }
 

@@ -1,8 +1,6 @@
 package DB;
 
 import DB.implementations.sqlite.transport.*;
-import DB.implementations.sqlite.employees.*;
-import DB.interfaces.employees.*;
 import DB.interfaces.transport.*;
 
 /**

@@ -48,8 +48,7 @@ public class Shift_Manager extends ARole {
                 return Status.Failure;
             }
         }
-        EmployeeManager.addNewRoleToList(newRole,employeeToPromote);
-        return Status.Success;
+        return EmployeeManager.addNewRoleToList(newRole,employeeToPromote);
     }
 
     @Override

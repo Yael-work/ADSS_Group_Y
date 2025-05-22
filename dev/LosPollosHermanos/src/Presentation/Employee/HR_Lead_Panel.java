@@ -101,7 +101,7 @@ public class HR_Lead_Panel {
         Scanner scanner = new Scanner(System.in);
         String employeeID = scanner.nextLine();
 
-        if (EmployeesDB.findEmployeeById(employeeID) == null) {
+        if (!EmployeeManager.doesEmployeeExist(employeeID)) {
             System.out.println("Employee not found.");
             return Status.Failure;
         }
@@ -118,7 +118,7 @@ public class HR_Lead_Panel {
         Scanner scanner = new Scanner(System.in);
 
         String employeeID = promptForEmployeeID(scanner);
-        if (EmployeesDB.findEmployeeById(employeeID) != null) {
+        if (EmployeeManager.doesEmployeeExist(employeeID)) {
             System.out.println("Employee with this ID already exists.");
             return Status.Failure;
         }
@@ -126,7 +126,7 @@ public class HR_Lead_Panel {
         double employeeSalary = promptForSalary(scanner);
 
         int choice=0;
-        do { //TODO Code duplication needs to be removed
+        do {
             System.out.println("Please choose Employee's role number:\n" +
                     "1. Manager\n2. HR Lead\n3. Cashier\n4. Cleaner\n5. Stocker\n6. Security");
 
@@ -152,30 +152,10 @@ public class HR_Lead_Panel {
         Contract employeeContract = promptForContract(scanner);
         LocalDate recruitment_Date = LocalDate.now();
 
-        Availability employeeAvailability = new Availability(
-                AvailabilityStatus.Unavailable,
-                AvailabilityStatus.Unavailable,
-                AvailabilityStatus.Unavailable,
-                AvailabilityStatus.Unavailable,
-                AvailabilityStatus.Unavailable);
 
-        Employee employee = new Employee(
-                IdGenerator.getNextIdEmployee(),
-                employeeName,
-                employeeSalary,
-                employeeID,
-                recruitment_Date,
-                rolesList,
-                employeeAccount,
-                employeeContract,
-                employeeAvailability
-        );
+        if (employeeAccount == null || employeeContract == null) { return Status.Failure; }
 
-        // TODO: Add employee to DB
-
-        if (employeeAccount == null || employeeContract == null || employeeAvailability == null || employee == null) { return Status.Failure; }
-
-        return HR_Lead.Add_Employee_to_System(employee);
+        return HR_Lead.Add_Employee_to_System(employeeName, employeeSalary, employeeID, recruitment_Date,  rolesList, employeeAccount, employeeContract );
     }
 
     private static String promptForEmployeeID(Scanner scanner) {

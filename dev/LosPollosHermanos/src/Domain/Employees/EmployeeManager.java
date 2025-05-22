@@ -3,50 +3,59 @@ package Domain.Employees;
 
 import Auxiliary.Enums.Domain.Status;
 import Auxiliary.Helper;
-import DB.DBManager;
+import DB.DBemployeeManager;
 import DB.WorkersDB.EmployeesDB;
 import DB.interfaces.employees.IEmployeeController;
-import Models.DBModels.Employees.ARole;
-import Models.DBModels.Employees.Employee;
-import Models.DBModels.transport.Branch;
+import Models.DBModels.Employees.*;
+import Models.DBModels.transport.Driver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeManager {
 
-    private static final IEmployeeController employeeController = DBManager.getInstance().getEmployeeController();
+    private static final IEmployeeController employeeController = DBemployeeManager.getInstance().getEmployeeController();
 
-    public static Status addEmployee(String id) {
-
-        if (doesEmployeeExist(id)) {
-            Helper.showError("Employee with this id already exists");
-            return Status.Failure;
-        }
-        Branch b = new Employee(, name, address, phone);
-        return branchController.addBranch(b) != Helper.UndefinedId;
+    public static Status addEmployee(Employee employee) {
+        return employeeController.addEmployeeToDB(employee);
     }
 
-    private static boolean doesEmployeeExist(String id) {
-        Employee emp = employeeController.findEmployeeById(id);
+    public static boolean doesEmployeeExist(String employeeID) {
+        Employee emp = employeeController.findEmployeeById(employeeID);
         if (emp != null)
             return true;
         return false;
     }
 
+    public static Status deleteEmployee(String employeeID) {
+        return employeeController.removeEmployeeFromDB(employeeID);
+    }
 
-    public static void addNewRoleToList(ARole newRole , Employee employee) {
+
+    public static Status addNewRoleToList(ARole newRole , Employee employee) {
         for (int i = 0; i < employee.getAllRoles().size(); i++) {
             if (employee.getRolesList().get(i).getRole().equals(newRole.getRole())) {
-                return;
+                return Status.Failure;
             }
         }
         List<ARole> updatedRoles = employee.getAllRoles();
         updatedRoles.add(newRole);
         employee.setAllRoles(updatedRoles);
+        return Status.Success;
     }
 
-    public static List<Employee> getAllEmployees() {
-        return EmployeesDB.getMockEmployeeDB();
+    public static List<Employee> getAllEmployees() {{
+        ArrayList<Employee> employeesList = new ArrayList<>();
+        for (String id : employeeController.getAllIds()) {
+            Employee employee = employeeController.findEmployeeById(id);
+            if (employee == null) {
+                Helper.showError(String.format("Cant get employee with id=%s, it does not exist", id));
+            } else {
+                employeesList.add(employee);
+            }
+        }
+        return employeesList;
+        }
     }
 
     public static void use_cancel_card() {

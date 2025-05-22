@@ -1,14 +1,16 @@
 package Domain.Employees;
 
+import Auxiliary.Enums.Models.AvailabilityStatus;
+import Auxiliary.IdGenerator;
 import DB.WorkersDB.EmployeesDB;
 import Models.DBModels.BaseModel;
-import Models.DBModels.Employees.ARole;
-import Models.DBModels.Employees.Employee;
-import Models.DBModels.Employees.Shift;
+import Models.DBModels.Employees.*;
 import Auxiliary.Enums.Domain.Status;
 import org.hibernate.Session;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 
 public class HR_Lead extends ARole {
@@ -19,14 +21,31 @@ public class HR_Lead extends ARole {
 
     public static Status Terminate_Employee_from_System(String employeeID)
     {
-        EmployeesDB.removeEmployeeByIdFromDB(employeeID);
-        return Status.Success;
+        return EmployeeManager.deleteEmployee(employeeID);
     }
 
-    public static Status Add_Employee_to_System(Employee employee)
+    public static Status Add_Employee_to_System(String employeeName, double employeeSalary, String employeeID, LocalDate recruitment_Date, List<ARole> rolesList, BankAccount employeeAccount, Contract employeeContract)
     {
-        EmployeesDB.addEmployeeToDB(employee);
-        return Status.Success;
+        Availability employeeAvailability = new Availability(
+                AvailabilityStatus.Unavailable,
+                AvailabilityStatus.Unavailable,
+                AvailabilityStatus.Unavailable,
+                AvailabilityStatus.Unavailable,
+                AvailabilityStatus.Unavailable);
+
+        Employee employee = new Employee(
+                IdGenerator.getNextIdEmployee(),
+                employeeName,
+                employeeSalary,
+                employeeID,
+                recruitment_Date,
+                rolesList,
+                employeeAccount,
+                employeeContract,
+                employeeAvailability
+        );
+
+        return EmployeeManager.addEmployee(employee);
     }
 
     public static Status Set_Shift_Hours(String shiftType, LocalTime startHour, LocalTime endHour) {
