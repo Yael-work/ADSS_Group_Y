@@ -1,7 +1,6 @@
 package Domain.Employees;
 
 
-import DB.WorkersDB.ShiftsDB;
 import Models.DBModels.BaseModel;
 import Models.DBModels.Employees.ARole;
 import Models.DBModels.Employees.Employee;
@@ -24,18 +23,18 @@ public class Shift_Manager extends ARole {
                                      Employee shiftManager, Map<Employee, String> assignedEmployees,
                                      List<Employee> allAvailableEmployees, Branch branch){
         Shift newShift = new Shift(id, shiftDate, shiftType, shiftManager, assignedEmployees, allAvailableEmployees, branch);
-        UpcomingShiftsManager.addUpcomingShift(newShift);
+        UpcomingShiftsManagerCLS.addUpcomingShift(newShift);
         return Status.Success;
     }
 
     public static Status removeEmployeeFromShift(Employee employeeToRemove , Shift shift) {
-        UpcomingShiftsManager.removeAssignedEmployee(employeeToRemove, shift);
+        UpcomingShiftsManagerCLS.removeAssignedEmployee(employeeToRemove, shift);
         return Status.Success;
     }
 
 
     public static Status addEmployeeToShift(Employee employeeToAdd, Shift shift, String role) {
-        UpcomingShiftsManager.addAssignedEmployee(employeeToAdd, role, shift);
+        UpcomingShiftsManagerCLS.addAssignedEmployee(employeeToAdd, role, shift);
         return Status.Success;
     }
 
@@ -48,7 +47,7 @@ public class Shift_Manager extends ARole {
                 return Status.Failure;
             }
         }
-        return EmployeeManager.addNewRoleToList(newRole,employeeToPromote);
+        return EmployeeManagerCLS.addNewRoleToList(newRole,employeeToPromote);
     }
 
     @Override

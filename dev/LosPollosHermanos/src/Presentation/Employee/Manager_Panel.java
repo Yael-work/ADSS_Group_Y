@@ -55,7 +55,7 @@ public class Manager_Panel {
     }
 
     private static void useCancelCard(Employee manager) {
-        EmployeeManager.use_cancel_card();
+        EmployeeManagerCLS.use_cancel_card();
     }
 
 
@@ -85,7 +85,7 @@ public class Manager_Panel {
         Map<Employee, String> assignedEmployeesToShift = new HashMap<>();
         List<Employee> allAvailableEmployees = new ArrayList<>();
 
-        for (Employee emp : EmployeeManager.getAllEmployees()) {
+        for (Employee emp : EmployeeManagerCLS.getAllEmployees()) {
             if (AvailabilityManager.isAvailable(shiftDate,emp)) {
                 allAvailableEmployees.add(emp);
             }
@@ -239,7 +239,7 @@ public class Manager_Panel {
         try {
             System.out.println("Please enter the ID of the employee you want to remove from the shift:");
             employeeId = scanner.nextLine();
-            toRemove = EmployeeManager.getEmployeeById(employeeId);
+            toRemove = EmployeeManagerCLS.getEmployeeById(employeeId);
 
 
             if (toRemove == null) {
@@ -273,7 +273,7 @@ public class Manager_Panel {
         if (shiftsFound == 1) {
             Shift shift = findShiftById(shiftId);
             if (shift != null) {
-                UpcomingShiftsManager.removeAssignedEmployee(toRemove,shift);
+                UpcomingShiftsManagerCLS.removeAssignedEmployee(toRemove,shift);
                 System.out.println("Employee with ID " + employeeId + " has been removed from the shift.");
             }
         } else {
@@ -302,7 +302,7 @@ public class Manager_Panel {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the Employee ID you want to assign to a shift:");
         String empId = scanner.nextLine().trim();
-        Employee employeeToAssign = EmployeeManager.getEmployeeById(empId);
+        Employee employeeToAssign = EmployeeManagerCLS.getEmployeeById(empId);
 
         if (employeeToAssign == null) {
             System.out.println("Employee with ID " + empId + " does not exist.");
@@ -366,7 +366,7 @@ public class Manager_Panel {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the Employee ID you want to promote:");
         String empId = scanner.nextLine().trim();
-        Employee employeeToPromote =EmployeeManager.getEmployeeById(empId);
+        Employee employeeToPromote = EmployeeManagerCLS.getEmployeeById(empId);
 
         if (employeeToPromote == null) {
             System.out.println("Employee with ID " + empId + " does not exist.");

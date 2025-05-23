@@ -100,7 +100,7 @@ public class HR_Lead_Panel {
         Scanner scanner = new Scanner(System.in);
         String employeeID = scanner.nextLine();
 
-        if (!EmployeeManager.doesEmployeeExist(employeeID)) {
+        if (!EmployeeManagerCLS.doesEmployeeExist(employeeID)) {
             System.out.println("Employee not found.");
             return Status.Failure;
         }
@@ -117,7 +117,7 @@ public class HR_Lead_Panel {
         Scanner scanner = new Scanner(System.in);
 
         String employeeID = promptForEmployeeID(scanner);
-        if (EmployeeManager.doesEmployeeExist(employeeID)) {
+        if (EmployeeManagerCLS.doesEmployeeExist(employeeID)) {
             System.out.println("Employee with this ID already exists.");
             return Status.Failure;
         }
@@ -375,7 +375,7 @@ public class HR_Lead_Panel {
         String employeeID = scanner.nextLine();
 
         // Find employee by ID
-        Employee employee = EmployeeManager.getEmployeeById(employeeID);
+        Employee employee = EmployeeManagerCLS.getEmployeeById(employeeID);
         if (employee == null) {
             System.out.println("Employee not found.");
             return Status.Failure;
@@ -409,7 +409,7 @@ public class HR_Lead_Panel {
                     int roleChoice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
 
                     ARole newRole = sharedFunctions.promptForRole(roleChoice);
-                    EmployeeManager.addNewRoleToList(newRole, employee);
+                    EmployeeManagerCLS.addNewRoleToList(newRole, employee);
                     System.out.println("Role added successfully.");
                     return Status.Success;
 

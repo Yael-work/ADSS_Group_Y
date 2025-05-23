@@ -6,12 +6,11 @@ import Auxiliary.Helper;
 import DB.DBemployeeManager;
 import DB.interfaces.employees.IEmployeeController;
 import Models.DBModels.Employees.*;
-import Models.DBModels.transport.Driver;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmployeeManager {
+public class EmployeeManagerCLS {
 
     private static final IEmployeeController employeeController = DBemployeeManager.getInstance().getEmployeeController();
 

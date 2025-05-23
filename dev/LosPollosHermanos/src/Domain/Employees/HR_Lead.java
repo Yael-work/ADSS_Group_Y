@@ -20,7 +20,7 @@ public class HR_Lead extends ARole {
 
     public static Status Terminate_Employee_from_System(String employeeID)
     {
-        return EmployeeManager.deleteEmployee(employeeID);
+        return EmployeeManagerCLS.deleteEmployee(employeeID);
     }
 
     public static Status Add_Employee_to_System(String employeeName, double employeeSalary, String employeeID, LocalDate recruitment_Date, List<ARole> rolesList, BankAccount employeeAccount, Contract employeeContract)
@@ -44,7 +44,7 @@ public class HR_Lead extends ARole {
                 employeeAvailability
         );
 
-        return EmployeeManager.addEmployee(employee);
+        return EmployeeManagerCLS.addEmployee(employee);
     }
 
     public static Status Set_Shift_Hours(String shiftType, LocalTime startHour, LocalTime endHour) {
@@ -62,9 +62,9 @@ public class HR_Lead extends ARole {
 
     public static void Update_Required_Role_to_Shift(int action ,int roleAmount, String roleName) {
         if (action == 1) {
-            UpcomingShiftsManager.addRequiredRoles(roleName, roleAmount);
+            UpcomingShiftsManagerCLS.addRequiredRoles(roleName, roleAmount);
         } else if (action == 2) {
-            UpcomingShiftsManager.removeRequiredRole(roleName);
+            UpcomingShiftsManagerCLS.removeRequiredRole(roleName);
         }
     }
 

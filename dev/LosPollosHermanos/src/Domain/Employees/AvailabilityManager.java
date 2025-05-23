@@ -131,7 +131,7 @@ public class AvailabilityManager {
 
         // Get all employees and reset their availability update flags
         try {
-            List<Employee> allEmployees = EmployeeManager.getAllEmployees();
+            List<Employee> allEmployees = EmployeeManagerCLS.getAllEmployees();
             for (Employee employee : allEmployees) {
                 Availability employeeAvailability = employee.getAvailability();
                 if (employeeAvailability != null) {

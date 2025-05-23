@@ -8,10 +8,9 @@ import Models.DBModels.Employees.Employee;
 import Models.DBModels.Employees.Shift;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-public class UpcomingShiftsManager {
+public class UpcomingShiftsManagerCLS {
 
     private static final IUpcomingShiftsController upcomingShiftsController = DBemployeeManager.getInstance().getUpcomingShiftsController();
 
