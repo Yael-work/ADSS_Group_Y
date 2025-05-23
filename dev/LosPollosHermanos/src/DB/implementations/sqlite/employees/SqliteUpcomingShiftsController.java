@@ -1,36 +1,144 @@
 package DB.implementations.sqlite.employees;
 
+import Auxiliary.Helper;
+import DB.interfaces.employees.IPastShiftsController;
+import DB.interfaces.employees.IUpcomingShiftsController;
+import DB.util.HibernateUtil;
 import Models.DBModels.Employees.Shift;
+import Models.DBModels.transport.Branch;
+import org.hibernate.Session;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SqliteUpcomingShiftsController {
+public class SqliteUpcomingShiftsController implements IUpcomingShiftsController {
+    private static SqliteUpcomingShiftsController instance;
+    private final IPastShiftsController pastShiftsController;
 
-
-    // upcomingShiftsDB methods
-    public static void addUpcomingShift(Shift shift) {
-        upcomingShiftsDB.add(shift);
+    private SqliteUpcomingShiftsController() {
+        // Private constructor for singleton pattern
+        this.pastShiftsController = SqlitePastShiftsController.getInstance();
     }
 
-    public static List<Shift> getUpcomingShifts() {
-        return new ArrayList<>(upcomingShiftsDB); // return copy for safety
-    }
-
-    public static void removeUpcomingShift(Shift shift) {
-        upcomingShiftsDB.remove(shift);
-    }
-
-
-    public static Shift findShiftById(String shiftId) {
-        for (Shift shift : upcomingShiftsDB) {
-            if (shift.getShiftID().equals(shiftId)) {
-                return shift;
-            }
+    public static SqliteUpcomingShiftsController getInstance() {
+        if (instance == null) {
+            instance = new SqliteUpcomingShiftsController();
         }
-        return null;
+        return instance;
     }
 
+    @Override
+    public boolean addUpcomingShift(Shift shift) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            session.persist(shift);
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            Helper.showError("Failed to add upcoming shift", e);
+            return false;
+        }
+    }
 
+    @Override
+    public boolean removeUpcomingShift(Shift shift) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            Shift existingShift = session.get(Shift.class, shift.getShiftID());
+            if (existingShift != null) {
+                session.remove(existingShift);
+                session.getTransaction().commit();
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            Helper.showError("Failed to remove upcoming shift", e);
+            return false;
+        }
+    }
 
+    @Override
+    public Shift findShiftById(String shiftId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(Shift.class, shiftId);
+        } catch (Exception e) {
+            Helper.showError("Failed to find upcoming shift by ID", e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<Shift> getUpcomingShifts() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Shift WHERE isPast = false", Shift.class).list();
+        } catch (Exception e) {
+            Helper.showError("Failed to get upcoming shifts", e);
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public Shift findShiftByDateTimeAndBranch(LocalDate date, LocalTime time, Branch branch) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                    "FROM Shift WHERE isPast = false AND shiftDate = :date " +
+                            "AND :time BETWEEN startShiftTime AND endShiftTime " +
+                            "AND branch.id = :branchId", Shift.class)
+                    .setParameter("date", date)
+                    .setParameter("time", time)
+                    .setParameter("branchId", branch.getId())
+                    .uniqueResult();
+        } catch (Exception e) {
+            Helper.showError("Failed to find shift by date, time, and branch", e);
+            return null;
+        }
+    }
+
+    @Override
+    public int moveShiftsToPast() {
+        LocalDate today = LocalDate.now();
+        int count = 0;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            List<Shift> shiftsToMove = session.createQuery(
+                    "FROM Shift WHERE isPast = false AND shiftDate < :today", Shift.class)
+                    .setParameter("today", today)
+                    .list();
+
+            for (Shift shift : shiftsToMove) {
+                shift.setPast(true);
+                if (pastShiftsController.addPastShift(shift)) {
+                    removeUpcomingShift(shift);
+                    count++;
+                }
+            }
+
+            return count;
+        } catch (Exception e) {
+            Helper.showError("Failed to move shifts to past", e);
+            return 0;
+        }
+    }
+
+    @Override
+    public List<Integer> getAllIds() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            List<String> stringIds = session.createQuery(
+                    "SELECT shiftID FROM Shift WHERE isPast = false", String.class).list();
+            List<Integer> intIds = new ArrayList<>();
+            for (String id : stringIds) {
+                try {
+                    intIds.add(Integer.parseInt(id));
+                } catch (NumberFormatException e) {
+                    // Skip IDs that can't be parsed as integers
+                }
+            }
+            return intIds;
+        } catch (Exception e) {
+            Helper.showError("Failed to get all upcoming shift IDs", e);
+            return new ArrayList<>();
+        }
+    }
 }

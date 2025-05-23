@@ -35,4 +35,22 @@ public class DBemployeeManager {
     public final IEmployeeController getEmployeeController() {
         return employeeController;
     }
+
+    /**
+     * Returns the past shifts controller.
+     *
+     * @return The past shifts controller.
+     */
+    public final IPastShiftsController getPastShiftsController() {
+        return pastShiftsController;
+    }
+
+    /**
+     * Returns the upcoming shifts controller.
+     *
+     * @return The upcoming shifts controller.
+     */
+    public final IUpcomingShiftsController getUpcomingShiftsController() {
+        return upcomingShiftsController;
+    }
 }

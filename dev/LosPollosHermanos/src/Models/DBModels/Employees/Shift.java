@@ -52,6 +52,9 @@ public class Shift extends BaseModel {
     private static int shiftCounter = 1;
     private Branch branch;
 
+    @Column(nullable = false)
+    private boolean isPast = false;
+
     public Shift(int id, LocalDate shiftDate, String shiftType,
                  Employee shiftManager, Map<Employee,String> assignedEmployees,
                  List<Employee> allAvailableEmployees , Branch branch) {
@@ -341,5 +344,13 @@ public class Shift extends BaseModel {
 
     public Branch getBranch() {
         return branch;
+    }
+
+    public boolean isPast() {
+        return isPast;
+    }
+
+    public void setPast(boolean past) {
+        isPast = past;
     }
 }
