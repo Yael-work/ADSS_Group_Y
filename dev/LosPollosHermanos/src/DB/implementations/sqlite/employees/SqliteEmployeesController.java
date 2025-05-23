@@ -62,13 +62,11 @@ public class SqliteEmployeesController implements IEmployeeController {
     @Override
     public List<String> getAllIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            session.beginTransaction();
-            List<String> ids = session.createQuery("SELECT id FROM Employee", String.class).getResultList();
-            session.getTransaction().commit();
+            List<String> ids = session.createQuery("SELECT employeeID FROM Employee", String.class).getResultList();
             return ids;
         } catch (Exception e) {
             Helper.showError("Failed to get all employees IDs", e);
-            return null;
+            return new ArrayList<>();
         }
     }
 

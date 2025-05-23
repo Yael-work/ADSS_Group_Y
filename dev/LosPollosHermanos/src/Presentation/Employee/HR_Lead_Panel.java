@@ -3,7 +3,6 @@ package Presentation.Employee;
 import Auxiliary.*;
 import Auxiliary.Enums.Domain.Status;
 import Auxiliary.Enums.Models.AvailabilityStatus;
-import DB.WorkersDB.EmployeesDB;
 import Domain.Employees.*;
 import Models.DBModels.Employees.*;
 import Auxiliary.sharedFunctions;
@@ -376,7 +375,7 @@ public class HR_Lead_Panel {
         String employeeID = scanner.nextLine();
 
         // Find employee by ID
-        Employee employee = EmployeesDB.findEmployeeById(employeeID);
+        Employee employee = EmployeeManager.getEmployeeById(employeeID);
         if (employee == null) {
             System.out.println("Employee not found.");
             return Status.Failure;

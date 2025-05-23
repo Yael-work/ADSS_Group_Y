@@ -24,18 +24,18 @@ public class Shift_Manager extends ARole {
                                      Employee shiftManager, Map<Employee, String> assignedEmployees,
                                      List<Employee> allAvailableEmployees, Branch branch){
         Shift newShift = new Shift(id, shiftDate, shiftType, shiftManager, assignedEmployees, allAvailableEmployees, branch);
-        ShiftsDB.addUpcomingShift(newShift);
+        UpcomingShiftsManager.addUpcomingShift(newShift);
         return Status.Success;
     }
 
     public static Status removeEmployeeFromShift(Employee employeeToRemove , Shift shift) {
-        shiftsManager.removeAssignedEmployee(employeeToRemove, shift);
+        UpcomingShiftsManager.removeAssignedEmployee(employeeToRemove, shift);
         return Status.Success;
     }
 
 
     public static Status addEmployeeToShift(Employee employeeToAdd, Shift shift, String role) {
-        shiftsManager.addAssignedEmployee(employeeToAdd, role, shift);
+        UpcomingShiftsManager.addAssignedEmployee(employeeToAdd, role, shift);
         return Status.Success;
     }
 

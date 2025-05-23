@@ -123,19 +123,10 @@ public class SqliteUpcomingShiftsController implements IUpcomingShiftsController
     }
 
     @Override
-    public List<Integer> getAllIds() {
+    public List<String> getAllIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            List<String> stringIds = session.createQuery(
+            return session.createQuery(
                     "SELECT shiftID FROM Shift WHERE isPast = false", String.class).list();
-            List<Integer> intIds = new ArrayList<>();
-            for (String id : stringIds) {
-                try {
-                    intIds.add(Integer.parseInt(id));
-                } catch (NumberFormatException e) {
-                    // Skip IDs that can't be parsed as integers
-                }
-            }
-            return intIds;
         } catch (Exception e) {
             Helper.showError("Failed to get all upcoming shift IDs", e);
             return new ArrayList<>();

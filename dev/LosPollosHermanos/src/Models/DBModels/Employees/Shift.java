@@ -2,14 +2,10 @@ package Models.DBModels.Employees;
 
 import Auxiliary.Enums.Models.AvailabilityStatus;
 import Auxiliary.IdGenerator;
-import DB.WorkersDB.EmployeesDB;
-import DB.WorkersDB.ShiftsDB;
 import Domain.Employees.AvailabilityManager;
 import Models.DBModels.BaseModel;
 import Models.DBModels.transport.Branch;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.Session;
 
 import java.time.LocalDate;
@@ -45,11 +41,31 @@ public class Shift extends BaseModel {
     @Column(nullable = false)
     private LocalTime endShiftTime;
 
+    @ManyToOne
+    @JoinColumn(name = "shift_manager_id")
     private Employee shiftManager;
-    private Map<Employee,String> assignedEmployees;
-    private List<Employee> allAvailableEmployees;
-    private Map<String, Integer> requiredRoles;
+
+    @ElementCollection
+    @CollectionTable(name = "shift_assigned_employees", 
+                    joinColumns = @JoinColumn(name = "shift_id"))
+    @MapKeyJoinColumn(name = "employee_id")
+    @Column(name = "role")
+    private Map<Employee,String> assignedEmployees = new HashMap<>();
+
+    @Transient
+    private List<Employee> allAvailableEmployees = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "shift_required_roles", 
+                    joinColumns = @JoinColumn(name = "shift_id"))
+    @MapKeyColumn(name = "role_name")
+    @Column(name = "count")
+    private Map<String, Integer> requiredRoles = new HashMap<>();
+
     private static int shiftCounter = 1;
+
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
     private Branch branch;
 
     @Column(nullable = false)
@@ -180,7 +196,44 @@ public class Shift extends BaseModel {
 
     @Override
     public boolean copyFromOther(BaseModel other, Session session) {
-        return false;
+        if (!(other instanceof Shift)) return false;
+        Shift otherShift = (Shift) other;
+
+        this.shiftDate = otherShift.shiftDate;
+        this.shiftType = otherShift.shiftType;
+        this.startShiftTime = otherShift.startShiftTime;
+        this.endShiftTime = otherShift.endShiftTime;
+        this.isPast = otherShift.isPast;
+
+        // Handle shiftManager
+        if (otherShift.shiftManager != null) {
+            this.shiftManager = otherShift.shiftManager;
+        }
+
+        // Handle branch
+        if (otherShift.branch != null) {
+            this.branch = otherShift.branch;
+        }
+
+        // Handle assignedEmployees
+        if (otherShift.assignedEmployees != null) {
+            this.assignedEmployees.clear();
+            this.assignedEmployees.putAll(otherShift.assignedEmployees);
+        }
+
+        // Handle allAvailableEmployees
+        if (otherShift.allAvailableEmployees != null) {
+            this.allAvailableEmployees.clear();
+            this.allAvailableEmployees.addAll(otherShift.allAvailableEmployees);
+        }
+
+        // Handle requiredRoles
+        if (otherShift.requiredRoles != null) {
+            this.requiredRoles.clear();
+            this.requiredRoles.putAll(otherShift.requiredRoles);
+        }
+
+        return true;
     }
 
 

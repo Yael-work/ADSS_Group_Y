@@ -6,7 +6,7 @@ import Models.DBModels.Employees.Shift;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface IPastShiftsController extends IController<Shift> {
+public interface IPastShiftsController extends IEmpController<Shift> {
     /**
      * Adds a past shift to the database.
      *

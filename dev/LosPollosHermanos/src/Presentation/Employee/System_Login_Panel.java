@@ -1,8 +1,8 @@
 package Presentation.Employee;
 
 import Auxiliary.sharedFunctions;
-import DB.WorkersDB.EmployeesDB;
 import DB.WorkersDB.ShiftsDB;
+import Domain.Employees.EmployeeManager;
 import Models.DBModels.Employees.Employee;
 import Models.DBModels.Employees.Shift;
 
@@ -32,7 +32,7 @@ public class System_Login_Panel {
                     scanner.nextLine(); // Clear the buffer
                     System.out.println("Please Enter Your ID: ");
                     String employeeID = scanner.nextLine();// Read user input
-                    enteredEmployee = EmployeesDB.findEmployeeById(employeeID);
+                    enteredEmployee = EmployeeManager.getEmployeeById(employeeID);
                     if (enteredEmployee == null) {
                         System.out.println("Invalid Employee ID - There is no employee with the following ID.\nPlease try again.");
                         continueLoop = true;

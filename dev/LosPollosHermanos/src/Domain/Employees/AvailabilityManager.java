@@ -1,7 +1,6 @@
 package Domain.Employees;
 
 import Auxiliary.Enums.Models.AvailabilityStatus;
-import DB.WorkersDB.EmployeesDB;
 import Models.DBModels.Employees.Availability;
 import Models.DBModels.Employees.Employee;
 
@@ -132,7 +131,7 @@ public class AvailabilityManager {
 
         // Get all employees and reset their availability update flags
         try {
-            List<Employee> allEmployees = EmployeesDB.getMockEmployeeDB();
+            List<Employee> allEmployees = EmployeeManager.getAllEmployees();
             for (Employee employee : allEmployees) {
                 Availability employeeAvailability = employee.getAvailability();
                 if (employeeAvailability != null) {

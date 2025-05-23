@@ -2,7 +2,6 @@ package Presentation.Employee;
 
 import Auxiliary.Enums.Domain.Status;
 import Auxiliary.IdGenerator;
-import DB.WorkersDB.EmployeesDB;
 import DB.WorkersDB.ShiftsDB;
 import DB.implementations.transport.MockBranchController;
 import Domain.Employees.*;
@@ -240,7 +239,7 @@ public class Manager_Panel {
         try {
             System.out.println("Please enter the ID of the employee you want to remove from the shift:");
             employeeId = scanner.nextLine();
-            toRemove = EmployeesDB.findEmployeeById(employeeId);
+            toRemove = EmployeeManager.getEmployeeById(employeeId);
 
 
             if (toRemove == null) {
@@ -274,7 +273,7 @@ public class Manager_Panel {
         if (shiftsFound == 1) {
             Shift shift = findShiftById(shiftId);
             if (shift != null) {
-                shiftsManager.removeAssignedEmployee(toRemove,shift);
+                UpcomingShiftsManager.removeAssignedEmployee(toRemove,shift);
                 System.out.println("Employee with ID " + employeeId + " has been removed from the shift.");
             }
         } else {
@@ -303,7 +302,7 @@ public class Manager_Panel {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the Employee ID you want to assign to a shift:");
         String empId = scanner.nextLine().trim();
-        Employee employeeToAssign = EmployeesDB.findEmployeeById(empId);
+        Employee employeeToAssign = EmployeeManager.getEmployeeById(empId);
 
         if (employeeToAssign == null) {
             System.out.println("Employee with ID " + empId + " does not exist.");
@@ -367,7 +366,7 @@ public class Manager_Panel {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the Employee ID you want to promote:");
         String empId = scanner.nextLine().trim();
-        Employee employeeToPromote = EmployeesDB.findEmployeeById(empId);
+        Employee employeeToPromote =EmployeeManager.getEmployeeById(empId);
 
         if (employeeToPromote == null) {
             System.out.println("Employee with ID " + empId + " does not exist.");

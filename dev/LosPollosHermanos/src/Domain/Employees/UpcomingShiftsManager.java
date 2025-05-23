@@ -1,18 +1,27 @@
 package Domain.Employees;
 
 import Auxiliary.Enums.Models.AvailabilityStatus;
+import DB.DBemployeeManager;
+import DB.interfaces.employees.IUpcomingShiftsController;
 import Models.DBModels.Employees.Availability;
 import Models.DBModels.Employees.Employee;
 import Models.DBModels.Employees.Shift;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-public class shiftsManager {
+public class UpcomingShiftsManager {
 
-    //TODO: understand this line
-    //private static final IDriverController driverController = DBManager.getInstance().getDriverController();
+    private static final IUpcomingShiftsController upcomingShiftsController = DBemployeeManager.getInstance().getUpcomingShiftsController();
 
+    public static void addUpcomingShift(Shift shift) {
+        upcomingShiftsController.addUpcomingShift(shift);
+    }
 
+    public static List<Shift> getUpcomingShifts() {
+        return upcomingShiftsController.getUpcomingShifts(); // return copy for safety
+    }
 
     public static void addRequiredRoles(String role, int count) {
         Shift.REQUIRED_ROLES_FOR_SHIFT.put(role, count);

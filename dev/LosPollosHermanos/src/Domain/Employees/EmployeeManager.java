@@ -20,10 +20,18 @@ public class EmployeeManager {
     }
 
     public static boolean doesEmployeeExist(String employeeID) {
-        Employee emp = employeeController.findEmployeeById(employeeID);
+        Employee emp =getEmployeeById(employeeID);
         if (emp != null)
             return true;
         return false;
+    }
+
+    public static Employee getEmployeeById(String employeeID) {
+        Employee employee = employeeController.findEmployeeById(employeeID);
+        if (employee == null) {
+            Helper.showError(String.format("Cant get employee with id=%s, it does not exist", employeeID));
+        }
+        return employee;
     }
 
     public static Status deleteEmployee(String employeeID) {

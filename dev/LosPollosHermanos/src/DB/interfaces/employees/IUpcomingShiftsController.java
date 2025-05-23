@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-public interface IUpcomingShiftsController extends IController<Shift> {
+public interface IUpcomingShiftsController extends IEmpController<Shift> {
     /**
      * Adds an upcoming shift to the database.
      *

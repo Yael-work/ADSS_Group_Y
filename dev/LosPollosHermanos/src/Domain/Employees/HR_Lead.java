@@ -2,7 +2,6 @@ package Domain.Employees;
 
 import Auxiliary.Enums.Models.AvailabilityStatus;
 import Auxiliary.IdGenerator;
-import DB.WorkersDB.EmployeesDB;
 import Models.DBModels.BaseModel;
 import Models.DBModels.Employees.*;
 import Auxiliary.Enums.Domain.Status;
@@ -63,9 +62,9 @@ public class HR_Lead extends ARole {
 
     public static void Update_Required_Role_to_Shift(int action ,int roleAmount, String roleName) {
         if (action == 1) {
-            shiftsManager.addRequiredRoles(roleName, roleAmount);
+            UpcomingShiftsManager.addRequiredRoles(roleName, roleAmount);
         } else if (action == 2) {
-            shiftsManager.removeRequiredRole(roleName);
+            UpcomingShiftsManager.removeRequiredRole(roleName);
         }
     }
 

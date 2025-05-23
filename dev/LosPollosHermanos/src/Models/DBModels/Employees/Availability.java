@@ -1,17 +1,12 @@
 package Models.DBModels.Employees;
 
 import Auxiliary.Enums.Models.AvailabilityStatus;
-import DB.WorkersDB.EmployeesDB;
 import Models.DBModels.BaseModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import org.hibernate.Session;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Scanner;
 
 /**
  * Represents an employee's availability for shifts on different days of the week.
