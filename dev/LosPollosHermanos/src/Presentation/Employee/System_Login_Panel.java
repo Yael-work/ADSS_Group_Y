@@ -3,6 +3,8 @@ package Presentation.Employee;
 import Auxiliary.sharedFunctions;
 import DB.WorkersDB.ShiftsDB;
 import Domain.Employees.EmployeeManagerCLS;
+import Domain.Employees.PastShiftsManagerCLS;
+import Domain.Employees.UpcomingShiftsManagerCLS;
 import Models.DBModels.Employees.Employee;
 
 import java.util.Scanner;
@@ -61,9 +63,9 @@ public class System_Login_Panel {
                 Employee.createEmployeesDB();
                 //Shift.createShiftsDB();
                 // Move past shifts to pastShiftsDB before any employee interaction
-                ShiftsDB.moveShiftToPast();
+                UpcomingShiftsManagerCLS.moveShiftsToPast();
                 // Clean up old shifts (older than 7 years) on application startup
-                ShiftsDB.removeOldPastShifts();
+                PastShiftsManagerCLS.removeOldPastShifts();
                 break;
             }
             if (answer.equals("no")) {

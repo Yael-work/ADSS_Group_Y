@@ -90,6 +90,23 @@ public class SqlitePastShiftsController implements IPastShiftsController {
     }
 
     @Override
+    public void removeOlderThen7YearsShifts() {
+        LocalDate today = LocalDate.now();
+        LocalDate sevenYearsAgo = today.minusYears(7);
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            int removedCount = session.createQuery("DELETE FROM Shift WHERE isPast = true AND shiftDate < :date")
+                    .setParameter("date", sevenYearsAgo)
+                    .executeUpdate();
+            session.getTransaction().commit();
+            System.out.println("Removed " + removedCount + " old past shifts.");
+        } catch (Exception e) {
+            Helper.showError("Failed to remove old past shifts", e);
+        }
+    }
+
+    @Override
     public List<String> getAllIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(

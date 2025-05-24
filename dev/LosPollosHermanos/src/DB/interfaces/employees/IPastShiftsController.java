@@ -1,6 +1,5 @@
 package DB.interfaces.employees;
 
-import DB.interfaces.transport.IController;
 import Models.DBModels.Employees.Shift;
 
 import java.time.LocalDate;
@@ -45,4 +44,10 @@ public interface IPastShiftsController extends IEmpController<Shift> {
      * @return The number of shifts removed.
      */
     int removeShiftsOlderThan(LocalDate date);
+
+    /**
+     * Removes shifts older than 7 years.
+     * This helps maintain database efficiency by removing very old records.
+     */
+    public void removeOlderThen7YearsShifts();
 }

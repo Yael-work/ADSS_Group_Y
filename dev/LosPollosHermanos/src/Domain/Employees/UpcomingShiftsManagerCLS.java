@@ -2,17 +2,20 @@ package Domain.Employees;
 
 import Auxiliary.Enums.Models.AvailabilityStatus;
 import DB.DBemployeeManager;
+import DB.interfaces.employees.IPastShiftsController;
 import DB.interfaces.employees.IUpcomingShiftsController;
 import Models.DBModels.Employees.Availability;
 import Models.DBModels.Employees.Employee;
 import Models.DBModels.Employees.Shift;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UpcomingShiftsManagerCLS {
 
     private static final IUpcomingShiftsController upcomingShiftsController = DBemployeeManager.getInstance().getUpcomingShiftsController();
+
 
     public static void addUpcomingShift(Shift shift) {
         upcomingShiftsController.addUpcomingShift(shift);
@@ -20,6 +23,24 @@ public class UpcomingShiftsManagerCLS {
 
     public static List<Shift> getUpcomingShifts() {
         return upcomingShiftsController.getUpcomingShifts(); // return copy for safety
+    }
+
+    public static void removeUpcomingShift(Shift shift) {
+        upcomingShiftsController.removeUpcomingShift(shift);
+    }
+
+    public static Shift findShiftById(String shiftId) {
+        for (Shift shift : upcomingShiftsController.getUpcomingShifts()) {
+            if (shift.getShiftID().equals(shiftId)) {
+                return shift;
+            }
+        }
+        return null;
+    }
+
+    public static void moveShiftsToPast() {
+        upcomingShiftsController.moveShiftsToPast();
+//TODO: move 7 years back
     }
 
     public static void addRequiredRoles(String role, int count) {

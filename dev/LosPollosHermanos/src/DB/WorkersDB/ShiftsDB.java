@@ -80,6 +80,7 @@ public class ShiftsDB {
     }
 
     public static void removePastShift(Shift shift) {
+
         pastShiftsDB.remove(shift);
     }
 
