@@ -31,6 +31,18 @@ public class SqliteEmployeesController implements IEmployeeController {
         }
     }
 
+    public Status updateEmployee(Employee updatedEmployee) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            session.merge(updatedEmployee); // Update the employee in the database
+            session.getTransaction().commit();
+            return Status.Success;
+        } catch (Exception e) {
+            Helper.showError("Failed to update Employee", e);
+            return Status.Failure;
+        }
+    }
+
 
     // This method is used to remove an employee by their ID
     public Status removeEmployeeFromDB(String id) {

@@ -1,5 +1,6 @@
 package Domain.Employees;
 
+import Auxiliary.Enums.Domain.Status;
 import Auxiliary.Enums.Models.AvailabilityStatus;
 import Auxiliary.Helper;
 import Models.DBModels.Employees.Availability;
@@ -12,8 +13,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AvailabilityManager {
-    private static final DB.interfaces.employees.IEmployeeController employeeController = 
-        DB.DBemployeeManager.getInstance().getEmployeeController();
 
     /**
      * Sets the availability for upcoming shifts for the given employee.
@@ -21,12 +20,12 @@ public class AvailabilityManager {
      *
      * @param employee The employee whose availability is being set
      */
-    public static void set_Upcoming_Shifts_Availability(Employee employee) {
+    public static Status set_Upcoming_Shifts_Availability(Employee employee) {
         if (LocalDate.now().getDayOfWeek() == DayOfWeek.THURSDAY) {
             Helper.println("Availability updates are closed for this week.");
             Helper.println("Please wait until tomorrow to submit your availability for next week.");
             startNewWeek();
-            return;
+            return Status.Failure;
         }
 
         Scanner scanner = new Scanner(System.in);
@@ -107,7 +106,7 @@ public class AvailabilityManager {
             }
         }
         employee.setAvailability(availability);
-        Helper.println("Availability updated successfully.");
+        return EmployeeManagerCLS.updateEmployee(employee);
     }
 
 
@@ -132,13 +131,13 @@ public class AvailabilityManager {
 
         // Get all employees and reset their availability update flags
         try {
-            List<Employee> allEmployees = employeeController.getAllEmployees();
+            List<Employee> allEmployees = EmployeeManagerCLS.getAllEmployees();
             for (Employee employee : allEmployees) {
                 Availability employeeAvailability = employee.getAvailability();
                 if (employeeAvailability != null) {
                     resetUpdateFlags(employeeAvailability);
                     employee.setAvailability(employeeAvailability);
-                    employeeController.updateEmployee(employee);
+                    EmployeeManagerCLS.updateEmployee(employee);
                 }
             }
         } catch (Exception e) {

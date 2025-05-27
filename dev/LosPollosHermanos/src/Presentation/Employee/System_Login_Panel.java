@@ -63,9 +63,9 @@ public class System_Login_Panel {
                 Employee.createEmployeesDB();
                 //Shift.createShiftsDB();
                 // Move past shifts to pastShiftsDB before any employee interaction
-                UpcomingShiftsManagerCLS.moveShiftsToPast();
+                //UpcomingShiftsManagerCLS.moveShiftsToPast();
                 // Clean up old shifts (older than 7 years) on application startup
-                PastShiftsManagerCLS.removeOldPastShifts();
+                //PastShiftsManagerCLS.removeOldPastShifts();
                 break;
             }
             if (answer.equals("no")) {

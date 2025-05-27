@@ -1,5 +1,6 @@
 package Presentation.Employee;
 
+import Auxiliary.Enums.Domain.Status;
 import Domain.Employees.UpcomingShiftsManagerCLS;
 import Models.DBModels.Employees.ARole;
 import Domain.Employees.AvailabilityManager;
@@ -43,7 +44,11 @@ public class General_Employee_Panel {
 
             switch (choice) {
                 case 1:
-                    AvailabilityManager.set_Upcoming_Shifts_Availability(employee);
+                    if (AvailabilityManager.set_Upcoming_Shifts_Availability(employee) == Status.Success) {
+                        System.out.println("Your availability for upcoming shifts has been set successfully.");
+                    } else {
+                        System.out.println("Failed to set your availability. Please try again later.");
+                    }
                     break;
                 case 2:
                     boolean Manger = false;

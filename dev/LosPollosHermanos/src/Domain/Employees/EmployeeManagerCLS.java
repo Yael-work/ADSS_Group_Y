@@ -38,6 +38,10 @@ public class EmployeeManagerCLS {
         return employeeController.removeEmployeeFromDB(employeeID);
     }
 
+    public static Status updateEmployee(Employee updatedEmployee) {
+        return employeeController.updateEmployee(updatedEmployee);
+    }
+
 
     public static Status addNewRoleToList(ARole newRole , Employee employee) {
         for (int i = 0; i < employee.getAllRoles().size(); i++) {
