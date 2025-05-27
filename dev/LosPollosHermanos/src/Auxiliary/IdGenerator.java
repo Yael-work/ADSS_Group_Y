@@ -14,6 +14,7 @@ public class IdGenerator {
     public static int availability_counter = 0;
     public static int bank_account_counter = 0;
     public static int contract_counter = 0;
+    private static int driver_counter = 0;
 
     public static synchronized int getNextIdManager() {
         return ++manager_counter;
@@ -61,4 +62,6 @@ public class IdGenerator {
         return ++contract_counter;
     }
 
-}
+    public static synchronized int getNextIdDriver() { return ++driver_counter;}
+    }
+

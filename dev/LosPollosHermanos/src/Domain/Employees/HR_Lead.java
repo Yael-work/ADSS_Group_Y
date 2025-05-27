@@ -5,12 +5,13 @@ import Auxiliary.IdGenerator;
 import Models.DBModels.BaseModel;
 import Models.DBModels.Employees.*;
 import Auxiliary.Enums.Domain.Status;
+import DB.interfaces.employees.IEmployeeController;
+import DB.implementations.sqlite.employees.SqliteEmployeesController;
 import org.hibernate.Session;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-
 
 public class HR_Lead extends ARole {
     public HR_Lead(int id) {
@@ -18,13 +19,11 @@ public class HR_Lead extends ARole {
         this.roleName = "HR Lead";
     }
 
-    public static Status Terminate_Employee_from_System(String employeeID)
-    {
+    public static Status Terminate_Employee_from_System(String employeeID) {
         return EmployeeManagerCLS.deleteEmployee(employeeID);
     }
 
-    public static Status Add_Employee_to_System(String employeeName, double employeeSalary, String employeeID, LocalDate recruitment_Date, List<ARole> rolesList, BankAccount employeeAccount, Contract employeeContract)
-    {
+    public static Status Add_Employee_to_System(String employeeName, double employeeSalary, String employeeID, LocalDate recruitment_Date, List<ARole> rolesList, BankAccount employeeAccount, Contract employeeContract) {
         Availability employeeAvailability = new Availability(
                 AvailabilityStatus.Unavailable,
                 AvailabilityStatus.Unavailable,
@@ -48,24 +47,71 @@ public class HR_Lead extends ARole {
     }
 
     public static Status Set_Shift_Hours(String shiftType, LocalTime startHour, LocalTime endHour) {
-
         if (shiftType.equals("Day")) {
             Shift.setStartHourDay(startHour);
             Shift.setEndHourDay(endHour);
-        }
-        else {
+        } else {
             Shift.setStartHourNight(startHour);
             Shift.setEndHourNight(endHour);
         }
         return Status.Success;
     }
 
-    public static void Update_Required_Role_to_Shift(int action ,int roleAmount, String roleName) {
+    public static void Update_Required_Role_to_Shift(int action, int roleAmount, String roleName) {
         if (action == 1) {
             UpcomingShiftsManagerCLS.addRequiredRoles(roleName, roleAmount);
         } else if (action == 2) {
             UpcomingShiftsManagerCLS.removeRequiredRole(roleName);
         }
+    }
+
+    /**
+     * Update any subset of an employee's information, as directed by UI or business logic.
+     * @param employeeID The employee to update
+     * @param newSalary If not null, sets salary
+     * @param newRole If not null, adds this role (does not remove any existing roles)
+     * @param newBankInfo If not null, replaces bank info
+     * @param newAvailability If not null, replaces availability
+     * @param newContract If not null, replaces contract
+     * @return Status.Success if update succeeded, error otherwise.
+     */
+    public static Status Update_Employee_Information(
+            String employeeID,
+            Double newSalary,        // Nullable
+            ARole newRole,           // Nullable
+            BankAccount newBankInfo, // Nullable
+            Availability newAvailability, // Nullable
+            Contract newContract     // Nullable
+    ) {
+        // --- Ideally inject the controller; for now, use singleton (OK for this scale) ---
+        IEmployeeController controller = SqliteEmployeesController.getInstance();
+
+        // 1. Fetch the current employee
+        Employee employee = controller.findEmployeeById(employeeID);
+        if (employee == null) {
+            return Status.Failure;
+        }
+
+        boolean updated = false;
+
+        // 2. Apply all changes to the in-memory object
+        if (newSalary != null) {
+            employee.setSalary(newSalary);
+            updated = true;
+        }
+        if (newRole != null) {
+            EmployeeManagerCLS.addNewRoleToEmployee(newRole, employee);
+            updated = true;
+        }
+        if (newAvailability != null) {
+            employee.setAvailability(newAvailability);
+            updated = true;
+        }
+
+        if (!updated) return Status.Failure;
+
+        // 3. Persist the changes
+        return controller.updateEmployee(employee);
     }
 
     @Override

@@ -3,6 +3,7 @@ package Auxiliary;
 
 import Domain.Employees.*;
 import Models.DBModels.Employees.*;
+import Models.DBModels.transport.Driver;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -68,6 +69,7 @@ public class sharedFunctions {
                 case 4: role = new Cleaner(IdGenerator.getNextIdCleaner()); break;
                 case 5: role = new Stocker(IdGenerator.getNextIdStocker()); break;
                 case 6: role = new Security(IdGenerator.getNextIdSecurity()); break;
+                case 7: role = new Driver(IdGenerator.getNextIdDriver()); break;
                 default:
                     System.out.println("Invalid choice. Promotion cancelled.");
                     return null;
@@ -82,6 +84,7 @@ public class sharedFunctions {
         System.out.println("4. Cleaner");
         System.out.println("5. Stocker");
         System.out.println("6. Security");
+        System.out.println("7. Driver");
     }
 
     public static int getValidIntChoice(Scanner scanner, int from, int to) {

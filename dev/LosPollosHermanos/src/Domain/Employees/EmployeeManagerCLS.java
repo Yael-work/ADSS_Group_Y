@@ -3,7 +3,6 @@ package Domain.Employees;
 
 import Auxiliary.Enums.Domain.Status;
 import Auxiliary.Helper;
-import Auxiliary.Result;
 import DB.DBemployeeManager;
 import DB.interfaces.employees.IEmployeeController;
 import Models.DBModels.Employees.*;
@@ -20,7 +19,7 @@ public class EmployeeManagerCLS {
     }
 
     public static boolean doesEmployeeExist(String employeeID) {
-        Employee emp =getEmployeeById(employeeID);
+        Employee emp = getEmployeeById(employeeID);
         if (emp != null)
             return true;
         return false;
@@ -43,7 +42,7 @@ public class EmployeeManagerCLS {
     }
 
 
-    public static Status addNewRoleToList(ARole newRole , Employee employee) {
+    public static Status addNewRoleToEmployee(ARole newRole , Employee employee) {
         for (int i = 0; i < employee.getAllRoles().size(); i++) {
             if (employee.getRolesList().get(i).getRole().equals(newRole.getRole())) {
                 return Status.Failure;
@@ -52,7 +51,7 @@ public class EmployeeManagerCLS {
         List<ARole> updatedRoles = employee.getAllRoles();
         updatedRoles.add(newRole);
         employee.setAllRoles(updatedRoles);
-        return Status.Success;
+        return employeeController.updateEmployee(employee);
     }
 
     public static List<Employee> getAllEmployees() {{

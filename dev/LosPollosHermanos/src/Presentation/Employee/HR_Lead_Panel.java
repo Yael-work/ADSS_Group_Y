@@ -40,49 +40,32 @@ public class HR_Lead_Panel {
                 scanner.next(); // Clear the invalid input
                 continue;
             }
+            scanner.nextLine(); // clear buffer
 
             switch (choice) {
                 case 1:
-                    if (Terminate_Employee_from_System(HRLead) == Status.Success) {
-                        System.out.println("Employee terminated successfully.");
-                    } else {
-                        System.out.println("Failed to terminate employee.");
-                    }
+                    Status termStatus = terminateEmployeeFromSystemUI(HRLead);
+                    System.out.println(termStatus == Status.Success ? "Employee terminated successfully." : "Failed to terminate employee.");
                     break;
                 case 2:
-                    if (Add_Employee_to_System() == Status.Success) {
-                        System.out.println("Employee added successfully.");
-                    } else {
-                        System.out.println("Failed to add employee.");
-                    }
+                    Status addStatus = addEmployeeToSystemUI();
+                    System.out.println(addStatus == Status.Success ? "Employee added successfully." : "Failed to add employee.");
                     break;
                 case 3:
-                    if (Set_Shift_Hours() == Status.Success) {
-                        System.out.println("Shift hours set successfully.");
-                    } else {
-                        System.out.println("Failed to set shift hours.");
-                    }
+                    Status shiftStatus = setShiftHoursUI();
+                    System.out.println(shiftStatus == Status.Success ? "Shift hours set successfully." : "Failed to set shift hours.");
                     break;
                 case 4:
-                    if (Update_Required_Roles_to_Shift() == Status.Success) {
-                        System.out.println("Required roles updated successfully.");
-                    } else {
-                        System.out.println("Failed to update required roles.");
-                    }
+                    Status updRolesStatus = updateRequiredRolesToShiftUI();
+                    System.out.println(updRolesStatus == Status.Success ? "Required roles updated successfully." : "Failed to update required roles.");
                     break;
                 case 5:
-                    if (set_required_roles_to_shift() == Status.Success) {
-                        System.out.println("Required roles set successfully.");
-                    } else {
-                        System.out.println("Failed to set required roles.");
-                    }
+                    Status setRolesStatus = setRequiredRolesToShiftUI();
+                    System.out.println(setRolesStatus == Status.Success ? "Required roles set successfully." : "Failed to set required roles.");
                     break;
                 case 6:
-                    if (Update_Employee_Information() == Status.Success) {
-                        System.out.println("Employee information updated successfully.");
-                    } else {
-                        System.out.println("Failed to update employee information.");
-                    }
+                    Status updateEmpStatus = updateEmployeeInformationUI();
+                    System.out.println(updateEmpStatus == Status.Success ? "Employee information updated successfully." : "Failed to update employee information.");
                     break;
                 case 7:
                     System.out.println("Going back to General Employee panel");
@@ -90,60 +73,36 @@ public class HR_Lead_Panel {
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
-        }while (true);
-
+        } while (true);
     }
 
-    public static Status Terminate_Employee_from_System(Employee HRLead)
-    {
-        System.out.println("Please Enter the ID of the Employee to terminate: ");
-        Scanner scanner = new Scanner(System.in);
-        String employeeID = scanner.nextLine();
+    // --- Each UI action now gathers input and delegates to domain ---
 
-        if (!EmployeeManagerCLS.doesEmployeeExist(employeeID)) {
-            System.out.println("Employee not found.");
-            return Status.Failure;
-        }
-        else if (employeeID.equals(HRLead.getEmployeeID())) {
+    private static Status terminateEmployeeFromSystemUI(Employee HRLead) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please Enter the ID of the Employee to terminate: ");
+        String employeeID = scanner.nextLine();
+        if (employeeID.equals(HRLead.getEmployeeID())) {
             System.out.println("You cannot terminate yourself.");
             return Status.Failure;
         }
-
         return HR_Lead.Terminate_Employee_from_System(employeeID);
-        // TODO: Remove employee from futur shifts
     }
 
-    public static Status Add_Employee_to_System() {
+    private static Status addEmployeeToSystemUI() {
         Scanner scanner = new Scanner(System.in);
-
         String employeeID = promptForEmployeeID(scanner);
-        if (EmployeeManagerCLS.doesEmployeeExist(employeeID)) {
-            System.out.println("Employee with this ID already exists.");
-            return Status.Failure;
-        }
         String employeeName = promptForEmployeeName(scanner);
         double employeeSalary = promptForSalary(scanner);
 
-        int choice=0;
+        int choice;
         do {
             System.out.println("Please choose Employee's role number:\n" +
-                    "1. Manager\n2. HR Lead\n3. Cashier\n4. Cleaner\n5. Stocker\n6. Security");
-
-            if (scanner.hasNextInt())
-                choice = scanner.nextInt();
-            else {
-                System.out.println("Invalid input. Please enter a number.");
-                scanner.next(); // Clear the invalid input
-                continue;
-            }
-
-            if (choice <0 || choice > 6)
-                System.out.println("Invalid choice. Please select a number from 1 to 6.");
-
-        } while (choice <0 || choice > 6);
+                    "1. Manager\n2. HR Lead\n3. Cashier\n4. Cleaner\n5. Stocker\n6. Security\n7. Driver");
+            choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
+        } while (choice < 1 || choice > 7);
 
         ARole role = sharedFunctions.promptForRole(choice);
-
         List<ARole> rolesList = new ArrayList<>();
         rolesList.add(role);
 
@@ -151,11 +110,118 @@ public class HR_Lead_Panel {
         Contract employeeContract = promptForContract(scanner);
         LocalDate recruitment_Date = LocalDate.now();
 
-
         if (employeeAccount == null || employeeContract == null) { return Status.Failure; }
 
-        return HR_Lead.Add_Employee_to_System(employeeName, employeeSalary, employeeID, recruitment_Date,  rolesList, employeeAccount, employeeContract );
+        return HR_Lead.Add_Employee_to_System(employeeName, employeeSalary, employeeID, recruitment_Date,  rolesList, employeeAccount, employeeContract);
     }
+
+    private static Status setShiftHoursUI() {
+        Scanner scanner = new Scanner(System.in);
+        String shiftType = sharedFunctions.getShiftTypeFromUser(scanner);
+        System.out.println("Start Time: ");
+        LocalTime startTime = sharedFunctions.parseTimeFromUser(scanner);
+        System.out.println("End Time: ");
+        LocalTime endTime = sharedFunctions.parseTimeFromUser(scanner);
+        return HR_Lead.Set_Shift_Hours(shiftType, startTime, endTime);
+    }
+
+    private static Status setRequiredRolesToShiftUI() {
+        Scanner scanner = new Scanner(System.in);
+        boolean continueLoop;
+        do {
+            continueLoop = false;
+            System.out.println("Please choose the number of ONE Employee's role you want in the shifts from the optional roles list:");
+            sharedFunctions.DisplayAvailableRoles();
+            int choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
+
+            String role = sharedFunctions.promptForRole(choice).getRole();
+            int amount = promptForPositiveInt(scanner, "Please Enter the wanted amount of this role: ");
+            if (amount == 0)
+                System.out.println("You cannot set the amount to 0\n");
+            else
+                HR_Lead.Update_Required_Role_to_Shift(1, amount, role);
+
+            String answer;
+            do {
+                System.out.println("Do you want to add or update another role? (yes/no)");
+                answer = scanner.nextLine();
+                if (answer.equals("yes")) {
+                    continueLoop = true;
+                } else if (answer.equals("no")) {
+                    continueLoop = false;
+                } else {
+                    System.out.println("Invalid answer. Please enter 'yes' or 'no'.");
+                }
+            } while (!answer.equals("yes") && !answer.equals("no"));
+        } while (continueLoop);
+
+        return Status.Success;
+    }
+
+    private static Status updateRequiredRolesToShiftUI() {
+        Scanner scanner = new Scanner(System.in);
+        int action;
+        do {
+            System.out.println("which action do you want to do? (1 OR 2)\n" +
+                    "1. Add new role OR Update the amount of a role\n*You can increase or decrease the number of employees in the role.*\n" +
+                    "2. Remove existing role");
+            action = sharedFunctions.getValidIntChoice(scanner, 1, 2);
+        } while (action != 1 && action != 2);
+
+        sharedFunctions.DisplayAvailableRoles();
+        int choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
+        String role = sharedFunctions.promptForRole(choice).getRole();
+
+        int amount = (action == 1) ? promptForPositiveInt(scanner, "Please Enter the wanted amount of this role: ") : 0;
+        HR_Lead.Update_Required_Role_to_Shift(action, amount, role);
+
+        return Status.Success;
+    }
+
+    private static Status updateEmployeeInformationUI() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please Enter the ID of the Employee to update: ");
+        String employeeID = scanner.nextLine();
+
+        // Prompt user for what to update
+        int choice;
+        do {
+            System.out.println("\nWhat would you like to update?");
+            System.out.println("1. Salary");
+            System.out.println("2. Add Role");
+            System.out.println("3. Availability");
+            System.out.println("4. Go back");
+            choice = sharedFunctions.getValidIntChoice(scanner, 1, 4);
+
+            switch (choice) {
+                case 1: // Update salary
+                    double newSalary = promptForSalary(scanner);
+                    if (HR_Lead.Update_Employee_Information(employeeID, newSalary, null, null, null, null) != Status.Success) {;
+                        System.out.println("Failed to update salary.");
+                        return Status.Failure;
+                    }
+                case 2: // Add role
+                    sharedFunctions.DisplayAvailableRoles();
+                    int roleChoice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
+                    ARole newRole = sharedFunctions.promptForRole(roleChoice);
+                    if (HR_Lead.Update_Employee_Information(employeeID, null, newRole, null, null, null) != Status.Success) {;
+                        System.out.println("Failed to add role.");
+                        return Status.Failure;
+                    }
+                case 3: // Update availability
+                    Availability newAvailability = promptForAvailability(scanner);
+                    if (HR_Lead.Update_Employee_Information(employeeID, null, null, null, newAvailability, null) != Status.Success) {;
+                        System.out.println("Failed to update availability.");
+                        return Status.Failure;
+                    }
+                case 4:
+                    System.out.println("No changes made.");
+                    return Status.Failure;
+            }
+        } while (true);
+    }
+
+    // --- Input helper methods (unchanged) ---
 
     private static String promptForEmployeeID(Scanner scanner) {
         System.out.println("Please Enter Employee's ID: ");
@@ -184,8 +250,6 @@ public class HR_Lead_Panel {
         return salary;
     }
 
-
-
     private static BankAccount promptForBankAccount(Scanner scanner) {
         System.out.println("Please Enter Employee's bank information: ");
         scanner.nextLine(); // Clear the buffer
@@ -195,21 +259,16 @@ public class HR_Lead_Panel {
         String accountNumber = scanner.nextLine();
         System.out.print("Bank branch number: ");
         String branch = scanner.nextLine();
-
         return new BankAccount(bankName, accountNumber, branch);
     }
 
     private static Contract promptForContract(Scanner scanner) {
         System.out.println("Please Enter Employee's Contract information:");
-
         int pension = promptForPositiveInt(scanner, "Pension Percentage: ");
         int sickDays = promptForPositiveInt(scanner, "Sick days number: ");
         int vacation = promptForPositiveInt(scanner, "Vacation days number: ");
         int minHours = promptForPositiveInt(scanner, "Min monthly hours: ");
-
-        // TODO: There's a mismatch between the Contract constructor definition (5 params) and its usage (4 params)
-        // This needs to be addressed in a separate task
-        return new Contract(IdGenerator.getNextIdContract(),pension, sickDays, vacation, minHours);
+        return new Contract(IdGenerator.getNextIdContract(), pension, sickDays, vacation, minHours);
     }
 
     private static int promptForPositiveInt(Scanner scanner, String message) {
@@ -232,213 +291,14 @@ public class HR_Lead_Panel {
         return value;
     }
 
-    public static Status Set_Shift_Hours() {
-        Scanner scanner = new Scanner(System.in);
-        String shiftType = sharedFunctions.getShiftTypeFromUser(scanner);
-        System.out.println("Start Time: ");
-        LocalTime startTime = sharedFunctions.parseTimeFromUser(scanner);
-        System.out.println("End Time: ");
-        LocalTime endTime = sharedFunctions.parseTimeFromUser(scanner);
-        return HR_Lead.Set_Shift_Hours(shiftType, startTime, endTime);
-        // TODO CHECK IF THE NEW SHIFT WITH NEW HOURS AND THAT HISTOTY NOT UPDATED
-    }
-
-    public static Status set_required_roles_to_shift() {
-        Scanner scanner = new Scanner(System.in);
-        int choice=0;
-        boolean continueLoop;
-        do {
-            do {
-                continueLoop = false;
-                System.out.println("Please choose the number of ONE Employee's role you want in the shifts from the optional roles list:");
-                sharedFunctions.DisplayAvailableRoles();
-
-                if (scanner.hasNextInt())
-                    choice = scanner.nextInt();
-                else {
-                    System.out.println("Invalid input. Please enter a number.");
-                    scanner.next(); // Clear the invalid input
-                    continueLoop = true;
-                    continue;
-                }
-
-                if (choice <1 || choice > 6)
-                    System.out.println("Invalid choice. Please select a number from 1 to 6.");
-
-            } while (continueLoop);
-
-            String role = sharedFunctions.promptForRole(choice).getRole();
-            int amount = promptForPositiveInt(scanner, "Please Enter the wanted amount of this role: ");
-            if (amount == 0 )
-                System.out.println("You cannot set the amount to 0\n");
-            else
-                HR_Lead.Update_Required_Role_to_Shift(1, amount, role);
-
-            String answer;
-            do {
-                System.out.println("Do you want to add or update another role? (yes/no)");
-                answer = scanner.nextLine();
-                if (answer.equals("yes")) {
-                    continueLoop = true;
-                } else if (answer.equals("no")) {
-                    continueLoop = false;
-                } else {
-                    System.out.println("Invalid answer. Please enter 'yes' or 'no'.");
-                }
-            } while (!answer.equals("yes") && !answer.equals("no"));
-
-        } while (continueLoop);
-
-        return Status.Success;
-    }
-
-
-
-    public static Status Update_Required_Roles_to_Shift() {
-        Scanner scanner = new Scanner(System.in);
-
-        int action=0;
-        do {
-            System.out.println("which action do you want to do? (1 OR 2)\n" +
-                    "1. Add new role OR Update the amount of a role\n*You can increase or decrease the number of employees in the role.*\n" +
-                    "2. Remove existing role");
-
-            if (scanner.hasNextInt())
-                action = scanner.nextInt();
-            else {
-                System.out.println("Invalid input. Please enter a number.");
-                scanner.next(); // Clear the invalid input
-                continue;
-            }
-
-            if (action != 1 && action != 2)
-                System.out.println("Invalid action. Please choose 1 or 2.");
-
-        } while (action != 1 && action != 2);
-
-
-        int choice=0;
-        boolean continueLoop;
-        do {
-            System.out.println("Please choose number of a role:\n");
-            sharedFunctions.DisplayAvailableRoles();
-
-
-            if (scanner.hasNextInt())
-            {
-                choice = scanner.nextInt();
-                continueLoop = false;
-            }
-            else {
-                System.out.println("Invalid input. Please enter a number.");
-                scanner.next(); // Clear the invalid input
-                continueLoop = true;
-                continue;
-            }
-
-            if (choice <1 || choice > 6)
-            {
-                System.out.println("Invalid choice. Please select a number from 1 to 6.");
-                continueLoop = true;
-            }
-
-        } while (continueLoop);
-
-        String role = sharedFunctions.promptForRole(choice).getRole();
-
-        if (action == 2 && !Shift.REQUIRED_ROLES_FOR_SHIFT.containsKey(role)) {
-            System.out.println("This role does not exist in the shift.\nNo role removed.");
-            return Status.Failure;
-        }
-
-        if (action == 2)
-            HR_Lead.Update_Required_Role_to_Shift(action, 0, role);
-        else
-        {
-            int amount = promptForPositiveInt(scanner, "Please Enter the wanted amount of this role: ");
-            if (amount == 0 )
-            {
-                System.out.println("You cannot set the amount to 0, Choose to remove the role\nNo role added.");
-                return Status.Failure;
-            }
-            HR_Lead.Update_Required_Role_to_Shift(action, amount, role);
-        }
-
-        return Status.Success;
-    }
-
-    public static Status Update_Employee_Information() { //TODO code need to be evalutated and changed accordingaly
-        Scanner scanner = new Scanner(System.in);
-
-        // Ask for employee ID
-        System.out.println("Please Enter the ID of the Employee to update: ");
-        String employeeID = scanner.nextLine();
-
-        // Find employee by ID
-        Employee employee = EmployeeManagerCLS.getEmployeeById(employeeID);
-        if (employee == null) {
-            System.out.println("Employee not found.");
-            return Status.Failure;
-        }
-
-        // Display employee information
-        System.out.println("Current employee information:");
-        System.out.println(employee.toString());
-
-        // Menu for choosing what to update
-        int choice = 0;
-        do {
-            System.out.println("\nWhat would you like to update?");
-            System.out.println("1. Salary");
-            System.out.println("2. Add Role");
-            System.out.println("3. Availability");
-            System.out.println("4. Go back");
-
-            choice = sharedFunctions.getValidIntChoice(scanner, 1, 4);
-
-            switch (choice) {
-                case 1: // Update salary
-                    double newSalary = promptForSalary(scanner);
-                    employee.setSalary(newSalary);
-                    System.out.println("Salary updated successfully.");
-                    return Status.Success;
-
-                case 2: // Add role
-                    System.out.println("Please choose a role to add:");
-                    sharedFunctions.DisplayAvailableRoles();
-                    int roleChoice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
-
-                    ARole newRole = sharedFunctions.promptForRole(roleChoice);
-                    EmployeeManagerCLS.addNewRoleToList(newRole, employee);
-                    System.out.println("Role added successfully.");
-                    return Status.Success;
-
-                case 3: // Update availability
-                    Availability newAvailability = promptForAvailability(scanner);
-                    employee.setAvailability(newAvailability);
-                    System.out.println("Availability updated successfully.");
-                    return Status.Success;
-
-                case 4: // Go back
-                    System.out.println("No changes made.");
-                    return Status.Failure;
-
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        } while (true);
-    }
-
     private static Availability promptForAvailability(Scanner scanner) {
         System.out.println("Please set availability for each day of the week:");
         System.out.println("Options: 1 = Day, 2 = Night, 3 = Both, 4 = Unavailable");
-
         AvailabilityStatus sunday = promptForDayAvailability(scanner, "Sunday");
         AvailabilityStatus monday = promptForDayAvailability(scanner, "Monday");
         AvailabilityStatus tuesday = promptForDayAvailability(scanner, "Tuesday");
         AvailabilityStatus wednesday = promptForDayAvailability(scanner, "Wednesday");
         AvailabilityStatus thursday = promptForDayAvailability(scanner, "Thursday");
-
         return new Availability(sunday, monday, tuesday, wednesday, thursday);
     }
 
@@ -446,7 +306,6 @@ public class HR_Lead_Panel {
         int choice;
         do {
             System.out.println("Enter availability for " + day + " (1-4):");
-
             if (scanner.hasNextInt()) {
                 choice = scanner.nextInt();
                 scanner.nextLine(); // Clear buffer
@@ -456,20 +315,13 @@ public class HR_Lead_Panel {
                 choice = 0;
                 continue;
             }
-
             switch (choice) {
-                case 1:
-                    return AvailabilityStatus.Day;
-                case 2:
-                    return AvailabilityStatus.Night;
-                case 3:
-                    return AvailabilityStatus.Both;
-                case 4:
-                    return AvailabilityStatus.Unavailable;
-                default:
-                    System.out.println("Invalid choice. Please select a number from 1 to 4.");
+                case 1: return AvailabilityStatus.Day;
+                case 2: return AvailabilityStatus.Night;
+                case 3: return AvailabilityStatus.Both;
+                case 4: return AvailabilityStatus.Unavailable;
+                default: System.out.println("Invalid choice. Please select a number from 1 to 4.");
             }
         } while (true);
     }
-
 }

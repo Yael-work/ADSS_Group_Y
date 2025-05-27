@@ -27,6 +27,10 @@ public class UpcomingShiftsManagerCLS {
         upcomingShiftsController.removeUpcomingShift(shift);
     }
 
+    public boolean updateShift(Shift updatedShift){
+        return upcomingShiftsController.updateShiftInDB(updatedShift);
+    }
+
     public static Shift findShiftById(String shiftId) {
         for (Shift shift : upcomingShiftsController.getUpcomingShifts()) {
             if (shift.getShiftID().equals(shiftId)) {
@@ -49,9 +53,10 @@ public class UpcomingShiftsManagerCLS {
         Shift.REQUIRED_ROLES_FOR_SHIFT.remove(role);
     }
 
-    public static void addAssignedEmployee(Employee employee, String role, Shift shift) {
+    public static void addAssignedEmployeeToShift(Employee employee, String role, Shift shift) {
         shift.getAssignedEmployees().put(employee, role);
         shift.getAllAvailableEmployees().remove(employee);
+        upcomingShiftsController.updateShiftInDB(shift);
     }
 
 
@@ -62,6 +67,7 @@ public class UpcomingShiftsManagerCLS {
         } else {
             shift.getAllAvailableEmployees().add(employee);
         }
+        upcomingShiftsController.updateShiftInDB(shift);
     }
 
     private static boolean isEmployeeAvailableForShift(Employee employee, LocalDate shiftDate, String shiftType) {

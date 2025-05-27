@@ -59,6 +59,18 @@ public class SqliteUpcomingShiftsController implements IUpcomingShiftsController
         }
     }
 
+    public boolean updateShiftInDB(Shift updatedShift) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            session.merge(updatedShift); // Update the shift in the database
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            Helper.showError("Failed to update shift", e);
+            return false;
+        }
+    }
+
     @Override
     public Shift findShiftById(String shiftId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

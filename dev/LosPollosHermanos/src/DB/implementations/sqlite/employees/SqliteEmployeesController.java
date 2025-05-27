@@ -34,7 +34,7 @@ public class SqliteEmployeesController implements IEmployeeController {
     public Status updateEmployee(Employee updatedEmployee) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            session.merge(updatedEmployee); // Update the employee in the database
+            session.merge(updatedEmployee);
             session.getTransaction().commit();
             return Status.Success;
         } catch (Exception e) {

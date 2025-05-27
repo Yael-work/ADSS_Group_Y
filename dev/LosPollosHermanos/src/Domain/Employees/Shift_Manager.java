@@ -34,7 +34,7 @@ public class Shift_Manager extends ARole {
 
 
     public static Status addEmployeeToShift(Employee employeeToAdd, Shift shift, String role) {
-        UpcomingShiftsManagerCLS.addAssignedEmployee(employeeToAdd, role, shift);
+        UpcomingShiftsManagerCLS.addAssignedEmployeeToShift(employeeToAdd, role, shift);
         return Status.Success;
     }
 
@@ -47,7 +47,7 @@ public class Shift_Manager extends ARole {
                 return Status.Failure;
             }
         }
-        return EmployeeManagerCLS.addNewRoleToList(newRole,employeeToPromote);
+        return EmployeeManagerCLS.addNewRoleToEmployee(newRole,employeeToPromote);
     }
 
     @Override

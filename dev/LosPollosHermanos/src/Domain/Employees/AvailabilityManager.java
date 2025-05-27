@@ -5,8 +5,6 @@ import Auxiliary.Enums.Models.AvailabilityStatus;
 import Auxiliary.Helper;
 import Models.DBModels.Employees.Availability;
 import Models.DBModels.Employees.Employee;
-import Domain.Employees.EmployeeManagerCLS;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;

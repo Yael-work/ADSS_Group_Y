@@ -1,6 +1,5 @@
 package DB.interfaces.employees;
 
-import DB.interfaces.transport.IController;
 import Models.DBModels.Employees.Shift;
 import Models.DBModels.transport.Branch;
 
@@ -39,6 +38,10 @@ public interface IUpcomingShiftsController extends IEmpController<Shift> {
      * @return A list of all upcoming shifts.
      */
     List<Shift> getUpcomingShifts();
+
+    public boolean updateShiftInDB(Shift updatedShift);
+
+
 
     /**
      * Finds a shift by date, time, and branch.
