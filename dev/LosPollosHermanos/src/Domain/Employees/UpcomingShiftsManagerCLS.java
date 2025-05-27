@@ -2,14 +2,12 @@ package Domain.Employees;
 
 import Auxiliary.Enums.Models.AvailabilityStatus;
 import DB.DBemployeeManager;
-import DB.interfaces.employees.IPastShiftsController;
 import DB.interfaces.employees.IUpcomingShiftsController;
 import Models.DBModels.Employees.Availability;
 import Models.DBModels.Employees.Employee;
 import Models.DBModels.Employees.Shift;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UpcomingShiftsManagerCLS {
