@@ -29,5 +29,12 @@
         <mapping class="Models.DBModels.transport.TransportIssueLog"/>
         <mapping class="Models.DBModels.transport.Transport"/>
         <mapping class="Models.DBModels.suppliers.Supplier"/>
+        <!-- Employees -->
+        <mapping class="Models.DBModels.Employees.Employee"/>
+        <mapping class="Models.DBModels.Employees.Shift"/>
+        <mapping class="Models.DBModels.Employees.Availability"/>
+        <mapping class="Models.DBModels.Employees.ARole"/>
+        <mapping class="Models.DBModels.Employees.Contract"/>
+        <mapping class="Models.DBModels.Employees.BankAccount"/>
     </session-factory>
 </hibernate-configuration>

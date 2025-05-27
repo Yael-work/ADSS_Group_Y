@@ -3,6 +3,7 @@ package Domain.Employees;
 
 import Auxiliary.Enums.Domain.Status;
 import Auxiliary.Helper;
+import Auxiliary.Result;
 import DB.DBemployeeManager;
 import DB.interfaces.employees.IEmployeeController;
 import Models.DBModels.Employees.*;
@@ -65,7 +66,7 @@ public class EmployeeManagerCLS {
     }
 
     public static void use_cancel_card() {
-        System.out.println("Cancel card used");
+        Helper.println("Cancel card used");
     }
 
 }

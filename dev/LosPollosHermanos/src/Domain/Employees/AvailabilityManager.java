@@ -1,9 +1,10 @@
 package Domain.Employees;
 
 import Auxiliary.Enums.Models.AvailabilityStatus;
+import Auxiliary.Helper;
 import Models.DBModels.Employees.Availability;
 import Models.DBModels.Employees.Employee;
-
+import Domain.Employees.EmployeeManagerCLS;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -11,8 +12,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AvailabilityManager {
-    //TODO: understand this line
-    //private static final IDriverController driverController = DBManager.getInstance().getDriverController();
+    private static final DB.interfaces.employees.IEmployeeController employeeController = 
+        DB.DBemployeeManager.getInstance().getEmployeeController();
 
     /**
      * Sets the availability for upcoming shifts for the given employee.
@@ -22,8 +23,8 @@ public class AvailabilityManager {
      */
     public static void set_Upcoming_Shifts_Availability(Employee employee) {
         if (LocalDate.now().getDayOfWeek() == DayOfWeek.THURSDAY) {
-            System.out.println("Availability updates are closed for this week.");
-            System.out.println("Please wait until tomorrow to submit your availability for next week.");
+            Helper.println("Availability updates are closed for this week.");
+            Helper.println("Please wait until tomorrow to submit your availability for next week.");
             startNewWeek();
             return;
         }
@@ -40,16 +41,16 @@ public class AvailabilityManager {
             );
         }
 
-        System.out.println("Select Availability for the upcoming shifts");
-        System.out.println("Unavailable = 0");
-        System.out.println("Day = 1");
-        System.out.println("Night = 2");
-        System.out.println("Both = 3");
-        System.out.println("Skip = 4 *NOTE if shift remains unfilled until Thursday, it will be filled as Unavailable");
+        Helper.println("Select Availability for the upcoming shifts");
+        Helper.println("Unavailable = 0");
+        Helper.println("Day = 1");
+        Helper.println("Night = 2");
+        Helper.println("Both = 3");
+        Helper.println("Skip = 4 *NOTE if shift remains unfilled until Thursday, it will be filled as Unavailable");
 
         String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"};
         for (String day : days) {
-            System.out.printf("%s availability:\n", day);
+            Helper.println(day + " availability:");
             AvailabilityStatus status = getUserInput(scanner);
 
             switch (day) {
@@ -106,7 +107,7 @@ public class AvailabilityManager {
             }
         }
         employee.setAvailability(availability);
-        System.out.println("Availability updated successfully.");
+        Helper.println("Availability updated successfully.");
     }
 
 
@@ -127,20 +128,21 @@ public class AvailabilityManager {
      * This method resets the update flags for all employees' availability.
      */
     public static void startNewWeek() {
-        System.out.println("Starting a new week for availability tracking.");
+        Helper.println("Starting a new week for availability tracking.");
 
         // Get all employees and reset their availability update flags
         try {
-            List<Employee> allEmployees = EmployeeManagerCLS.getAllEmployees();
+            List<Employee> allEmployees = employeeController.getAllEmployees();
             for (Employee employee : allEmployees) {
                 Availability employeeAvailability = employee.getAvailability();
                 if (employeeAvailability != null) {
                     resetUpdateFlags(employeeAvailability);
                     employee.setAvailability(employeeAvailability);
+                    employeeController.updateEmployee(employee);
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error resetting availability update flags: " + e.getMessage());
+            Helper.println("Error resetting availability update flags: " + e.getMessage());
         }
     }
 
@@ -154,9 +156,9 @@ public class AvailabilityManager {
      */
     public static AvailabilityStatus getUserInput(Scanner scanner) {
         while (true) {
-            System.out.println("Enter (0: Unavailable, 1: Day, 2: Night, 3: Both, 4: Skip): ");
+            Helper.println("Enter (0: Unavailable, 1: Day, 2: Night, 3: Both, 4: Skip): ");
             if (!scanner.hasNextInt()) {
-                System.out.println("Invalid input. Please enter a number between 0 and 4.");
+                Helper.println("Invalid input. Please enter a number between 0 and 4.");
                 scanner.next(); // consume bad input
                 continue;
             }
@@ -175,7 +177,7 @@ public class AvailabilityManager {
                 case 4:
                     return AvailabilityStatus.Skip;
                 default:
-                    System.out.println("Number must be between 0 and 4. Try again.");
+                    Helper.println("Number must be between 0 and 4. Try again.");
             }
         }
     }
