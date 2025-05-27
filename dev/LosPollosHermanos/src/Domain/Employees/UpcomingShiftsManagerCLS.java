@@ -14,12 +14,31 @@ public class UpcomingShiftsManagerCLS {
 
     private static final IUpcomingShiftsController upcomingShiftsController = DBemployeeManager.getInstance().getUpcomingShiftsController();
 
+
     public static void addUpcomingShift(Shift shift) {
         upcomingShiftsController.addUpcomingShift(shift);
     }
 
     public static List<Shift> getUpcomingShifts() {
         return upcomingShiftsController.getUpcomingShifts(); // return copy for safety
+    }
+
+    public static void removeUpcomingShift(Shift shift) {
+        upcomingShiftsController.removeUpcomingShift(shift);
+    }
+
+    public static Shift findShiftById(String shiftId) {
+        for (Shift shift : upcomingShiftsController.getUpcomingShifts()) {
+            if (shift.getShiftID().equals(shiftId)) {
+                return shift;
+            }
+        }
+        return null;
+    }
+
+    public static void moveShiftsToPast() {
+        upcomingShiftsController.moveShiftsToPast();
+//TODO: move 7 years back
     }
 
     public static void addRequiredRoles(String role, int count) {

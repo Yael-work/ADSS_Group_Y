@@ -1,5 +1,6 @@
 package Presentation.Employee;
 
+import Domain.Employees.UpcomingShiftsManagerCLS;
 import Models.DBModels.Employees.ARole;
 import Domain.Employees.AvailabilityManager;
 import Models.DBModels.Employees.Employee;
@@ -102,11 +103,11 @@ public class General_Employee_Panel {
                     break;
                 case 4:
                     System.out.println("All Shifts for the next week: ");
-                    if (!ShiftsDB.getUpcomingShifts().isEmpty()) {
-                        for (int i = 0; i < ShiftsDB.getUpcomingShifts().size(); i++) {
-                            if (ShiftsDB.getUpcomingShifts().get(i).getShiftDate().isBefore(LocalDate.now().plusDays(7))) {
+                    if (!UpcomingShiftsManagerCLS.getUpcomingShifts().isEmpty()) {
+                        for (int i = 0; i < UpcomingShiftsManagerCLS.getUpcomingShifts().size(); i++) {
+                            if (UpcomingShiftsManagerCLS.getUpcomingShifts().get(i).getShiftDate().isBefore(LocalDate.now().plusDays(7))) {
                                 System.out.println();
-                                System.out.println(ShiftsDB.getUpcomingShifts().get(i).toString());
+                                System.out.println(UpcomingShiftsManagerCLS.getUpcomingShifts().get(i).toString());
                             }
                         }
                     }

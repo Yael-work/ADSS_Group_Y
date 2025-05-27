@@ -18,8 +18,6 @@ import java.util.Scanner;
 
 import Auxiliary.sharedFunctions;
 
-import static DB.WorkersDB.ShiftsDB.findShiftById;
-
 public class Manager_Panel {
 
     private static void printMenu_Manager() {
@@ -257,7 +255,7 @@ public class Manager_Panel {
         int shiftsFound = 0;
         String shiftId = null;
 
-        for (Shift shift : ShiftsDB.getUpcomingShifts()) {
+        for (Shift shift : UpcomingShiftsManagerCLS.getUpcomingShifts()) {
             if (shift.getAssignedEmployees().keySet().stream().anyMatch(emp -> emp.getEmployeeID().equals(employeeId))) {
                 System.out.println(shift.getShiftID() + " - " + shift.getShiftDate() + " - " + shift.getShiftType());
                 shiftsFound++;
@@ -271,7 +269,7 @@ public class Manager_Panel {
         }
 
         if (shiftsFound == 1) {
-            Shift shift = findShiftById(shiftId);
+            Shift shift = UpcomingShiftsManagerCLS.findShiftById(shiftId);
             if (shift != null) {
                 UpcomingShiftsManagerCLS.removeAssignedEmployee(toRemove,shift);
                 System.out.println("Employee with ID " + employeeId + " has been removed from the shift.");
@@ -282,7 +280,7 @@ public class Manager_Panel {
                 System.out.println("Valid shift ID example (uppercase): 'SHIFT-1' \n Enter shift ID:");
                 String shiftIdToRemoveFrom = scanner.nextLine();
 
-                Shift shift = findShiftById(shiftIdToRemoveFrom);
+                Shift shift = UpcomingShiftsManagerCLS.findShiftById(shiftIdToRemoveFrom);
                 if (shift != null) {
                     if (Shift_Manager.removeEmployeeFromShift(toRemove, shift) == Status.Success) {
                         System.out.println("Employee with ID " + employeeId + " has been removed from the shift.");
@@ -311,7 +309,7 @@ public class Manager_Panel {
 
         System.out.println("Enter the Shift ID to assign the employee to:");
         String shiftId = scanner.nextLine().trim();
-        Shift shift = findShiftById(shiftId);
+        Shift shift = UpcomingShiftsManagerCLS.findShiftById(shiftId);
 
         if (shift == null) {
             System.out.println("Shift with ID " + shiftId + " does not exist.");
