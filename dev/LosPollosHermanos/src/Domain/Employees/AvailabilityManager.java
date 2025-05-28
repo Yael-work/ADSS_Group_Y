@@ -104,7 +104,7 @@ public class AvailabilityManager {
             }
         }
         employee.setAvailability(availability);
-        return EmployeeManagerCLS.updateEmployee(employee);
+        return EmployeeManagerCLS.updateEmployeeInSystem(employee);
     }
 
 
@@ -135,7 +135,7 @@ public class AvailabilityManager {
                 if (employeeAvailability != null) {
                     resetUpdateFlags(employeeAvailability);
                     employee.setAvailability(employeeAvailability);
-                    EmployeeManagerCLS.updateEmployee(employee);
+                    EmployeeManagerCLS.updateEmployeeInSystem(employee);
                 }
             }
         } catch (Exception e) {

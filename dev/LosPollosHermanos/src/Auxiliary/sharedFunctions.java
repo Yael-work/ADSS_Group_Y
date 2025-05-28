@@ -3,7 +3,6 @@ package Auxiliary;
 
 import Domain.Employees.*;
 import Models.DBModels.Employees.*;
-import Models.DBModels.transport.Driver;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -84,7 +83,6 @@ public class sharedFunctions {
         System.out.println("4. Cleaner");
         System.out.println("5. Stocker");
         System.out.println("6. Security");
-        System.out.println("7. Driver");
     }
 
     public static int getValidIntChoice(Scanner scanner, int from, int to) {

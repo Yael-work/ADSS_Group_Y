@@ -44,7 +44,6 @@ public class Employee extends BaseModel {
     @JoinColumn(name = "availability_id", referencedColumnName = "id", nullable = false)
     private Availability availability;
 
-
     public Employee(int id, String name, double salary, String employeeId, LocalDate recruitment_Date,
                     List<ARole> roles, BankAccount bank_info, Contract employee_condition, Availability availability) {
         super(id, Employee.class.getName());
@@ -85,9 +84,6 @@ public class Employee extends BaseModel {
     }
     public void setAvailability(Availability availability) {
         this.availability = availability;
-    }
-    public List<ARole> getAllRoles() {
-        return allRoles;
     }
     public void setAllRoles(List<ARole> allRoles) {
         this.allRoles = allRoles;

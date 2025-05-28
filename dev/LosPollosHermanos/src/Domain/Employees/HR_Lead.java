@@ -20,7 +20,7 @@ public class HR_Lead extends ARole {
     }
 
     public static Status Terminate_Employee_from_System(String employeeID) {
-        return EmployeeManagerCLS.deleteEmployee(employeeID);
+        return EmployeeManagerCLS.deleteEmployeeFromSystem(employeeID);
     }
 
     public static Status Add_Employee_to_System(String employeeName, double employeeSalary, String employeeID, LocalDate recruitment_Date, List<ARole> rolesList, BankAccount employeeAccount, Contract employeeContract) {
@@ -43,7 +43,7 @@ public class HR_Lead extends ARole {
                 employeeAvailability
         );
 
-        return EmployeeManagerCLS.addEmployee(employee);
+        return EmployeeManagerCLS.addEmployeeToSystem(employee);
     }
 
     public static Status Set_Shift_Hours(String shiftType, LocalTime startHour, LocalTime endHour) {
@@ -89,9 +89,8 @@ public class HR_Lead extends ARole {
         // 1. Fetch the current employee
         Employee employee = controller.findEmployeeById(employeeID);
         if (employee == null) {
-            return Status.Failure;
+            return Status.EmployeeNotFound;
         }
-
         boolean updated = false;
 
         // 2. Apply all changes to the in-memory object
@@ -100,6 +99,8 @@ public class HR_Lead extends ARole {
             updated = true;
         }
         if (newRole != null) {
+            boolean hasDriverRole = employee.getRolesList().stream().anyMatch(role -> role instanceof Driver);
+            if (hasDriverRole) {return Status.Failure;} // Cannot add a new role if the employee is already a Driver
             EmployeeManagerCLS.addNewRoleToEmployee(newRole, employee);
             updated = true;
         }
@@ -113,6 +114,7 @@ public class HR_Lead extends ARole {
         // 3. Persist the changes
         return controller.updateEmployee(employee);
     }
+
 
     @Override
     public boolean copyFromOther(BaseModel other, Session session) {

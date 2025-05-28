@@ -3,6 +3,7 @@ package Models.DBModels.transport;
 import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Auxiliary.Helper;
 import Models.DBModels.BaseModel;
+import Models.DBModels.Employees.ARole;
 import jakarta.persistence.*;
 import org.hibernate.Session;
 

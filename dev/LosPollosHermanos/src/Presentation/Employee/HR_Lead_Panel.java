@@ -98,9 +98,9 @@ public class HR_Lead_Panel {
         int choice;
         do {
             System.out.println("Please choose Employee's role number:\n" +
-                    "1. Manager\n2. HR Lead\n3. Cashier\n4. Cleaner\n5. Stocker\n6. Security\n7. Driver");
+                    "1. Manager\n2. HR Lead\n3. Cashier\n4. Cleaner\n5. Stocker\n6. Security\n");
             choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
-        } while (choice < 1 || choice > 7);
+        } while (choice < 1 || choice > 6);
 
         ARole role = sharedFunctions.promptForRole(choice);
         List<ARole> rolesList = new ArrayList<>();
@@ -110,9 +110,11 @@ public class HR_Lead_Panel {
         Contract employeeContract = promptForContract(scanner);
         LocalDate recruitment_Date = LocalDate.now();
 
-        if (employeeAccount == null || employeeContract == null) { return Status.Failure; }
+        if (employeeAccount == null || employeeContract == null) {
+            return Status.Failure;
+        }
 
-        return HR_Lead.Add_Employee_to_System(employeeName, employeeSalary, employeeID, recruitment_Date,  rolesList, employeeAccount, employeeContract);
+        return HR_Lead.Add_Employee_to_System(employeeName, employeeSalary, employeeID, recruitment_Date, rolesList, employeeAccount, employeeContract);
     }
 
     private static Status setShiftHoursUI() {
@@ -183,7 +185,6 @@ public class HR_Lead_Panel {
         System.out.println("Please Enter the ID of the Employee to update: ");
         String employeeID = scanner.nextLine();
 
-        // Prompt user for what to update
         int choice;
         do {
             System.out.println("\nWhat would you like to update?");
@@ -196,24 +197,38 @@ public class HR_Lead_Panel {
             switch (choice) {
                 case 1: // Update salary
                     double newSalary = promptForSalary(scanner);
-                    if (HR_Lead.Update_Employee_Information(employeeID, newSalary, null, null, null, null) != Status.Success) {;
+                    Status status1 = HR_Lead.Update_Employee_Information(employeeID, newSalary, null, null, null, null);
+                    if (status1 == Status.Success) {
+                        System.out.println("Salary updated successfully.");
+                    } else {
                         System.out.println("Failed to update salary.");
-                        return Status.Failure;
                     }
+                    return status1;
+
                 case 2: // Add role
                     sharedFunctions.DisplayAvailableRoles();
                     int roleChoice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
                     ARole newRole = sharedFunctions.promptForRole(roleChoice);
-                    if (HR_Lead.Update_Employee_Information(employeeID, null, newRole, null, null, null) != Status.Success) {;
-                        System.out.println("Failed to add role.");
-                        return Status.Failure;
+                    Status status2 = HR_Lead.Update_Employee_Information(employeeID, null, newRole, null, null, null);
+                    if (status2 == Status.Success) {
+                        System.out.println("Role added successfully.");
+                    } else if (status2 == Status.EmployeeNotFound) {
+                        System.out.println("Failed to add role. Employee not found.");
+                    } else {
+                        System.out.println("Driver role can only be added during recruitment.");
                     }
+                    return status2;
+
                 case 3: // Update availability
                     Availability newAvailability = promptForAvailability(scanner);
-                    if (HR_Lead.Update_Employee_Information(employeeID, null, null, null, newAvailability, null) != Status.Success) {;
+                    Status status3 = HR_Lead.Update_Employee_Information(employeeID, null, null, null, newAvailability, null);
+                    if (status3 == Status.Success) {
+                        System.out.println("Availability updated successfully.");
+                    } else {
                         System.out.println("Failed to update availability.");
-                        return Status.Failure;
                     }
+                    return status3;
+
                 case 4:
                     System.out.println("No changes made.");
                     return Status.Failure;
@@ -224,50 +239,122 @@ public class HR_Lead_Panel {
     // --- Input helper methods (unchanged) ---
 
     private static String promptForEmployeeID(Scanner scanner) {
-        System.out.println("Please Enter Employee's ID: ");
-        return scanner.nextLine();
+        String employeeID;
+        do {
+            System.out.println("Please enter Employee's ID:");
+            employeeID = scanner.nextLine().trim();
+
+            if (employeeID.isEmpty()) {
+                System.out.println("Employee ID cannot be empty. Please try again.");
+                continue;
+            }
+            if (EmployeeManagerCLS.doesEmployeeExist(employeeID)) {
+                System.out.println("Employee ID already exists. Please enter a different ID.");
+                continue;
+            }
+            break; // Input is valid
+        } while (true);
+
+        return employeeID;
     }
 
     private static String promptForEmployeeName(Scanner scanner) {
         System.out.println("Please Enter Employee's name: ");
+        while (!scanner.hasNextLine() || scanner.nextLine().trim().isEmpty()) {
+            System.out.println("Invalid input. Please enter a valid name.");
+        }
         return scanner.nextLine();
     }
 
     private static double promptForSalary(Scanner scanner) {
         double salary;
-        do {
-            System.out.println("Please Enter Employee's salary: ");
-            while (!scanner.hasNextDouble()) {
-                System.out.println("Invalid input. Please enter a numeric value.");
-                scanner.next();
+        while (true) {
+            System.out.print("Please enter Employee's salary: ");
+            String input = scanner.nextLine().trim();
+
+            try {
+                salary = Double.parseDouble(input);
+
+                if (salary <= 0) {
+                    System.out.println("Salary must be a positive number greater than zero. Please try again.");
+                    continue;
+                }
+
+                break;
+
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a numeric value (e.g., 35.5).");
             }
-            salary = scanner.nextDouble();
-            if (salary < 0) {
-                System.out.println("Invalid salary. Should be a positive number.");
-            }
-        } while (salary < 0);
-        scanner.nextLine(); // clear buffer
+        }
         return salary;
     }
 
     private static BankAccount promptForBankAccount(Scanner scanner) {
-        System.out.println("Please Enter Employee's bank information: ");
-        scanner.nextLine(); // Clear the buffer
-        System.out.print("Bank name: ");
-        String bankName = scanner.nextLine();
-        System.out.print("Bank account number: ");
-        String accountNumber = scanner.nextLine();
-        System.out.print("Bank branch number: ");
-        String branch = scanner.nextLine();
+        String bankName, accountNumber, branch;
+
+        System.out.println("Please enter Employee's bank information:");
+
+        // Bank name
+        while (true) {
+            System.out.print("Bank name: ");
+            bankName = scanner.nextLine().trim();
+            if (bankName.isEmpty()) {
+                System.out.println("Bank name cannot be empty. Please try again.");
+            } else {
+                break;
+            }
+        }
+
+        // Account number
+        while (true) {
+            System.out.print("Bank account number: ");
+            accountNumber = scanner.nextLine().trim();
+            if (accountNumber.isEmpty()) {
+                System.out.println("Account number cannot be empty. Please try again.");
+                continue;
+            }
+            if (!accountNumber.matches("\\d+")) {
+                System.out.println("Account number must be numeric. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        // Branch number
+        while (true) {
+            System.out.print("Bank branch number: ");
+            branch = scanner.nextLine().trim();
+            if (branch.isEmpty()) {
+                System.out.println("Branch number cannot be empty. Please try again.");
+                continue;
+            }
+            if (!branch.matches("\\d+")) {
+                System.out.println("Branch number must be numeric. Please try again.");
+                continue;
+            }
+            break;
+        }
+
         return new BankAccount(bankName, accountNumber, branch);
     }
 
     private static Contract promptForContract(Scanner scanner) {
-        System.out.println("Please Enter Employee's Contract information:");
-        int pension = promptForPositiveInt(scanner, "Pension Percentage: ");
+        System.out.println("Please enter Employee's contract information:");
+
+        int pension;
+        while (true) {
+            pension = promptForPositiveInt(scanner, "Pension Percentage (0–100): ");
+            if (pension < 0 || pension > 100) {
+                System.out.println("Pension percentage must be between 0 and 100.");
+            } else {
+                break;
+            }
+        }
+
         int sickDays = promptForPositiveInt(scanner, "Sick days number: ");
         int vacation = promptForPositiveInt(scanner, "Vacation days number: ");
         int minHours = promptForPositiveInt(scanner, "Min monthly hours: ");
+
         return new Contract(IdGenerator.getNextIdContract(), pension, sickDays, vacation, minHours);
     }
 
@@ -275,17 +362,16 @@ public class HR_Lead_Panel {
         int value;
         while (true) {
             System.out.print(message);
-            if (scanner.hasNextInt()) {
-                value = scanner.nextInt();
-                if (value >= 0) {
-                    scanner.nextLine(); // consume leftover newline
-                    break;
+            String input = scanner.nextLine().trim();
+            try {
+                value = Integer.parseInt(input);
+                if (value < 0) {
+                    System.out.println("Value must be 0 or more. Please try again.");
                 } else {
-                    System.out.println("Value must be 0 or more. Try again.");
+                    break;
                 }
-            } else {
+            } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a whole number.");
-                scanner.next(); // clear invalid input
             }
         }
         return value;
@@ -316,12 +402,36 @@ public class HR_Lead_Panel {
                 continue;
             }
             switch (choice) {
-                case 1: return AvailabilityStatus.Day;
-                case 2: return AvailabilityStatus.Night;
-                case 3: return AvailabilityStatus.Both;
-                case 4: return AvailabilityStatus.Unavailable;
-                default: System.out.println("Invalid choice. Please select a number from 1 to 4.");
+                case 1:
+                    return AvailabilityStatus.Day;
+                case 2:
+                    return AvailabilityStatus.Night;
+                case 3:
+                    return AvailabilityStatus.Both;
+                case 4:
+                    return AvailabilityStatus.Unavailable;
+                default:
+                    System.out.println("Invalid choice. Please select a number from 1 to 4.");
             }
         } while (true);
+    }
+
+    public static Status Add_Driver_to_System(String firstName, String personalId) {
+        Scanner scanner = new Scanner(System.in);
+        double employeeSalary = promptForSalary(scanner);
+
+
+        ARole role = sharedFunctions.promptForRole(7);
+        List<ARole> rolesList = new ArrayList<>();
+        rolesList.add(role);
+
+        BankAccount employeeAccount = promptForBankAccount(scanner);
+        Contract employeeContract = promptForContract(scanner);
+        LocalDate recruitment_Date = LocalDate.now();
+
+        if (employeeAccount == null || employeeContract == null) {
+            return Status.Failure;
+        }
+        return HR_Lead.Add_Employee_to_System(firstName, employeeSalary, personalId, recruitment_Date, rolesList, employeeAccount, employeeContract);
     }
 }

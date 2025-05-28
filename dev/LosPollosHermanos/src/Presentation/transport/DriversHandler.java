@@ -1,8 +1,10 @@
 package Presentation.transport;
 
+import Domain.Employees.HR_Lead;
 import Domain.transport.DriversManager;
 import Models.DBModels.transport.Driver;
 import Auxiliary.Helper;
+import Presentation.Employee.HR_Lead_Panel;
 
 import java.util.ArrayList;
 
@@ -45,6 +47,7 @@ public class DriversHandler {
             Helper.showError("Error creating new driver.");
             return false;
         }
+        HR_Lead_Panel.Add_Driver_to_System(firstName , personalId);
         return true;
     }
 

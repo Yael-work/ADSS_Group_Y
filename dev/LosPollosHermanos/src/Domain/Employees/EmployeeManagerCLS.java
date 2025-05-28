@@ -5,6 +5,7 @@ import Auxiliary.Enums.Domain.Status;
 import Auxiliary.Helper;
 import DB.DBemployeeManager;
 import DB.interfaces.employees.IEmployeeController;
+import Domain.transport.DriversManager;
 import Models.DBModels.Employees.*;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ public class EmployeeManagerCLS {
 
     private static final IEmployeeController employeeController = DBemployeeManager.getInstance().getEmployeeController();
 
-    public static Status addEmployee(Employee employee) {
+    public static Status addEmployeeToSystem(Employee employee) {
         return employeeController.addEmployeeToDB(employee);
     }
 
@@ -33,22 +34,34 @@ public class EmployeeManagerCLS {
         return employee;
     }
 
-    public static Status deleteEmployee(String employeeID) {
-        return employeeController.removeEmployeeFromDB(employeeID);
+    public static Status deleteEmployeeFromSystem(String employeeID) {
+        if (!doesEmployeeExist(employeeID)) {
+            Helper.showError(String.format("Cant delete employee with id=%s, it does not exist", employeeID));
+            return Status.Failure;
+        }
+
+        boolean hasDriverRole = getEmployeeById(employeeID).getRolesList().stream().anyMatch(role -> role instanceof Driver);
+        if (hasDriverRole)
+            String driverPersonal_id = getEmployeeById(employeeID).getEmployeeID();
+            Driver driverToRemove = DriversManager.getDriverByPersonalId(driverPersonal_id);
+            if (DriversManager.deleteDriver(driverToRemove.getId()))
+                return employeeController.removeEmployeeFromDB(employeeID);
+        else
+            return employeeController.removeEmployeeFromDB(employeeID);
     }
 
-    public static Status updateEmployee(Employee updatedEmployee) {
+    public static Status updateEmployeeInSystem(Employee updatedEmployee) {
         return employeeController.updateEmployee(updatedEmployee);
     }
 
 
     public static Status addNewRoleToEmployee(ARole newRole , Employee employee) {
-        for (int i = 0; i < employee.getAllRoles().size(); i++) {
+        for (int i = 0; i < employee.getRolesList().size(); i++) {
             if (employee.getRolesList().get(i).getRole().equals(newRole.getRole())) {
                 return Status.Failure;
             }
         }
-        List<ARole> updatedRoles = employee.getAllRoles();
+        List<ARole> updatedRoles = employee.getRolesList();
         updatedRoles.add(newRole);
         employee.setAllRoles(updatedRoles);
         return employeeController.updateEmployee(employee);
