@@ -7,6 +7,18 @@ import Domain.Employees.PastShiftsManagerCLS;
 import Domain.Employees.UpcomingShiftsManagerCLS;
 import Models.DBModels.Employees.Employee;
 
+// Following imports are only for mock data upload-----
+import DB.implementations.sqlite.employees.SqlitePastShiftsController;
+import DB.implementations.MockFactory.MockEmployeeData;
+import DB.implementations.MockFactory.MockShiftsData;
+import DB.implementations.sqlite.employees.SqliteEmployeesController;
+import DB.implementations.sqlite.employees.SqliteUpcomingShiftsController;
+import Models.DBModels.Employees.Employee;
+import Models.DBModels.Employees.Shift;
+//-----------------------
+
+import java.util.List;
+import java.util.Scanner;
 import java.util.Scanner;
 
 public class System_Login_Panel {
@@ -54,21 +66,31 @@ public class System_Login_Panel {
 
 
     public static void EmployeesPresentationHandler() {
+        Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("Would you like to load mock data? (yes/no)");
-            Scanner scanner = new Scanner(System.in);
             String answer = scanner.nextLine().trim().toLowerCase();
             if (answer.equals("yes")) {
                 System.out.println("Loading mock data...");
-                Employee.createEmployeesDB();
-                //Shift.createShiftsDB();
-                // Move past shifts to pastShiftsDB before any employee interaction
-                //UpcomingShiftsManagerCLS.moveShiftsToPast();
-                // Clean up old shifts (older than 7 years) on application startup
-                //PastShiftsManagerCLS.removeOldPastShifts();
+
+                // Load and add mock employees to DB
+                List<Employee> employees = MockEmployeeData.createMockEmployees();
+                for (Employee emp : employees) {
+                    SqliteEmployeesController.getInstance().addEmployeeToDB(emp);
+                }
+
+                // Load and add mock shifts to DB
+                List<Shift> shifts = MockShiftsData.createUpcomingShiftsMockData();
+                for (Shift shift : shifts) {
+                    SqliteUpcomingShiftsController.getInstance().addUpcomingShift(shift);
+                }
+
+                // Optionally move past shifts, clean old shifts, etc.
+                SqliteUpcomingShiftsController.getInstance().moveShiftsToPast();
+                SqlitePastShiftsController.getInstance().removeOlderThen7YearsShifts();
+
                 break;
-            }
-            if (answer.equals("no")) {
+            } else if (answer.equals("no")) {
                 System.out.println("Skipping mock data loading.");
                 break;
             } else {

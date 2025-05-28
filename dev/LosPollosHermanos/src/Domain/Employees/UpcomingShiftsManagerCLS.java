@@ -72,7 +72,7 @@ public class UpcomingShiftsManagerCLS {
         upcomingShiftsController.updateShiftInDB(shift);
     }
 
-    private static boolean isEmployeeAvailableForShift(Employee employee, LocalDate shiftDate, String shiftType) {
+    public static boolean isEmployeeAvailableForShift(Employee employee, LocalDate shiftDate, String shiftType) {
         if (employee == null) {
             return false;
         }
