@@ -41,15 +41,18 @@ public class EmployeeManagerCLS {
         }
 
         boolean hasDriverRole = getEmployeeById(employeeID).getRolesList().stream().anyMatch(role -> role instanceof Driver);
-        if (hasDriverRole)
+        if (hasDriverRole) {
             String driverPersonal_id = getEmployeeById(employeeID).getEmployeeID();
-            Driver driverToRemove = DriversManager.getDriverByPersonalId(driverPersonal_id);
-            if (DriversManager.deleteDriver(driverToRemove.getId()))
+            Models.DBModels.transport.Driver driverToRemove = DriversManager.getDriverByPersonalId(driverPersonal_id);
+            if (DriversManager.deleteDriver(driverToRemove.getId())) {
                 return employeeController.removeEmployeeFromDB(employeeID);
-        else
+            }
+            //TODO: Consider what should happen if deleteDriver returns false (maybe return Status.Failure here?)
+            return Status.Failure;
+        } else {
             return employeeController.removeEmployeeFromDB(employeeID);
+        }
     }
-
     public static Status updateEmployeeInSystem(Employee updatedEmployee) {
         return employeeController.updateEmployee(updatedEmployee);
     }
