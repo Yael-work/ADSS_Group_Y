@@ -106,17 +106,17 @@ public class UpcomingShiftsManagerCLS {
             default -> false; // Unavailable or Skip
         };
     }
-    // for available Roles search in Auxilary package - > sharedFunctions -> DisplayAyavailableRoles
-    public static boolean isRoleInShift(Shift shift, String role) {
-        if (shift == null || role == null) return false;
-        Map<Employee, String> assignedEmployees = shift.getAssignedEmployees();
-        for (Employee emp : assignedEmployees.keySet()) {
-            if (emp.getRolesList().stream().anyMatch(r -> r.getRole().equals(role))) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    // for available Roles search in Auxilary package - > sharedFunctions -> DisplayAyavailableRoles
+//    public static boolean isRoleInShift(Shift shift, String role) {
+//        if (shift == null || role == null) return false;
+//        Map<Employee, String> assignedEmployees = shift.getAssignedEmployees();
+//        for (Employee emp : assignedEmployees.keySet()) {
+//            if (emp.getRolesList().stream().anyMatch(r -> r.getRole().equals(role))) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * Retrieves a shift by its date.
