@@ -13,6 +13,9 @@ import DB.interfaces.transport.ITransportIssueLogController;
 import DB.interfaces.transport.ITransportRouteController;
 import Domain.stock.StockManager;
 import Domain.suppliers.SuppliersManager;
+import Models.DBModels.Employees.ARole;
+import Models.DBModels.Employees.Employee;
+import Models.DBModels.Employees.Shift;
 import Models.DBModels.suppliers.Supplier;
 import Models.DBModels.transport.*;
 import Models.DTOs.ItemsAtSupplier;
@@ -295,19 +298,41 @@ public class TransportManager {
         List<Driver> availableDriversWithProperLicense = DriversManager.getAllDrivers().stream()
                 .filter(driver -> Helper.isLicenseTypeValidPerTruck(driver.getLicenseType(), truckLicenseType))
                 .toList();
-        for (Driver driver : availableDriversWithProperLicense) {
-            if (driver == null) {
-                Helper.showError("Cant get driver, it does not exist");
-                continue;
-            }
-            // Check if the driver is available for the given date
-            boolean isAvailable = UpcomingShiftsManagerCLS.isEmployeeAvailableForShift(driver, targetStartDateTime.toLocalDate(), "Day");
-            if (!isAvailable) {
-                availableDriversWithProperLicense.remove(driver);
+        if (availableDriversWithProperLicense.isEmpty()) {
+            Helper.showError("No drivers with the required license type found.");
+            return new ArrayList<>();
+        }
+        Shift shift = UpcomingShiftsManagerCLS.getShiftByDate(targetStartDateTime.toLocalDate());
+        if (shift == null) {
+            Helper.showError("No shift found for the given date.");
+            return new ArrayList<>();
+        }
+        if(shift.getAllAvailableEmployees().isEmpty()) {
+            Helper.showError("No available drivers for the given shift.");
+            return new ArrayList<>();
+        }
+        List<Employee> availableEmployees = shift.getAllAvailableEmployees();
+        List<Driver> availableDrivers = new ArrayList<>();
+        for (Employee employee : availableEmployees) {
+            if (employee.getRolesList().stream().anyMatch(role -> role.getRole().equals("Driver"))) {
+                Domain.Employees.Driver driver = employee.getRolesList()
+                        .stream()
+                        .filter(role -> role instanceof Domain.Employees.Driver)
+                        .map(role -> (Domain.Employees.Driver) role)
+                        .findFirst()
+                        .orElse(null);
+                if (driver != null && availableDriversWithProperLicense.stream().
+                        anyMatch(d -> d.getId() == driver.getId())) {
+                   availableDrivers.add(availableDriversWithProperLicense.stream()
+                            .filter(d -> d.getId() == driver.getId())
+                            .findFirst()
+                            .orElse(null));
+                }
+
             }
         }
-        return /*TODO @ethan link with employees module and check for each specific driver that is not blocked due to a shift by start and end*/
-                availableDriversWithProperLicense;
+        return /*TODO @ethan link with employees module and check for each specific driver that is not blocked due to a shift by start and end -DONE*/
+                availableDrivers;
     }
 
 
@@ -328,8 +353,18 @@ public class TransportManager {
             return new CreateNewTransportResult(Helper.UndefinedId,
                     CreateNewTransportResultEnum.InvalidInput);
         }
-        boolean doesStockerExistAtPlannedEndTime = true;//todo @ethan link with employees by branch name(extracted from the routes) and the plannedEndDateTime!
-        if (!doesStockerExistAtPlannedEndTime) {
+        //todo @ethan link with employees by branch name(extracted from the routes) and the plannedEndDateTime!
+        Shift shift = UpcomingShiftsManagerCLS.getShiftByDate(plannedEndDateTime.toLocalDate());
+        if (shift == null) {
+            Helper.showError("No shift found for the planned end date.");
+            return new CreateNewTransportResult(Helper.UndefinedId,
+                    CreateNewTransportResultEnum.StockerUnavailable);
+        }
+        List<Employee> stockers = shift.getAllAvailableEmployees().stream()
+                .filter(employee -> employee.getRolesList().stream()
+                        .anyMatch(role -> role.getRole().equals("Stocker")))
+                .toList();
+        if (stockers.isEmpty()) {
             Helper.println("No stocker available at the planned end time.");
             return new CreateNewTransportResult(Helper.UndefinedId,
                     CreateNewTransportResultEnum.StockerUnavailable);

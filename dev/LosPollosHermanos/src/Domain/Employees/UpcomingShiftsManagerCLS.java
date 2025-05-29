@@ -106,15 +106,30 @@ public class UpcomingShiftsManagerCLS {
             default -> false; // Unavailable or Skip
         };
     }
-    // for available Roles search in Auxilary package - > sharedFunctions -> DisplayAyavailableRoles
-    public static boolean isRoleInShift(Shift shift, String role) {
-        if (shift == null || role == null) return false;
-        Map<Employee, String> assignedEmployees = shift.getAssignedEmployees();
-        for (Employee emp : assignedEmployees.keySet()) {
-            if (emp.getRolesList().stream().anyMatch(r -> r.getRole().equals(role))) {
-                return true;
+//    // for available Roles search in Auxilary package - > sharedFunctions -> DisplayAyavailableRoles
+//    public static boolean isRoleInShift(Shift shift, String role) {
+//        if (shift == null || role == null) return false;
+//        Map<Employee, String> assignedEmployees = shift.getAssignedEmployees();
+//        for (Employee emp : assignedEmployees.keySet()) {
+//            if (emp.getRolesList().stream().anyMatch(r -> r.getRole().equals(role))) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
+    /**
+     * Retrieves a shift by its date.
+     *
+     * @param date - the date of the shift to be retrieved
+     * @return - the Shift object with the specified date, or null if not found
+     */
+    public static Shift getShiftByDate(LocalDate date) {
+        for (Shift shift : upcomingShiftsController.getUpcomingShifts()) {
+            if (shift.getShiftDate().equals(date)) {
+                return shift;
             }
         }
-        return false;
+        return null;
     }
 }
