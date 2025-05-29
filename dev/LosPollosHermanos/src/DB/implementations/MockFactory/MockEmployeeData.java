@@ -22,9 +22,9 @@ public class MockEmployeeData {
         BankAccount mockBank6 = new BankAccount("Bank-Yahav", "0725431", "972");
 
         // --- Mock Contracts ---
-        Contract fullTimeContract = new Contract(IdGenerator.getNextIdContract(),7, 14, 21, 160);
-        Contract partTimeContract = new Contract(IdGenerator.getNextIdContract(),5, 10, 14, 80);
-        Contract flexibleContract = new Contract(IdGenerator.getNextIdContract(), 6, 12, 18, 120);
+        Contract fullTimeContract = new Contract(0,7, 14, 21, 160);
+        Contract partTimeContract = new Contract(0,5, 10, 14, 80);
+        Contract flexibleContract = new Contract(0, 6, 12, 18, 120);
 
         // --- Mock Availabilities ---
         Availability mockAvailability1 = new Availability(
@@ -53,18 +53,18 @@ public class MockEmployeeData {
         );
 
         // --- Mock Roles ---
-        ARole cashier1 = new Cashier(IdGenerator.getNextIdCashier());
-        ARole manager1 = new Shift_Manager(IdGenerator.getNextIdManager());
-        ARole hrLead1 = new HR_Lead(IdGenerator.getNextIdHR());
-        ARole cleaner1 = new Cleaner(IdGenerator.getNextIdCleaner());
-        ARole cashier2 = new Cashier(IdGenerator.getNextIdCashier());
-        ARole security1 = new Security(IdGenerator.getNextIdSecurity());
+        ARole cashier1 = new Cashier(0);
+        ARole manager1 = new Shift_Manager(0);
+        ARole hrLead1 = new HR_Lead(0);
+        ARole cleaner1 = new Cleaner(0);
+        ARole cashier2 = new Cashier(0);
+        ARole security1 = new Security(0);
 
         // --- Employees ---
         // Employee 1: Alice
         List<ARole> rolesList1 = new ArrayList<>(List.of(cashier1));
         Employee emp1 = new Employee(
-                1, "Alice", 32.5, "EMP001",
+                0, "Alice", 32.5, "EMP001",
                 LocalDate.of(2022, 3, 15),
                 rolesList1,
                 mockBank1,
@@ -78,7 +78,7 @@ public class MockEmployeeData {
         rolesList2.add(manager1);
         rolesList2.add(cashier2);
         Employee emp2 = new Employee(
-                2, "Bob", 47.1, "EMP002",
+                0, "Bob", 47.1, "EMP002",
                 LocalDate.of(2023, 1, 10),
                 rolesList2,
                 mockBank2,
@@ -91,7 +91,7 @@ public class MockEmployeeData {
         List<ARole> rolesList3 = new ArrayList<>();
         rolesList3.add(hrLead1);
         Employee emp3 = new Employee(
-                3, "Charlie", 120.2, "EMP003",
+                0, "Charlie", 120.2, "EMP003",
                 LocalDate.of(2021, 5, 20),
                 rolesList3,
                 mockBank3,
@@ -104,7 +104,7 @@ public class MockEmployeeData {
         List<ARole> rolesList4 = new ArrayList<>();
         rolesList4.add(cleaner1);
         Employee emp4 = new Employee(
-                4, "David", 35.0, "EMP004",
+                0, "David", 35.0, "EMP004",
                 LocalDate.of(2023, 6, 1),
                 rolesList4,
                 mockBank4,
@@ -118,7 +118,7 @@ public class MockEmployeeData {
         rolesList5.add(security1);
         rolesList5.add(cleaner1);
         Employee emp5 = new Employee(
-                5, "Eve", 33.5, "EMP005",
+                0, "Eve", 33.5, "EMP005",
                 LocalDate.of(2023, 7, 15),
                 rolesList5,
                 mockBank5,
@@ -132,7 +132,7 @@ public class MockEmployeeData {
         rolesList6.add(security1);
         rolesList6.add(cleaner1);
         Employee emp6 = new Employee(
-                6, "Inna", 33, "EMP006",
+                0, "Inna", 33, "EMP006",
                 LocalDate.of(2024, 7, 10),
                 rolesList6,
                 mockBank6,

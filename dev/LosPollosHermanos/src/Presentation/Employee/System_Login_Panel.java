@@ -65,7 +65,7 @@ public class System_Login_Panel {
     }
 
 
-    public static void EmployeesPresentationHandler() {
+     public static void EmployeesPresentationHandler() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("Would you like to load mock data? (yes/no)");
@@ -73,22 +73,89 @@ public class System_Login_Panel {
             if (answer.equals("yes")) {
                 System.out.println("Loading mock data...");
 
-                // Load and add mock employees to DB
-                List<Employee> employees = MockEmployeeData.createMockEmployees();
-                for (Employee emp : employees) {
-                    SqliteEmployeesController.getInstance().addEmployeeToDB(emp);
+                try {
+                    // Set test mode to use test database
+                    Auxiliary.GlobalConfig.setTestMode(true);
+
+                    // Force Hibernate to recreate the session factory
+                    DB.util.HibernateUtil.invalidateSessionFactory();
+
+                    // Get a new session to ensure schema is created
+                    try (org.hibernate.Session session = DB.util.HibernateUtil.getSessionFactory().openSession()) {
+                        //System.out.println("Database connection established");
+
+                        // Clear existing data to avoid unique constraint violations
+                        session.beginTransaction();
+                        //System.out.println("Clearing existing mock data...");
+                        session.createNativeQuery("DELETE FROM shift_assigned_employees").executeUpdate();
+                        session.createNativeQuery("DELETE FROM shift_required_roles").executeUpdate();
+                        session.createNativeQuery("DELETE FROM Shifts").executeUpdate();
+                        session.createNativeQuery("DELETE FROM employee_roles").executeUpdate();
+                        session.createNativeQuery("DELETE FROM Roles").executeUpdate();
+                        session.createNativeQuery("DELETE FROM Employees").executeUpdate();
+                        session.createNativeQuery("DELETE FROM Availabilitys").executeUpdate();
+                        session.createNativeQuery("DELETE FROM BankAccounts").executeUpdate();
+                        session.createNativeQuery("DELETE FROM Contracts").executeUpdate();
+                        session.getTransaction().commit();
+                        //System.out.println("Existing data cleared successfully");
+
+                        // Begin transaction for adding employees
+                        session.beginTransaction();
+
+                        // Create and add mock employees
+                        List<Employee> employees = MockEmployeeData.createMockEmployees();
+                        //System.out.println("Created " + employees.size() + " mock employees");
+
+                        for (Employee emp : employees) {
+                            try {
+                                // Use merge instead of persist to handle detached entities
+                                session.merge(emp);
+                                //System.out.println("Added employee: " + emp.getEmployeeID());
+                            } catch (Exception e) {
+                                System.out.println("Error adding employee " + emp.getEmployeeID() + ": " + e.getMessage());
+                            }
+                        }
+
+                        // Commit the transaction
+                        session.getTransaction().commit();
+                        //System.out.println("Employee transaction committed");
+
+                        // Begin new transaction for shifts
+                        session.beginTransaction();
+
+                        // Fetch the persisted employees from database to use in shifts
+                        List<Employee> persistedEmployees = session.createQuery("FROM Employee", Employee.class).getResultList();
+                        //System.out.println("Fetched " + persistedEmployees.size() + " persisted employees");
+
+                        // Create and add mock shifts using persisted employees
+                        List<Shift> shifts = MockShiftsData.createUpcomingShiftsMockDataWithEmployees(persistedEmployees);
+                        //System.out.println("Created " + shifts.size() + " mock shifts");
+
+                        for (Shift shift : shifts) {
+                            try {
+                                // Use merge instead of persist to handle detached entities
+                                session.merge(shift);
+                                // System.out.println("Added shift: " + shift.getShiftID());
+                            } catch (Exception e) {
+                                System.out.println("Error adding shift " + shift.getShiftID() + ": " + e.getMessage());
+                            }
+                        }
+
+                        // Commit the transaction
+                        session.getTransaction().commit();
+                        //System.out.println("Shift transaction committed");
+                    }
+
+                    // Reset to production mode
+                    // Auxiliary.GlobalConfig.setTestMode(false); // Keep test mode to use mock data
+                    //System.out.println("Mock data loading completed");
+
+                } catch (Exception e) {
+                    System.out.println("Error in mock data process: " + e.getMessage());
+                    e.printStackTrace();
+                    // Reset to production mode
+                    // Auxiliary.GlobalConfig.setTestMode(false); // Keep test mode to use mock data
                 }
-
-                // Load and add mock shifts to DB
-                List<Shift> shifts = MockShiftsData.createUpcomingShiftsMockData();
-                for (Shift shift : shifts) {
-                    SqliteUpcomingShiftsController.getInstance().addUpcomingShift(shift);
-                }
-
-                // Optionally move past shifts, clean old shifts, etc.
-                SqliteUpcomingShiftsController.getInstance().moveShiftsToPast();
-                SqlitePastShiftsController.getInstance().removeOlderThen7YearsShifts();
-
                 break;
             } else if (answer.equals("no")) {
                 System.out.println("Skipping mock data loading.");

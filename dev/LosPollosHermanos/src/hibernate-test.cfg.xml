@@ -16,6 +16,21 @@
         <!-- Debugging -->
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
+        <property name="hibernate.generate_statistics">false</property>
+        <property name="hibernate.use_sql_comments">false</property>
+        <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+
+        <!-- Additional compatibility settings -->
+        <property name="hibernate.bytecode.provider">none</property>
+        <property name="hibernate.enhance.enableLazyInitialization">false</property>
+        <property name="hibernate.enhance.enableDirtyTracking">false</property>
+        <property name="hibernate.enhance.enableAssociationManagement">false</property>
+
+        <!-- Force disable all bytecode enhancement -->
+        <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+        <property name="hibernate.bytecode.provider">none</property>
+        <property name="hibernate.session.events.log">false</property>
+        <property name="hibernate.session.events.log.LOG_QUERIES_SLOWER_THAN_MS">0</property>
 
         <!-- Register your entities -->
         <mapping class="Models.DBModels.transport.Driver"/>
@@ -36,5 +51,13 @@
         <mapping class="Models.DBModels.Employees.ARole"/>
         <mapping class="Models.DBModels.Employees.Contract"/>
         <mapping class="Models.DBModels.Employees.BankAccount"/>
+        <!-- Employee Roles -->
+        <mapping class="Domain.Employees.Cashier"/>
+        <mapping class="Domain.Employees.Shift_Manager"/>
+        <mapping class="Domain.Employees.HR_Lead"/>
+        <mapping class="Domain.Employees.Cleaner"/>
+        <mapping class="Domain.Employees.Security"/>
+        <mapping class="Domain.Employees.Stocker"/>
+        <mapping class="Domain.Employees.Driver"/>
     </session-factory>
 </hibernate-configuration>

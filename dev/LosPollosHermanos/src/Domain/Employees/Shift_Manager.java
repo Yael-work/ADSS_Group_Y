@@ -1,6 +1,5 @@
 package Domain.Employees;
 
-
 import Models.DBModels.BaseModel;
 import Models.DBModels.Employees.ARole;
 import Models.DBModels.Employees.Employee;
@@ -8,15 +7,23 @@ import Models.DBModels.Employees.Shift;
 import Auxiliary.Enums.Domain.Status;
 import Models.DBModels.transport.Branch;
 import org.hibernate.Session;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+@Entity
+@DiscriminatorValue("SHIFT_MANAGER")
 public class Shift_Manager extends ARole {
+    public Shift_Manager() {
+        super();
+    }
+
     public Shift_Manager(int id) {
         super(id, Shift_Manager.class.getName());
-        this.roleName = "Shift Manager";
+        this.setRoleName("Shift Manager");
     }
 
     public static Status createShift(int id, LocalDate shiftDate, String shiftType,

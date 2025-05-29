@@ -22,7 +22,8 @@ public class SqliteEmployeesController implements IEmployeeController {
     public Status addEmployeeToDB(Employee employee) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            session.persist(employee);
+            // Use merge instead of persist to handle detached entities
+            session.merge(employee);
             session.getTransaction().commit();
             return Status.Success;
         } catch (Exception e) {
@@ -48,7 +49,10 @@ public class SqliteEmployeesController implements IEmployeeController {
     public Status removeEmployeeFromDB(String id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            Employee employee = session.get(Employee.class, id);
+            // Use HQL query to find employee by employeeID field, not primary key
+            Employee employee = session.createQuery("FROM Employee WHERE employeeID = :empId", Employee.class)
+                    .setParameter("empId", id)
+                    .uniqueResult();
             if (employee != null) {
                 session.remove(employee);
                 session.getTransaction().commit();
@@ -64,7 +68,10 @@ public class SqliteEmployeesController implements IEmployeeController {
     // This method is used to find an employee by their ID
     public Employee findEmployeeById(String id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Employee.class, id);
+            // Use HQL query to find employee by employeeID field, not primary key
+            return session.createQuery("FROM Employee WHERE employeeID = :empId", Employee.class)
+                    .setParameter("empId", id)
+                    .uniqueResult();
         } catch (Exception e) {
             Helper.showError("Failed to get employee by ID", e);
             return null;

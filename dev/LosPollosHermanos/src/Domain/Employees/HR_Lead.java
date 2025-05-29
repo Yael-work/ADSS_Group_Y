@@ -8,15 +8,23 @@ import Auxiliary.Enums.Domain.Status;
 import DB.interfaces.employees.IEmployeeController;
 import DB.implementations.sqlite.employees.SqliteEmployeesController;
 import org.hibernate.Session;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+@Entity
+@DiscriminatorValue("HR_LEAD")
 public class HR_Lead extends ARole {
+    public HR_Lead() {
+        super();
+    }
+
     public HR_Lead(int id) {
-        super(id, Stocker.class.getName());
-        this.roleName = "HR Lead";
+        super(id, HR_Lead.class.getName());
+        this.setRoleName("HR Lead");
     }
 
     public static Status Terminate_Employee_from_System(String employeeID) {

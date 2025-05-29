@@ -18,6 +18,19 @@ public class MockShiftsData {
         for (Employee e : employees) {
             employeeMap.put(e.getEmployeeID(), e);
         }
+        return createShiftsWithEmployeeMap(employeeMap);
+    }
+
+    public static List<Shift> createUpcomingShiftsMockDataWithEmployees(List<Employee> persistedEmployees) {
+        Map<String, Employee> employeeMap = new HashMap<>();
+        for (Employee e : persistedEmployees) {
+            employeeMap.put(e.getEmployeeID(), e);
+        }
+        return createShiftsWithEmployeeMap(employeeMap);
+    }
+
+    private static List<Shift> createShiftsWithEmployeeMap(Map<String, Employee> employeeMap) {
+        List<Shift> shifts = new ArrayList<>();
 
         // --- PAST SHIFT: 3 years ago ---
         {
@@ -37,7 +50,7 @@ public class MockShiftsData {
             available.remove(emp002);
 
             shifts.add(new Shift(
-                    IdGenerator.getNextIdShift(), date, type, emp001, assigned, available, null
+                    0, date, type, emp001, assigned, available, null
             ));
         }
 
@@ -59,7 +72,7 @@ public class MockShiftsData {
             available.remove(emp004);
 
             shifts.add(new Shift(
-                    IdGenerator.getNextIdShift(), date, type, emp003, assigned, available, null
+                    0, date, type, emp003, assigned, available, null
             ));
         }
 
@@ -91,7 +104,7 @@ public class MockShiftsData {
             }
 
             shifts.add(new Shift(
-                    IdGenerator.getNextIdShift(), date, type, emp002, assigned, available, null
+                    0, date, type, emp002, assigned, available, null
             ));
         }
 
@@ -123,7 +136,7 @@ public class MockShiftsData {
             }
 
             shifts.add(new Shift(
-                    IdGenerator.getNextIdShift(), date, type, emp002, assigned, available, null
+                    0, date, type, emp002, assigned, available, null
             ));
         }
 
@@ -157,7 +170,7 @@ public class MockShiftsData {
             }
 
             shifts.add(new Shift(
-                    IdGenerator.getNextIdShift(), date, type, emp002, assigned, available, null
+                    0, date, type, emp002, assigned, available, null
             ));
         }
 

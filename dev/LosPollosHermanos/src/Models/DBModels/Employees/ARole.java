@@ -13,8 +13,8 @@ import org.hibernate.Session;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "role_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class ARole extends BaseModel {
-    @Column(nullable = false)
-    protected String roleName;
+    @Column(nullable = false, name = "role_name")
+    private String roleName;
 
     public ARole() {
         super(0, ARole.class.getName());
@@ -27,6 +27,14 @@ public abstract class ARole extends BaseModel {
 
     public String getRole() {
         return roleName;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     @Override

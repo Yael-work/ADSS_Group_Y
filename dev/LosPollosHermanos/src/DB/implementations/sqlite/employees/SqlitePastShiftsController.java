@@ -28,7 +28,8 @@ public class SqlitePastShiftsController implements IPastShiftsController {
     public boolean addPastShift(Shift shift) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            session.persist(shift);
+            // Use merge instead of persist to handle detached entities
+            session.merge(shift);
             session.getTransaction().commit();
             return true;
         } catch (Exception e) {
