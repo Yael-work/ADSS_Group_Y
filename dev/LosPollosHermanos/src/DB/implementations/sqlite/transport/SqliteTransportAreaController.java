@@ -33,6 +33,7 @@ public class SqliteTransportAreaController implements ITransportAreaController {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.persist(transportArea);
+            //session.flush(); // Force the ID generation before commit
             session.getTransaction().commit();
             return transportArea.getId();
         } catch (Exception e) {

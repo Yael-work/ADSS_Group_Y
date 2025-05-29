@@ -1,13 +1,18 @@
 package DB.implementations.MockFactory;
 
 import Auxiliary.IdGenerator;
+import DB.util.HibernateUtil;
 import Domain.Employees.AvailabilityManager;
 import Domain.Employees.UpcomingShiftsManagerCLS;
+import Domain.transport.BranchesManager;
 import Models.DBModels.Employees.Employee;
 import Models.DBModels.Employees.Shift;
-
+import Models.DBModels.transport.Branch;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.time.LocalDate;
 import java.util.*;
+
 
 public class MockShiftsData {
 
@@ -31,6 +36,11 @@ public class MockShiftsData {
 
     private static List<Shift> createShiftsWithEmployeeMap(Map<String, Employee> employeeMap) {
         List<Shift> shifts = new ArrayList<>();
+        BranchesManager.addBranch("Branch1", "Address1", "+972 5412311");
+        BranchesManager.addBranch("Branch2", "Address2", "+972 5488899");
+        BranchesManager.addBranch("Branch3", "Address3", "+972 5412988");
+        List<Branch> branches = BranchesManager.getExistingBranches();
+        int randomIndex = ThreadLocalRandom.current().nextInt(branches.size());
 
         // --- PAST SHIFT: 3 years ago ---
         {
@@ -49,9 +59,7 @@ public class MockShiftsData {
             available.remove(emp001);
             available.remove(emp002);
 
-            shifts.add(new Shift(
-                    0, date, type, emp001, assigned, available, null
-            ));
+            shifts.add(new Shift(0, date, type, emp001, assigned, available, branches.get(randomIndex)));
         }
 
         // --- PAST SHIFT: 8 years ago ---
@@ -70,9 +78,9 @@ public class MockShiftsData {
             assigned.put(emp004, getFirstRoleOrUnknown(emp004));
             available.remove(emp003);
             available.remove(emp004);
-
+            randomIndex = ThreadLocalRandom.current().nextInt(branches.size());
             shifts.add(new Shift(
-                    0, date, type, emp003, assigned, available, null
+                    0, date, type, emp003, assigned, available, branches.get(randomIndex)
             ));
         }
 
@@ -102,9 +110,9 @@ public class MockShiftsData {
                 assigned.put(emp005, role005);
                 available.remove(emp005);
             }
-
+            randomIndex = ThreadLocalRandom.current().nextInt(branches.size());
             shifts.add(new Shift(
-                    0, date, type, emp002, assigned, available, null
+                    0, date, type, emp002, assigned, available, branches.get(randomIndex)
             ));
         }
 
@@ -134,10 +142,9 @@ public class MockShiftsData {
                 assigned.put(emp004, role004);
                 available.remove(emp004);
             }
-
+            randomIndex = ThreadLocalRandom.current().nextInt(branches.size());
             shifts.add(new Shift(
-                    0, date, type, emp002, assigned, available, null
-            ));
+                    0, date, type, emp002, assigned, available, branches.get(randomIndex)));
         }
 
         // --- FUTURE SHIFT 3  ---
@@ -168,10 +175,9 @@ public class MockShiftsData {
                 assigned.put(emp001, role001);
                 available.remove(emp001);
             }
-
+            randomIndex = ThreadLocalRandom.current().nextInt(branches.size());
             shifts.add(new Shift(
-                    0, date, type, emp002, assigned, available, null
-            ));
+                    0, date, type, emp002, assigned, available, branches.get(randomIndex)));
         }
 
         return shifts;

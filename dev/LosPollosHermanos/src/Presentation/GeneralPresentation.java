@@ -2,6 +2,7 @@ package Presentation;
 
 import Auxiliary.Enums.Domain.CreateNewTransportResultEnum;
 import Auxiliary.Helper;
+import DB.implementations.MockFactory.MockShiftsData;
 import DB.util.HibernateUtil;
 import Domain.stock.StockManager;
 import Domain.suppliers.SuppliersManager;
@@ -46,11 +47,14 @@ public class GeneralPresentation {
         }
         if (loadMockData.equalsIgnoreCase("y")) {
             Helper.println("Loading mock data...");
+            System_Login_Panel.EmployeesPresentationHandler();
             if (!handleTempMockDataRuntimeLoad()) {
                 Helper.println("Failed to load mock data. Exiting.");
                 return;
             }
         }
+        else
+        {Helper.println("Skipping mock data loading.");}
 
         int choice;
         do {
@@ -72,7 +76,7 @@ public class GeneralPresentation {
                 TransportPresentation.TransportPresentationHandler();
                 break;
             case 2:
-                System_Login_Panel.EmployeesPresentationHandler();
+                System_Login_Panel.printLoginPanel();
                 break;
             case 3:
                 Helper.println("Exiting the system. Goodbye!");
@@ -104,11 +108,12 @@ public class GeneralPresentation {
             return false;
         }
         // we should delete any existing dbs if the point is to test mock data
-        HibernateUtil.deleteDatabaseFiles();
+        // HibernateUtil.deleteDatabaseFiles();
 
-        BranchesManager.addBranch("Branch1", "Address1", "+972 5412311");
-        BranchesManager.addBranch("Branch2", "Address2", "+972 5488899");
-        BranchesManager.addBranch("Branch3", "Address3", "+972 5412988");
+//        BranchesManager.addBranch("Branch1", "Address1", "+972 5412311");
+//        BranchesManager.addBranch("Branch2", "Address2", "+972 5488899");
+//        BranchesManager.addBranch("Branch3", "Address3", "+972 5412988");
+
 
         DriversManager.addDriver("John", "Doe", "123456789", "+972 5412311", "C");
         DriversManager.addDriver("Sam", "Wilson", "987654321", "+972 5488899", "B");

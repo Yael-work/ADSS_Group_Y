@@ -52,7 +52,7 @@ public class HibernateUtil {
             configuration.setProperty("hibernate.hbm2ddl.auto", "update");
 
             // Debugging settings
-            configuration.setProperty("hibernate.show_sql", GlobalConfig.logSql());
+            configuration.setProperty("hibernate.show_sql", "false"); // can be later changed from "false" to Globalconfig.logsql()
             configuration.setProperty("hibernate.format_sql", isTestMode ? "true" : "false");
             configuration.setProperty("hibernate.generate_statistics", "false");
             configuration.setProperty("hibernate.use_sql_comments", "false");
@@ -79,6 +79,7 @@ public class HibernateUtil {
             throw new ExceptionInInitializerError(e);
         }
     }
+
 
     private static void addEntityClasses(Configuration configuration) {
         // Transport entities
@@ -140,6 +141,7 @@ public class HibernateUtil {
             _sessionFactory.close();
             sessionFactory = null;
         }
+        invalidateSessionFactory();
         return deleteDatabaseFiles(GlobalConfig.DATABASE_FILE_NAME) &&
                 deleteDatabaseFiles(GlobalConfig.DATABASE_TESTING_FILE_NAME);
     }

@@ -24,6 +24,7 @@ public class SqliteBranchController implements IBranchController {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.persist(branch);
+            //session.flush(); // Force the ID generation before commit
             session.getTransaction().commit();
             return branch.getId();
         } catch (Exception e) {
@@ -112,6 +113,7 @@ public class SqliteBranchController implements IBranchController {
 
     @Override
     public List<Branch> getBranchesByIds(List<Integer> ids) {
+
         if (ids == null || ids.isEmpty()) {
             return new ArrayList<>();
         }
