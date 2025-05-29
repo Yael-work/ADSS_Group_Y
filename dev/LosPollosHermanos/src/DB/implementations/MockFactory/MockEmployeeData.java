@@ -2,6 +2,7 @@ package DB.implementations.MockFactory;
 
 import Auxiliary.IdGenerator;
 import Auxiliary.Enums.Models.AvailabilityStatus;
+import Domain.transport.DriversManager;
 import Models.DBModels.Employees.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ public class MockEmployeeData {
 
     public static List<Employee> createMockEmployees() {
         List<Employee> employees = new ArrayList<>();
+        ArrayList<Models.DBModels.transport.Driver> drivers = DriversManager.getAllDrivers();
 
         // --- Mock Bank Accounts ---
         BankAccount mockBank1 = new BankAccount("Leumi-Hills", "072543", "972");
@@ -140,6 +142,50 @@ public class MockEmployeeData {
                 mockAvailability5
         );
         employees.add(emp6);
+
+        // Employee 7: John
+        List<ARole> rolesList7 = new ArrayList<>();
+        rolesList7.add(new Driver(0));
+        String personalId = drivers.get(0).getPersonalId();
+        Employee emp7 = new Employee(
+                0, "John", 33, personalId,
+                LocalDate.of(2024, 7, 10),
+                rolesList7,
+                mockBank6,
+                flexibleContract,
+                mockAvailability5
+        );
+        employees.add(emp7);
+
+        // Employee 8: Jane
+        List<ARole> rolesList8 = new ArrayList<>();
+        rolesList8.add(new Driver(0));
+        String personalId2 = drivers.get(1).getPersonalId();
+        String name2 = drivers.get(1).getFirstName();
+        Employee emp8 = new Employee(
+                0, name2, 33, personalId2,
+                LocalDate.of(2024, 7, 10),
+                rolesList8,
+                mockBank6,
+                flexibleContract,
+                mockAvailability5
+        );
+        employees.add(emp8);
+
+        // Employee 9: Sam
+        List<ARole> rolesList9 = new ArrayList<>();
+        rolesList9.add(new Driver(0));
+        String personalId3 = drivers.get(2).getPersonalId();
+        String name3 = drivers.get(2).getFirstName();
+        Employee emp9 = new Employee(
+                0, name3, 33, personalId3,
+                LocalDate.of(2024, 7, 10),
+                rolesList9,
+                mockBank6,
+                flexibleContract,
+                mockAvailability5
+        );
+        employees.add(emp9);
 
         return employees;
     }

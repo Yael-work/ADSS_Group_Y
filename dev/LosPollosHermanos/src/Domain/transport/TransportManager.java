@@ -307,10 +307,12 @@ public class TransportManager {
             Helper.showError("No shift found for the given date.");
             return new ArrayList<>();
         }
-        if(shift.getAllAvailableEmployees().isEmpty()) {
+        if(shift.getAssignedEmployees().isEmpty()) { //TODO assigned employees may not be empty but still have no drivers
             Helper.showError("No available drivers for the given shift.");
             return new ArrayList<>();
         }
+        //TODO shift.getAllAvailableEmployees() - > shift.getAssignedEmployees().keySet()
+        //TODO need to iterate over all assigned employees, All available employees are the employees that are not assigned to the shift
         List<Employee> availableEmployees = shift.getAllAvailableEmployees();
         List<Driver> availableDrivers = new ArrayList<>();
         for (Employee employee : availableEmployees) {

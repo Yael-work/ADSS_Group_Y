@@ -47,7 +47,6 @@ public class GeneralPresentation {
         }
         if (loadMockData.equalsIgnoreCase("y")) {
             Helper.println("Loading mock data...");
-            System_Login_Panel.EmployeesPresentationHandler();
             if (!handleTempMockDataRuntimeLoad()) {
                 Helper.println("Failed to load mock data. Exiting.");
                 return;
@@ -108,20 +107,22 @@ public class GeneralPresentation {
             return false;
         }
         // we should delete any existing dbs if the point is to test mock data
-        // HibernateUtil.deleteDatabaseFiles();
+         HibernateUtil.deleteDatabaseFiles();
 
-//        BranchesManager.addBranch("Branch1", "Address1", "+972 5412311");
-//        BranchesManager.addBranch("Branch2", "Address2", "+972 5488899");
-//        BranchesManager.addBranch("Branch3", "Address3", "+972 5412988");
+        BranchesManager.addBranch("Branch1", "Address1", "+972 5412311");
+        BranchesManager.addBranch("Branch2", "Address2", "+972 5488899");
+        BranchesManager.addBranch("Branch3", "Address3", "+972 5412988");
 
 
-        DriversManager.addDriver("John", "Doe", "123456789", "+972 5412311", "C");
-        DriversManager.addDriver("Sam", "Wilson", "987654321", "+972 5488899", "B");
-        DriversManager.addDriver("Jane", "Smith", "456789123", "+972 5412988", "C1");
+        DriversManager.addDriver("John", "Doe", "EMP007", "+972 5412311", "C");
+        DriversManager.addDriver("Sam", "Wilson", "EMP008", "+972 5488899", "B");
+        DriversManager.addDriver("Jane", "Smith", "EMP009", "+972 5412988", "C1");
 
         TrucksManager.addTruck("5498875", 3500, 5000, "C1", "Toyota");
         TrucksManager.addTruck("5491176", 1000, 3000, "C", "Ford");
         TrucksManager.addTruck("5491177", 4500, 7000, "C1", "Mercedes");
+
+        System_Login_Panel.EmployeesPresentationHandler();
 
         SuppliersManager.addSupplier("Supplier1", "Address4", "+972 77788855");
         SuppliersManager.addSupplier("Supplier2", "Address5", "+972 77788856");
@@ -138,7 +139,7 @@ public class GeneralPresentation {
         Branch firstBranch = BranchesManager.getBranchByName("Branch1");
         assert firstBranch != null;
         List<StockItem> selectedItems = StockManager.mockSearchAndReturnRelevantStockItems("", firstBranch.getId());
-        LocalDateTime plannedStartDateTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime plannedStartDateTime = LocalDateTime.now().plusDays(3);
         LocalDateTime plannedEndDateTime = plannedStartDateTime.plusHours(4);
         CreateNewTransportRoutesResult routesCreationResult =
                 TransportManager.createNewTransportRoutes(firstBranch.getId(), selectedItems);

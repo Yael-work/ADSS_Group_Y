@@ -75,7 +75,16 @@ public class SqliteUpcomingShiftsController implements IUpcomingShiftsController
     @Override
     public Shift findShiftById(String shiftId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Shift.class, shiftId);
+//            return session.get(Shift.class, shiftId);
+            return session.createQuery("""
+    SELECT s
+    FROM Shift s
+    LEFT JOIN FETCH s.assignedEmployees
+    LEFT JOIN FETCH s.requiredRoles
+    WHERE s.shiftID = :id
+""", Shift.class)
+                    .setParameter("id", shiftId)
+                    .uniqueResult();
         } catch (Exception e) {
             Helper.showError("Failed to find upcoming shift by ID", e);
             return null;
@@ -85,7 +94,14 @@ public class SqliteUpcomingShiftsController implements IUpcomingShiftsController
     @Override
     public List<Shift> getUpcomingShifts() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Shift WHERE isPast = false", Shift.class).list();
+            return session.createQuery("""
+    SELECT DISTINCT s
+    FROM Shift s
+    LEFT JOIN FETCH s.assignedEmployees
+    LEFT JOIN FETCH s.requiredRoles
+    WHERE s.isPast = false
+""", Shift.class).list();
+//            return session.createQuery("FROM Shift WHERE isPast = false", Shift.class).list();
         } catch (Exception e) {
             Helper.showError("Failed to get upcoming shifts", e);
             return new ArrayList<>();
@@ -95,10 +111,19 @@ public class SqliteUpcomingShiftsController implements IUpcomingShiftsController
     @Override
     public Shift findShiftByDateTimeAndBranch(LocalDate date, LocalTime time, Branch branch) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery(
-                    "FROM Shift WHERE isPast = false AND shiftDate = :date " +
-                            "AND :time BETWEEN startShiftTime AND endShiftTime " +
-                            "AND branch.id = :branchId", Shift.class)
+//            return session.createQuery(
+//                    "FROM Shift WHERE isPast = false AND shiftDate = :date " +
+//                            "AND :time BETWEEN startShiftTime AND endShiftTime " +
+//                            "AND branch.id = :branchId", Shift.class)
+            return session.createQuery("""
+    SELECT s
+    FROM Shift s
+    LEFT JOIN FETCH s.assignedEmployees
+    LEFT JOIN FETCH s.requiredRoles
+    WHERE s.isPast = false AND s.shiftDate = :date
+    AND :time BETWEEN s.startShiftTime AND s.endShiftTime
+    AND s.branch.id = :branchId
+""", Shift.class)
                     .setParameter("date", date)
                     .setParameter("time", time)
                     .setParameter("branchId", branch.getId())
@@ -115,8 +140,15 @@ public class SqliteUpcomingShiftsController implements IUpcomingShiftsController
         int count = 0;
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            List<Shift> shiftsToMove = session.createQuery(
-                    "FROM Shift WHERE isPast = false AND shiftDate < :today", Shift.class)
+//            List<Shift> shiftsToMove = session.createQuery(
+//                    "FROM Shift WHERE isPast = false AND shiftDate < :today", Shift.class)
+            List<Shift> shiftsToMove = session.createQuery("""
+    SELECT DISTINCT s
+    FROM Shift s
+    LEFT JOIN FETCH s.assignedEmployees
+    LEFT JOIN FETCH s.requiredRoles
+    WHERE s.isPast = false AND s.shiftDate < :today
+""", Shift.class)
                     .setParameter("today", today)
                     .list();
 
