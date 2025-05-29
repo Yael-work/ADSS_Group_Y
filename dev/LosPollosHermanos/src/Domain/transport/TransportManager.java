@@ -19,6 +19,7 @@ import Models.DTOs.ItemsAtSupplier;
 import Models.DTOs.StockItem;
 import Models.DTOs.transport.CreateNewTransportResult;
 import Models.DTOs.transport.CreateNewTransportRoutesResult;
+import Domain.Employees.UpcomingShiftsManagerCLS;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -294,6 +295,17 @@ public class TransportManager {
         List<Driver> availableDriversWithProperLicense = DriversManager.getAllDrivers().stream()
                 .filter(driver -> Helper.isLicenseTypeValidPerTruck(driver.getLicenseType(), truckLicenseType))
                 .toList();
+        for (Driver driver : availableDriversWithProperLicense) {
+            if (driver == null) {
+                Helper.showError("Cant get driver, it does not exist");
+                continue;
+            }
+            // Check if the driver is available for the given date
+            boolean isAvailable = UpcomingShiftsManagerCLS.isEmployeeAvailableForShift(driver, targetStartDateTime.toLocalDate(), "Day");
+            if (!isAvailable) {
+                availableDriversWithProperLicense.remove(driver);
+            }
+        }
         return /*TODO @ethan link with employees module and check for each specific driver that is not blocked due to a shift by start and end*/
                 availableDriversWithProperLicense;
     }

@@ -185,7 +185,7 @@ public class TransportHandler {
                 return false;
             }
             if (stock.getWeight() > 0) {
-                sumOfItemsWeight += stock.getWeight() * deliveryFileItem.getAmount(); //TODO check if this is correct
+                sumOfItemsWeight += stock.getWeight() * deliveryFileItem.getAmount();
             } else {
                 Helper.println("Invalid weight for stock item. Please try again.");
                 return false;

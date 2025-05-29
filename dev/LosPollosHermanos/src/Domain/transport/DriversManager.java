@@ -44,7 +44,6 @@ public class DriversManager {
 //        }
         d = new Driver(0, firstName, lastName, personalId, phoneNumber, LicenseTypeEnum.stringToEnum(licenseType));
         if (driverController.addDriver(d) != Helper.UndefinedId) {
-            //todo @ethan link with employees module
             return true;
         }
         return false;
