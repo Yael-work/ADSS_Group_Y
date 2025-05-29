@@ -3,6 +3,7 @@ package Presentation.Employee;
 import Auxiliary.*;
 import Auxiliary.Enums.Domain.Status;
 import Auxiliary.Enums.Models.AvailabilityStatus;
+import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Domain.Employees.*;
 import Models.DBModels.Employees.*;
 import Auxiliary.sharedFunctions;

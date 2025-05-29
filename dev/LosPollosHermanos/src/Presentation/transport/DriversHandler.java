@@ -1,5 +1,6 @@
 package Presentation.transport;
 
+import Auxiliary.Enums.Models.LicenseTypeEnum;
 import Domain.Employees.HR_Lead;
 import Domain.transport.DriversManager;
 import Models.DBModels.transport.Driver;
