@@ -62,7 +62,6 @@ public class GeneralPresentation {
             Helper.println("1. Transport system");
             Helper.println("2. Employee system");
             Helper.println("3. Exit");
-            Helper.println("4. Load Temporary Mock Data");
             Helper.print("Your choice: ");
             choice = Helper.getUserInputInteger();
             handleChoice(choice);
@@ -79,14 +78,6 @@ public class GeneralPresentation {
                 break;
             case 3:
                 Helper.println("Exiting the system. Goodbye!");
-                break;
-            case 4:
-                Helper.println("Loading temporary mock data...");
-                if (handleTempMockDataRuntimeLoad()) {
-                    Helper.println("Temporary mock data loaded successfully.");
-                } else {
-                    Helper.println("Failed to load temporary mock data.");
-                }
                 break;
             default:
                 Helper.println("Invalid choice. Please try again.");
