@@ -354,10 +354,11 @@ public class TransportManager {
             return new CreateNewTransportResult(Helper.UndefinedId,
                     CreateNewTransportResultEnum.StockerUnavailable);
         }
-        List<Employee> stockers = shift.getAllAvailableEmployees().stream()
-                .filter(employee -> employee.getRolesList().stream()
-                        .anyMatch(role -> role.getRole().equals("Stocker")))
-                .toList();
+        List<Employee> stockers = shift.getAssignedEmployees().containsValue("Stocker") ?
+                shift.getAssignedEmployees().keySet().stream()
+                        .filter(employee -> employee.getRolesList().stream()
+                                .anyMatch(role -> role.getRole().equals("Stocker")))
+                        .toList() : new ArrayList<>();
         if (stockers.isEmpty()) {
             Helper.println("No stocker available at the planned end time.");
             return new CreateNewTransportResult(Helper.UndefinedId,
