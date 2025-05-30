@@ -3,8 +3,8 @@ package Presentation.Employee;
 import Auxiliary.Enums.Domain.Status;
 import Auxiliary.IdGenerator;
 import DB.WorkersDB.ShiftsDB;
-import DB.implementations.transport.MockBranchController;
 import Domain.Employees.*;
+import Domain.transport.BranchesManager;
 import Models.DBModels.Employees.*;
 import Models.DBModels.transport.Branch;
 
@@ -183,28 +183,24 @@ public class Manager_Panel {
     private static Branch getShiftBranchFromUser(Scanner scanner) {
         // Display all available branches first
         System.out.println("Available branches:");
-        List<Integer> branchIds = MockBranchController.getInstance().getAllIds();
+        ArrayList<Branch> branches = BranchesManager.getExistingBranches();
 
-        if (branchIds.isEmpty()) {
+        if (branches.isEmpty()) {
             System.out.println("No branches available. Please create a branch first.");
             return null;
         }
 
-        for (int i = 0; i < branchIds.size(); i++) {
-            int branchId = branchIds.get(i);
-            Branch branch = MockBranchController.getInstance().getBranchById(branchId);
-            if (branch != null) {
-                System.out.println((i + 1) + ". Branch ID: " + branchId + " - Branch Name: " + branch.getSiteName());
-            }
+        for (int i = 0; i < branches.size(); i++) {
+            Branch branch = branches.get(i);
+            System.out.println((i + 1) + ". Branch ID: " + branch.getId() + " - Branch Name: " + branch.getSiteName());
         }
 
         // Ask user to select a branch
         System.out.println("Please enter the number of the branch you want to select:");
-        int choice = sharedFunctions.getValidIntChoice(scanner, 1, branchIds.size());
+        int choice = sharedFunctions.getValidIntChoice(scanner, 1, branches.size());
 
         // Get the selected branch
-        int selectedBranchId = branchIds.get(choice - 1);
-        Branch selectedBranch = MockBranchController.getInstance().getBranchById(selectedBranchId);
+        Branch selectedBranch = branches.get(choice - 1);
 
         if (selectedBranch == null) {
             System.out.println("Error retrieving branch. Please try again.");
