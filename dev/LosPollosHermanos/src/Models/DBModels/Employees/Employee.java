@@ -119,6 +119,21 @@ public class Employee extends BaseModel {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Employee employee = (Employee) obj;
+        // Use employeeID as the primary key for equality since it's unique
+        return employeeID != null && employeeID.equals(employee.employeeID);
+    }
+
+    @Override
+    public int hashCode() {
+        // Use employeeID for hashCode since it's unique and immutable
+        return employeeID != null ? employeeID.hashCode() : 0;
+    }
+
+    @Override
     public boolean copyFromOther(BaseModel other, Session session) {
         if (!(other instanceof Employee)) return false;
         Employee otherEmployee = (Employee) other;
