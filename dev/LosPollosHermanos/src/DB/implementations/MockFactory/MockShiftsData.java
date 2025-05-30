@@ -166,7 +166,7 @@ public class MockShiftsData {
         {
             List<Employee> available = new ArrayList<>();
             Map<Employee, String> assigned = new HashMap<>();
-            LocalDate date = LocalDate.now().plusDays(7);
+            LocalDate date = LocalDate.now().plusDays(6);
             String type = "Day";
 
             Employee emp001 = employeeMap.get("EMP001");

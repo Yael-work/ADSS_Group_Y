@@ -331,10 +331,18 @@ public class Manager_Panel {
         }
 
         // Display available roles and ask user to select one
+        System.out.println("Employee " + employeeToAssign.getName() + " has the following roles:");
+        for (int i = 0; i < employeeToAssign.getRolesList().size(); i++) {
+            ARole role = employeeToAssign.getRolesList().get(i);
+            System.out.printf(role.getRole() + ", ");
+        }
+        System.out.println();
+        System.out.println();
+        System.out.println("Based on the Employee's roles");
         System.out.println("Select the corresponding number to the desired Role to add:");
-        sharedFunctions.DisplayAvailableRoles();
+        sharedFunctions.DisplayAvailableRoles(1);
 
-        int choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
+        int choice = sharedFunctions.getValidIntChoice(scanner, 1, 7);
         scanner.nextLine(); // Clear the buffer
 
         // Get the selected role
