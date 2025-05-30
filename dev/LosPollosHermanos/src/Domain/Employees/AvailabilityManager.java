@@ -19,7 +19,7 @@ public class AvailabilityManager {
      * @param employee The employee whose availability is being set
      */
     public static Status set_Upcoming_Shifts_Availability(Employee employee) {
-        if (LocalDate.now().getDayOfWeek() == DayOfWeek.THURSDAY) {
+        if (LocalDate.now().getDayOfWeek() == DayOfWeek.FRIDAY) { //THURSDAY
             Helper.println("Availability updates are closed for this week.");
             Helper.println("Please wait until tomorrow to submit your availability for next week.");
             startNewWeek();

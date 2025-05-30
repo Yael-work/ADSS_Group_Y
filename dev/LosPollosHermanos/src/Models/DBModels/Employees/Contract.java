@@ -47,7 +47,16 @@ public class Contract extends BaseModel {
 
     @Override
     public boolean copyFromOther(BaseModel other, Session session) {
-        return false;
+        if (!(other instanceof Contract)) return false;
+        Contract otherContract = (Contract) other;
+
+        // Copy all contract fields
+        this.pension_Percentage = otherContract.pension_Percentage;
+        this.sick_Days = otherContract.sick_Days;
+        this.vacation_Days = otherContract.vacation_Days;
+        this.minMonthlyHours = otherContract.minMonthlyHours;
+
+        return true;
     }
 
 }

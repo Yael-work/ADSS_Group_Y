@@ -166,6 +166,23 @@ public class Availability extends BaseModel {
 
     @Override
     public boolean copyFromOther(BaseModel other, Session session) {
-        return false;
+        if (!(other instanceof Availability)) return false;
+        Availability otherAvailability = (Availability) other;
+
+        // Copy availability status for each day
+        this.sunday = otherAvailability.sunday;
+        this.monday = otherAvailability.monday;
+        this.tuesday = otherAvailability.tuesday;
+        this.wednesday = otherAvailability.wednesday;
+        this.thursday = otherAvailability.thursday;
+
+        // Copy update tracking flags
+        this.updatedSun = otherAvailability.updatedSun;
+        this.updatedMon = otherAvailability.updatedMon;
+        this.updatedTue = otherAvailability.updatedTue;
+        this.updatedWed = otherAvailability.updatedWed;
+        this.updatedThu = otherAvailability.updatedThu;
+
+        return true;
     }
 }

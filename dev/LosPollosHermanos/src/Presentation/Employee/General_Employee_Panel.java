@@ -5,6 +5,7 @@ import Domain.Employees.UpcomingShiftsManagerCLS;
 import Models.DBModels.Employees.ARole;
 import Domain.Employees.AvailabilityManager;
 import Models.DBModels.Employees.Employee;
+import Models.DBModels.Employees.Shift;
 import DB.WorkersDB.ShiftsDB;
 
 import java.time.LocalDate;
@@ -108,12 +109,27 @@ public class General_Employee_Panel {
                     break;
                 case 4:
                     System.out.println("All Shifts for the next week: ");
+                    // First, move any past shifts to the past shifts table
+                    UpcomingShiftsManagerCLS.moveShiftsToPast();
+
                     if (!UpcomingShiftsManagerCLS.getUpcomingShifts().isEmpty()) {
-                        for (int i = 0; i < UpcomingShiftsManagerCLS.getUpcomingShifts().size(); i++) {
-                            if (UpcomingShiftsManagerCLS.getUpcomingShifts().get(i).getShiftDate().isBefore(LocalDate.now().plusDays(7))) {
+                        LocalDate today = LocalDate.now();
+                        LocalDate nextWeek = today.plusDays(7);
+                        boolean foundUpcomingShifts = false;
+
+                        for (Shift shift : UpcomingShiftsManagerCLS.getUpcomingShifts()) {
+                            LocalDate shiftDate = shift.getShiftDate();
+                            // Show shifts that are today or in the future AND within the next 7 days
+                            if ((shiftDate.isEqual(today) || shiftDate.isAfter(today)) &&
+                                (shiftDate.isBefore(nextWeek) || shiftDate.isEqual(nextWeek))) {
                                 System.out.println();
-                                System.out.println(UpcomingShiftsManagerCLS.getUpcomingShifts().get(i).toString());
+                                System.out.println(shift.toString());
+                                foundUpcomingShifts = true;
                             }
+                        }
+
+                        if (!foundUpcomingShifts) {
+                            System.out.println("There are no upcoming shifts in the next week.");
                         }
                     }
                     else {

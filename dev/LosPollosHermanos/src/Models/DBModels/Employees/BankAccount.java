@@ -38,7 +38,15 @@ public class BankAccount extends BaseModel {
 
     @Override
     public boolean copyFromOther(BaseModel other, Session session) {
-        return false;
+        if (!(other instanceof BankAccount)) return false;
+        BankAccount otherBankAccount = (BankAccount) other;
+
+        // Copy all bank account fields
+        this.bankName = otherBankAccount.bankName;
+        this.accountNumber = otherBankAccount.accountNumber;
+        this.branch = otherBankAccount.branch;
+
+        return true;
     }
 
 }

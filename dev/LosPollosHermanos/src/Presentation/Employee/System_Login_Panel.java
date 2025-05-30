@@ -28,43 +28,46 @@ public class System_Login_Panel {
 
     public static void printLoginPanel() {
         Scanner scanner = new Scanner(System.in);  // Create Scanner object
+        int choice =0;
 
-        System.out.println("\nWelcome to the Employees Management System!\n");
-        System.out.println("You are on Login panel!");
+        while (choice !=2) {
+            System.out.println("\nWelcome to the Employees Management System!\n");
+            System.out.println("You are on Login panel!");
 
-        boolean continueLoop;
-        int choice;
-        Employee enteredEmployee = null;
-        do {
-            continueLoop = false;
-            System.out.println("\nPlease choose an action (1 or 2):");
-            System.out.println("1. Enter to your Employee Role");
-            System.out.println("2. Exit System");
+            boolean continueLoop;
 
-            choice = sharedFunctions.getValidIntChoice(scanner, 1, 2);
+            Employee enteredEmployee = null;
+            do {
+                continueLoop = false;
+                System.out.println("\nPlease choose an action (1 or 2):");
+                System.out.println("1. Enter to your Employee Role");
+                System.out.println("2. Exit System");
 
-            switch (choice) {
-                case 1:
-                    scanner.nextLine(); // Clear the buffer
-                    System.out.println("Please Enter Your ID: ");
-                    String employeeID = scanner.nextLine();// Read user input
-                    enteredEmployee = EmployeeManagerCLS.getEmployeeById(employeeID);
-                    if (enteredEmployee == null) {
-                        System.out.println("Invalid Employee ID - There is no employee with the following ID.\nPlease try again.");
+                choice = sharedFunctions.getValidIntChoice(scanner, 1, 2);
+
+                switch (choice) {
+                    case 1:
+                        scanner.nextLine(); // Clear the buffer
+                        System.out.println("Please Enter Your ID: ");
+                        String employeeID = scanner.nextLine();// Read user input
+                        enteredEmployee = EmployeeManagerCLS.getEmployeeById(employeeID);
+                        if (enteredEmployee == null) {
+                            System.out.println("Invalid Employee ID - There is no employee with the following ID.\nPlease try again.");
+                            continueLoop = true;
+                        }
+                        break;
+                    case 2:
+                        System.out.println("Exiting the system...");
+                        continueLoop = false;
+                        return;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
                         continueLoop = true;
-                    }
-                    break;
-                case 2:
-                    System.out.println("Exiting the system...");
-                    continueLoop = false;
-                    return;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-                    continueLoop = true;
-            }
-        } while (continueLoop);
+                }
+            } while (continueLoop);
 
-        General_Employee_Panel.moveToPanel_GeneralEmployee(enteredEmployee);
+            General_Employee_Panel.moveToPanel_GeneralEmployee(enteredEmployee);
+        }
     }
 
 

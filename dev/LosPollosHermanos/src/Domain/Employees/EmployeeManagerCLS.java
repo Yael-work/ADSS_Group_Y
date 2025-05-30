@@ -28,9 +28,9 @@ public class EmployeeManagerCLS {
 
     public static Employee getEmployeeById(String employeeID) {
         Employee employee = employeeController.findEmployeeById(employeeID);
-        if (employee == null) {
-            Helper.showError(String.format("Cant get employee with id=%s, it does not exist", employeeID));
-        }
+//        if (employee == null) {
+//            Helper.showError(String.format("Cant get employee with id=%s, it does not exist", employeeID));
+//        }
         return employee;
     }
 
@@ -59,14 +59,18 @@ public class EmployeeManagerCLS {
 
 
     public static Status addNewRoleToEmployee(ARole newRole , Employee employee) {
-        for (int i = 0; i < employee.getRolesList().size(); i++) {
-            if (employee.getRolesList().get(i).getRole().equals(newRole.getRole())) {
+        // Check if employee already has this role
+        for (ARole existingRole : employee.getRolesList()) {
+            if (existingRole.getRole().equals(newRole.getRole())) {
                 return Status.Failure;
             }
         }
-        List<ARole> updatedRoles = employee.getRolesList();
+
+        // Create a new list to avoid modifying the original list directly
+        List<ARole> updatedRoles = new ArrayList<>(employee.getRolesList());
         updatedRoles.add(newRole);
         employee.setAllRoles(updatedRoles);
+
         return employeeController.updateEmployee(employee);
     }
 

@@ -4,6 +4,7 @@ import Auxiliary.Helper;
 import DB.interfaces.employees.IEmployeeController;
 import DB.util.HibernateUtil;
 import Models.DBModels.Employees.Employee;
+import Models.DBModels.Employees.ARole;
 import org.hibernate.Session;
 
 import java.util.ArrayList;
@@ -22,8 +23,46 @@ public class SqliteEmployeesController implements IEmployeeController {
     public Status addEmployeeToDB(Employee employee) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            // Use merge instead of persist to handle detached entities
-            session.merge(employee);
+
+            // Reset IDs for all related entities to avoid conflicts from IdGenerator
+            // Reset employee ID to let Hibernate assign proper ID
+            employee.setId(0);
+
+            // Handle roles - reset IDs and persist each role
+            if (employee.getRolesList() != null) {
+                for (ARole role : employee.getRolesList()) {
+                    if (role != null) {
+                        // Reset the ID to 0 to let Hibernate assign a proper unique ID
+                        role.setId(0);
+                        // Persist the role
+                        session.persist(role);
+                    }
+                }
+            }
+
+            // Handle bank account - reset ID
+            if (employee.getBankInfo() != null) {
+                employee.getBankInfo().setId(0);
+                session.persist(employee.getBankInfo());
+            }
+
+            // Handle contract - reset ID
+            if (employee.getEmployeeCondition() != null) {
+                employee.getEmployeeCondition().setId(0);
+                session.persist(employee.getEmployeeCondition());
+            }
+
+            // Handle availability - reset ID
+            if (employee.getAvailability() != null) {
+                employee.getAvailability().setId(0);
+                session.persist(employee.getAvailability());
+            }
+
+            // Flush to ensure all related entities are saved first
+            session.flush();
+
+            // Now persist the employee
+            session.persist(employee);
             session.getTransaction().commit();
             return Status.Success;
         } catch (Exception e) {
@@ -35,7 +74,34 @@ public class SqliteEmployeesController implements IEmployeeController {
     public Status updateEmployee(Employee updatedEmployee) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            session.merge(updatedEmployee);
+
+            // First get the current employee from the database
+            Employee existingEmployee = session.get(Employee.class, updatedEmployee.getId());
+            if (existingEmployee == null) {
+                session.getTransaction().rollback();
+                return Status.Failure;
+            }
+
+            // Handle roles - simple approach: each employee gets their own role instances
+            if (updatedEmployee.getRolesList() != null) {
+                for (ARole role : updatedEmployee.getRolesList()) {
+                    if (role != null) {
+                        // Reset the ID to 0 to let Hibernate assign a proper unique ID
+                        // This avoids conflicts from IdGenerator
+                        role.setId(0);
+                        // Persist the role - each employee gets their own role instance
+                        session.persist(role);
+                    }
+                }
+                // Flush to ensure all new roles are saved
+                session.flush();
+            }
+
+            // Copy data from updated employee to existing one
+            existingEmployee.copyFromOther(updatedEmployee, session);
+
+            // Save the updated entity
+            session.merge(existingEmployee);
             session.getTransaction().commit();
             return Status.Success;
         } catch (Exception e) {
@@ -43,6 +109,9 @@ public class SqliteEmployeesController implements IEmployeeController {
             return Status.Failure;
         }
     }
+
+
+
 
 
     // This method is used to remove an employee by their ID

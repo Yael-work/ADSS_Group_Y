@@ -255,6 +255,9 @@ public class Manager_Panel {
         int shiftsFound = 0;
         String shiftId = null;
 
+        // First, move any past shifts to the past shifts table
+        UpcomingShiftsManagerCLS.moveShiftsToPast();
+
         for (Shift shift : UpcomingShiftsManagerCLS.getUpcomingShifts()) {
             if (shift.getAssignedEmployees().keySet().stream().anyMatch(emp -> emp.getEmployeeID().equals(employeeId))) {
                 System.out.println(shift.getShiftID() + " - " + shift.getShiftDate() + " - " + shift.getShiftType());
@@ -298,6 +301,10 @@ public class Manager_Panel {
     //case 3 in switch case printMenu_Manager
     public static void addEmployeeToShift() {
         Scanner scanner = new Scanner(System.in);
+
+        // First, move any past shifts to the past shifts table
+        UpcomingShiftsManagerCLS.moveShiftsToPast();
+
         System.out.println("Enter the Employee ID you want to assign to a shift:");
         String empId = scanner.nextLine().trim();
         Employee employeeToAssign = EmployeeManagerCLS.getEmployeeById(empId);

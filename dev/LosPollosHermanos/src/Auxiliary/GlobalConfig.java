@@ -39,4 +39,5 @@ public class GlobalConfig {
     public static String logSql() {
         return testMode || overrideAndShowSql ? "true" : "false";
     }
+
 }

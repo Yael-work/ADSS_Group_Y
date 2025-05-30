@@ -98,7 +98,7 @@ public class HR_Lead_Panel {
         int choice;
         do {
             System.out.println("Please choose Employee's role number:\n" +
-                    "1. Manager\n2. HR Lead\n3. Cashier\n4. Cleaner\n5. Stocker\n6. Security\n");
+                    "1. Manager\n2. HR Lead\n3. Cashier\n4. Cleaner\n5. Stocker\n6. Security");
             choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
         } while (choice < 1 || choice > 6);
 
@@ -137,6 +137,7 @@ public class HR_Lead_Panel {
             int choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
 
             String role = sharedFunctions.promptForRole(choice).getRole();
+            scanner.nextLine();
             int amount = promptForPositiveInt(scanner, "Please Enter the wanted amount of this role: ");
             if (amount == 0)
                 System.out.println("You cannot set the amount to 0\n");
@@ -174,6 +175,7 @@ public class HR_Lead_Panel {
         int choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
         String role = sharedFunctions.promptForRole(choice).getRole();
 
+        scanner.nextLine();
         int amount = (action == 1) ? promptForPositiveInt(scanner, "Please Enter the wanted amount of this role: ") : 0;
         HR_Lead.Update_Required_Role_to_Shift(action, amount, role);
 
@@ -182,8 +184,19 @@ public class HR_Lead_Panel {
 
     private static Status updateEmployeeInformationUI() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Please Enter the ID of the Employee to update: ");
-        String employeeID = scanner.nextLine();
+        boolean found;
+        String employeeID;
+        do{
+            System.out.println("Please enter Employee's ID:");
+
+            employeeID = scanner.nextLine().trim();
+            if (!EmployeeManagerCLS.doesEmployeeExist(employeeID)) {
+                System.out.println("Employee not found. Please check the ID and try again.");
+                found = false;
+            }
+            else
+                found = true;
+        } while (!found);
 
         int choice;
         do {
@@ -260,14 +273,24 @@ public class HR_Lead_Panel {
 
     private static String promptForEmployeeName(Scanner scanner) {
         System.out.println("Please Enter Employee's name: ");
-        while (!scanner.hasNextLine() || scanner.nextLine().trim().isEmpty()) {
-            System.out.println("Invalid input. Please enter a valid name.");
+        String name;
+        while (true) {
+            name = scanner.next().trim();
+            if (name.isEmpty()) {
+                System.out.println("Invalid input. Name cannot be empty. Please try again.");
+            } else if (!name.matches("[a-zA-Z]+")) {
+                System.out.println("Invalid input. Name must contain only alphabetic characters. Please try again.");
+            } else {
+                break;
+            }
         }
-        return scanner.nextLine();
+        return name;
     }
+
 
     private static double promptForSalary(Scanner scanner) {
         double salary;
+        scanner.nextLine();
         while (true) {
             System.out.print("Please enter Employee's salary: ");
             String input = scanner.nextLine().trim();
@@ -293,7 +316,7 @@ public class HR_Lead_Panel {
         String bankName, accountNumber, branch;
 
         System.out.println("Please enter Employee's bank information:");
-
+        scanner.nextLine();
         // Bank name
         while (true) {
             System.out.print("Bank name: ");
@@ -340,7 +363,6 @@ public class HR_Lead_Panel {
 
     private static Contract promptForContract(Scanner scanner) {
         System.out.println("Please enter Employee's contract information:");
-
         int pension;
         while (true) {
             pension = promptForPositiveInt(scanner, "Pension Percentage (0–100): ");
