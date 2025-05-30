@@ -2,7 +2,6 @@ package Models.DBModels.Employees;
 
 
 import Models.DBModels.BaseModel;
-import Models.DBModels.transport.Branch;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -20,8 +19,6 @@ public class Contract extends BaseModel {
     @Column(nullable = false)
     private  int minMonthlyHours;
 
-
-    //TODO: getters and setters???
 
     public Contract(int id, int pension_Percentage, int sick_Days, int vacation_Days, int minMonthlyHours) {
         super(id,Contract.class.getName());

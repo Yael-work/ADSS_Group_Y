@@ -6,7 +6,6 @@ import Models.DBModels.Employees.ARole;
 import Domain.Employees.AvailabilityManager;
 import Models.DBModels.Employees.Employee;
 import Models.DBModels.Employees.Shift;
-import DB.WorkersDB.ShiftsDB;
 
 import java.time.LocalDate;
 import java.util.List;

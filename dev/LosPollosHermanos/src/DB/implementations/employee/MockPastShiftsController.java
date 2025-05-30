@@ -11,9 +11,7 @@ public class MockPastShiftsController implements IPastShiftsController {
     private final Map<String, Shift> pastShifts = new HashMap<>();
 
     private MockPastShiftsController() {
-        // Optionally initialize with some mock data
-        // Example: List<Shift> mocks = Shift.createPastShiftsDB(); // if you have such a method
-        // for (Shift shift : mocks) pastShifts.put(shift.getShiftID(), shift);
+        MockPastShiftsController.getInstance();
     }
 
     public static MockPastShiftsController getInstance() {

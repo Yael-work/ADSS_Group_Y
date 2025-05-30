@@ -3,7 +3,6 @@ package Domain.Employees;
 import Auxiliary.Enums.Models.AvailabilityStatus;
 import DB.DBemployeeManager;
 import DB.interfaces.employees.IUpcomingShiftsController;
-import Models.DBModels.Employees.ARole;
 import Models.DBModels.Employees.Availability;
 import Models.DBModels.Employees.Employee;
 import Models.DBModels.Employees.Shift;
@@ -44,7 +43,6 @@ public class UpcomingShiftsManagerCLS {
 
     public static void moveShiftsToPast() {
         upcomingShiftsController.moveShiftsToPast();
-//TODO: move 7 years back
     }
 
     public static void addRequiredRoles(String role, int count) {
@@ -110,17 +108,17 @@ public class UpcomingShiftsManagerCLS {
             default -> false; // Unavailable or Skip
         };
     }
-//    // for available Roles search in Auxilary package - > sharedFunctions -> DisplayAyavailableRoles
-//    public static boolean isRoleInShift(Shift shift, String role) {
-//        if (shift == null || role == null) return false;
-//        Map<Employee, String> assignedEmployees = shift.getAssignedEmployees();
-//        for (Employee emp : assignedEmployees.keySet()) {
-//            if (emp.getRolesList().stream().anyMatch(r -> r.getRole().equals(role))) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+// for available Roles search in Auxilary package - > sharedFunctions -> DisplayAyavailableRoles
+    public static boolean isRoleInShift(Shift shift, String role) {
+        if (shift == null || role == null) return false;
+        Map<Employee, String> assignedEmployees = shift.getAssignedEmployees();
+        for (Employee emp : assignedEmployees.keySet()) {
+            if (emp.getRolesList().stream().anyMatch(r -> r.getRole().equals(role))) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Retrieves a shift by its date.

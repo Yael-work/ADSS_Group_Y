@@ -20,10 +20,6 @@ public class MockEmployeesController implements IEmployeeController {
     }
 
     private MockEmployeesController() {
-        // Optionally populate with mock data here
-        // Example:
-        // List<Employee> mockList = Employee.createEmployeesDB(); // Refactor this to return a List<Employee>
-        // for (Employee e : mockList) employees.put(e.getEmployeeID(), e);
     }
 
     @Override

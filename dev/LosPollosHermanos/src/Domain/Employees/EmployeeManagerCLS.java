@@ -28,9 +28,6 @@ public class EmployeeManagerCLS {
 
     public static Employee getEmployeeById(String employeeID) {
         Employee employee = employeeController.findEmployeeById(employeeID);
-//        if (employee == null) {
-//            Helper.showError(String.format("Cant get employee with id=%s, it does not exist", employeeID));
-//        }
         return employee;
     }
 
@@ -47,7 +44,6 @@ public class EmployeeManagerCLS {
             if (DriversManager.deleteDriver(driverToRemove.getId())) {
                 return employeeController.removeEmployeeFromDB(employeeID);
             }
-            //TODO: Consider what should happen if deleteDriver returns false (maybe return Status.Failure here?)
             return Status.Failure;
         } else {
             return employeeController.removeEmployeeFromDB(employeeID);

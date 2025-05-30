@@ -1,27 +1,15 @@
 package Presentation.Employee;
 
 import Auxiliary.sharedFunctions;
-import DB.WorkersDB.ShiftsDB;
-import DB.util.HibernateUtil;
 import Domain.Employees.EmployeeManagerCLS;
-import Domain.Employees.PastShiftsManagerCLS;
-import Domain.Employees.UpcomingShiftsManagerCLS;
-import Domain.transport.BranchesManager;
 import Models.DBModels.Employees.Employee;
 
 // Following imports are only for mock data upload-----
-import DB.implementations.sqlite.employees.SqlitePastShiftsController;
 import DB.implementations.MockFactory.MockEmployeeData;
 import DB.implementations.MockFactory.MockShiftsData;
-import DB.implementations.sqlite.employees.SqliteEmployeesController;
-import DB.implementations.sqlite.employees.SqliteUpcomingShiftsController;
-import Models.DBModels.Employees.Employee;
 import Models.DBModels.Employees.Shift;
-import Models.DBModels.transport.Branch;
 //-----------------------
-
 import java.util.List;
-import java.util.Scanner;
 import java.util.Scanner;
 
 public class System_Login_Panel {
@@ -73,24 +61,13 @@ public class System_Login_Panel {
 
      public static void EmployeesPresentationHandler() {
                 try {
-
-                    // Set test mode to use test database
-                    //Auxiliary.GlobalConfig.setTestMode(true);;
-
-                    // Clean up database files before starting (moved from MockShiftsData)
-                    //HibernateUtil.deleteDatabaseFiles();
-
                     // Get a new session to ensure schema is created
                     try (org.hibernate.Session session = DB.util.HibernateUtil.getSessionFactory().openSession()) {
-                        //System.out.println("Database connection established");
-
                         // Begin transaction for adding employees
                         session.beginTransaction();
 
                         // Create and add mock employees
                         List<Employee> employees = MockEmployeeData.createMockEmployees();
-                        //System.out.println("Created " + employees.size() + " mock employees");
-
                         for (Employee emp : employees) {
                             try {
                                 session.merge(emp);

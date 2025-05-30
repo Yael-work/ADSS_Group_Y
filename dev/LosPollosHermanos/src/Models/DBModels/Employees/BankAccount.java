@@ -26,8 +26,6 @@ public class BankAccount extends BaseModel {
         super(0,BankAccount.class.getName());
     }
 
-    //TODO: getters and setters???
-
     @Override
     public String toString() {
         return "Bank Information= \n" +

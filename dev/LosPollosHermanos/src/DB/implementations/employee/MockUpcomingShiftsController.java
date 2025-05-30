@@ -16,11 +16,6 @@ public class MockUpcomingShiftsController implements IUpcomingShiftsController {
     private final IPastShiftsController pastShiftsController;
 
     private MockUpcomingShiftsController() {
-        // You may want to initialize with mock data here.
-        // List<Shift> mockList = Shift.createUpcomingShiftsDB();
-        // for (Shift s : mockList) upcomingShifts.put(s.getShiftID(), s);
-
-        // Make sure you initialize your mock PastShiftsController somewhere in your app
         this.pastShiftsController = MockPastShiftsController.getInstance();
     }
 
