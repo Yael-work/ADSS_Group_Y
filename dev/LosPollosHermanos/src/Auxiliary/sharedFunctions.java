@@ -54,6 +54,7 @@ public class sharedFunctions {
             return "Night";
         }
     }
+
     private static boolean isValidShiftType(String shiftType) {
         return shiftType.equalsIgnoreCase("Day") || shiftType.equalsIgnoreCase("Night");
     }
@@ -62,13 +63,27 @@ public class sharedFunctions {
         ARole role = null;
         while (role == null) {
             switch (choice) {
-                case 1: role = new Shift_Manager(IdGenerator.getNextIdManager()); break;
-                case 2: role = new HR_Lead(IdGenerator.getNextIdHR()); break;
-                case 3: role = new Cashier(IdGenerator.getNextIdCashier()); break;
-                case 4: role = new Cleaner(IdGenerator.getNextIdCleaner()); break;
-                case 5: role = new Stocker(IdGenerator.getNextIdStocker()); break;
-                case 6: role = new Security(IdGenerator.getNextIdSecurity()); break;
-                case 7: role = new Driver(IdGenerator.getNextIdDriver()); break;
+                case 1:
+                    role = new Shift_Manager(IdGenerator.getNextIdManager());
+                    break;
+                case 2:
+                    role = new HR_Lead(IdGenerator.getNextIdHR());
+                    break;
+                case 3:
+                    role = new Cashier(IdGenerator.getNextIdCashier());
+                    break;
+                case 4:
+                    role = new Cleaner(IdGenerator.getNextIdCleaner());
+                    break;
+                case 5:
+                    role = new Stocker(IdGenerator.getNextIdStocker());
+                    break;
+                case 6:
+                    role = new Security(IdGenerator.getNextIdSecurity());
+                    break;
+                case 7:
+                    role = new Driver(IdGenerator.getNextIdDriver());
+                    break;
                 default:
                     System.out.println("Invalid choice. Promotion cancelled.");
                     return null;
@@ -76,13 +91,29 @@ public class sharedFunctions {
         }
         return role;
     }
-    public static void DisplayAvailableRoles() {
-        System.out.println("1. Shift Manager");
-        System.out.println("2. HR Lead");
-        System.out.println("3. Cashier");
-        System.out.println("4. Cleaner");
-        System.out.println("5. Stocker");
-        System.out.println("6. Security");
+
+    public static void DisplayAvailableRoles() { //calling DisplayAvailableRoles() will use preset = 0 by default.
+        DisplayAvailableRoles(0);
+    }
+
+    public static void DisplayAvailableRoles(int preset) {
+        if (preset == 0) { //regular roles
+            System.out.println("1. Shift Manager");
+            System.out.println("2. HR Lead");
+            System.out.println("3. Cashier");
+            System.out.println("4. Cleaner");
+            System.out.println("5. Stocker");
+            System.out.println("6. Security");
+        }
+        if (preset == 1) { // with the added driver role
+            System.out.println("1. Shift Manager");
+            System.out.println("2. HR Lead");
+            System.out.println("3. Cashier");
+            System.out.println("4. Cleaner");
+            System.out.println("5. Stocker");
+            System.out.println("6. Security");
+            System.out.println("7. Driver");
+        }
     }
 
     public static int getValidIntChoice(Scanner scanner, int from, int to) {
