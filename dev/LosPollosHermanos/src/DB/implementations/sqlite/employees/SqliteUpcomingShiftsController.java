@@ -140,8 +140,8 @@ public class SqliteUpcomingShiftsController implements IUpcomingShiftsController
         int count = 0;
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-//            List<Shift> shiftsToMove = session.createQuery(
-//                    "FROM Shift WHERE isPast = false AND shiftDate < :today", Shift.class)
+            session.beginTransaction();
+
             List<Shift> shiftsToMove = session.createQuery("""
     SELECT DISTINCT s
     FROM Shift s
@@ -154,12 +154,12 @@ public class SqliteUpcomingShiftsController implements IUpcomingShiftsController
 
             for (Shift shift : shiftsToMove) {
                 shift.setPast(true);
-                if (pastShiftsController.addPastShift(shift)) {
-                    removeUpcomingShift(shift);
-                    count++;
-                }
+                // Update the shift in the current session
+                session.merge(shift);
+                count++;
             }
 
+            session.getTransaction().commit();
             return count;
         } catch (Exception e) {
             Helper.showError("Failed to move shifts to past", e);
