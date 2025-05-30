@@ -73,6 +73,10 @@ public class HR_Lead extends ARole {
         }
     }
 
+    public static void clearAllRequiredRoles() {
+        UpcomingShiftsManagerCLS.clearAllRequiredRoles();
+    }
+
     /**
      * Update any subset of an employee's information, as directed by UI or business logic.
      * @param employeeID The employee to update
