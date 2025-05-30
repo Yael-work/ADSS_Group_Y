@@ -55,16 +55,15 @@ public class MockEmployeeData {
         );
 
         // --- Mock Roles ---
-        ARole cashier1 = new Cashier(0);
         ARole manager1 = new Shift_Manager(0);
         ARole hrLead1 = new HR_Lead(0);
         ARole cleaner1 = new Cleaner(0);
-        ARole cashier2 = new Cashier(0);
         ARole security1 = new Security(0);
+        ARole stocker1 = new Stocker(0);
 
         // --- Employees ---
         // Employee 1: Alice
-        List<ARole> rolesList1 = new ArrayList<>(List.of(cashier1));
+        List<ARole> rolesList1 = new ArrayList<>(List.of(stocker1));
         Employee emp1 = new Employee(
                 0, "Alice", 32.5, "EMP001",
                 LocalDate.of(2022, 3, 15),
@@ -78,7 +77,7 @@ public class MockEmployeeData {
         // Employee 2: Bob
         List<ARole> rolesList2 = new ArrayList<>();
         rolesList2.add(manager1);
-        rolesList2.add(cashier2);
+        rolesList2.add(stocker1);
         Employee emp2 = new Employee(
                 0, "Bob", 47.1, "EMP002",
                 LocalDate.of(2023, 1, 10),
@@ -104,7 +103,7 @@ public class MockEmployeeData {
 
         // Employee 4: David
         List<ARole> rolesList4 = new ArrayList<>();
-        rolesList4.add(cleaner1);
+        rolesList4.add(stocker1);
         Employee emp4 = new Employee(
                 0, "David", 35.0, "EMP004",
                 LocalDate.of(2023, 6, 1),
@@ -117,7 +116,7 @@ public class MockEmployeeData {
 
         // Employee 5: Eve
         List<ARole> rolesList5 = new ArrayList<>();
-        rolesList5.add(security1);
+        rolesList5.add(stocker1);
         rolesList5.add(cleaner1);
         Employee emp5 = new Employee(
                 0, "Eve", 33.5, "EMP005",
@@ -131,8 +130,8 @@ public class MockEmployeeData {
 
         // Employee 6: Inna
         List<ARole> rolesList6 = new ArrayList<>();
+        rolesList6.add(stocker1);
         rolesList6.add(security1);
-        rolesList6.add(cleaner1);
         Employee emp6 = new Employee(
                 0, "Inna", 33, "EMP006",
                 LocalDate.of(2024, 7, 10),
