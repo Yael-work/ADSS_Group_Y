@@ -147,8 +147,8 @@ public class HR_Lead_Panel {
                 System.out.println("Please choose the next role you want to add to shifts:");
             }
 
-            sharedFunctions.DisplayAvailableRoles();
-            int choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
+            sharedFunctions.DisplayAvailableRoles(1);
+            int choice = sharedFunctions.getValidIntChoice(scanner, 1, 7);
 
             String role = sharedFunctions.promptForRole(choice).getRole();
             scanner.nextLine();
@@ -192,8 +192,8 @@ public class HR_Lead_Panel {
             action = sharedFunctions.getValidIntChoice(scanner, 1, 2);
         } while (action != 1 && action != 2);
 
-        sharedFunctions.DisplayAvailableRoles();
-        int choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
+        sharedFunctions.DisplayAvailableRoles(1);
+        int choice = sharedFunctions.getValidIntChoice(scanner, 1, 7);
         String role = sharedFunctions.promptForRole(choice).getRole();
 
         scanner.nextLine();
