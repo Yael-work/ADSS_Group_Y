@@ -307,28 +307,20 @@ public class TransportManager {
             Helper.showError("No shift found for the given date.");
             return new ArrayList<>();
         }
-        if(shift.getAssignedEmployees().isEmpty()) { //TODO assigned employees may not be empty but still have no drivers
+        if(!shift.getAssignedEmployees().containsValue("Driver")) { //TODO assigned employees may not be empty but still have no drivers - oki doki
             Helper.showError("No available drivers for the given shift.");
             return new ArrayList<>();
         }
-        //TODO shift.getAllAvailableEmployees() - > shift.getAssignedEmployees().keySet()
-        //TODO need to iterate over all assigned employees, All available employees are the employees that are not assigned to the shift
-        List<Employee> availableEmployees = shift.getAllAvailableEmployees();
+        Map<Employee, String> availableEmployees = shift.getAssignedEmployees();
         List<Driver> availableDrivers = new ArrayList<>();
-        for (Employee employee : availableEmployees) {
+        for (Employee employee : availableEmployees.keySet()) {
             if (employee.getRolesList().stream().anyMatch(role -> role.getRole().equals("Driver"))) {
-                Domain.Employees.Driver driver = employee.getRolesList()
-                        .stream()
-                        .filter(role -> role instanceof Domain.Employees.Driver)
-                        .map(role -> (Domain.Employees.Driver) role)
-                        .findFirst()
-                        .orElse(null);
-                if (driver != null && availableDriversWithProperLicense.stream().
-                        anyMatch(d -> d.getId() == driver.getId())) {
-                   availableDrivers.add(availableDriversWithProperLicense.stream()
-                            .filter(d -> d.getId() == driver.getId())
-                            .findFirst()
-                            .orElse(null));
+                if (availableDriversWithProperLicense.stream()
+                        .anyMatch(driver -> driver.getPersonalId().equals(employee.getEmployeeID()))) {
+                    Driver d = availableDriversWithProperLicense.stream().anyMatch(driver -> driver.getPersonalId().equals(employee.getEmployeeID()))
+                            ? availableDriversWithProperLicense.stream().filter(driver -> driver.getPersonalId().equals(employee.getEmployeeID())).findFirst().orElse(null)
+                            : null;
+                    availableDrivers.add(d);
                 }
 
             }

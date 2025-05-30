@@ -1,5 +1,6 @@
 package Presentation.transport;
 
+import Auxiliary.Enums.Domain.Status;
 import Domain.Employees.HR_Lead;
 import Domain.transport.DriversManager;
 import Models.DBModels.transport.Driver;
@@ -47,8 +48,12 @@ public class DriversHandler {
             Helper.showError("Error creating new driver.");
             return false;
         }
-        HR_Lead_Panel.Add_Driver_to_System(firstName , personalId);//TODO @Ethan link with employees module, it is here.
-        return true;
+        if (HR_Lead_Panel.Add_Driver_to_System(firstName, personalId) == Status.Success) {
+            ;//TODO @Ethan link with employees module, it is here.
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private static boolean updateDriver() {
@@ -148,7 +153,7 @@ public class DriversHandler {
             Helper.println("No drivers found.");
             return;
         }
-        for (Driver driver : DriversManager.getAllDrivers())  {
+        for (Driver driver : DriversManager.getAllDrivers()) {
             Helper.println("ID: " + Integer.toString(driver.getId()) + ", First name:  " + driver.getFirstName() + ", Last name: " + driver.getLastName());
         }
     }
