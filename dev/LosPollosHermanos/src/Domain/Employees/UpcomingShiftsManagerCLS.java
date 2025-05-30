@@ -55,6 +55,10 @@ public class UpcomingShiftsManagerCLS {
         Shift.REQUIRED_ROLES_FOR_SHIFT.remove(role);
     }
 
+    public static void clearAllRequiredRoles() {
+        Shift.REQUIRED_ROLES_FOR_SHIFT.clear();
+    }
+
     public static void addAssignedEmployeeToShift(Employee employee, String role, Shift shift) {
         shift.getAssignedEmployees().put(employee, role);
         shift.getAllAvailableEmployees().remove(employee);

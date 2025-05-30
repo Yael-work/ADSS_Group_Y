@@ -129,25 +129,44 @@ public class HR_Lead_Panel {
 
     private static Status setRequiredRolesToShiftUI() {
         Scanner scanner = new Scanner(System.in);
-        boolean continueLoop;
+
+        System.out.println("This will clear ALL existing required roles and set new roles as specified.");
+
+        // Clear all existing required roles first
+        HR_Lead.clearAllRequiredRoles();
+        System.out.println("All previous required roles have been cleared.");
+
+        boolean continueLoop = true;
+        boolean firstRole = true;
+
         do {
-            continueLoop = false;
-            System.out.println("Please choose the number of ONE Employee's role you want in the shifts from the optional roles list:");
+            if (firstRole) {
+                System.out.println("Please choose the first role you want to set for shifts:");
+                firstRole = false;
+            } else {
+                System.out.println("Please choose the next role you want to add to shifts:");
+            }
+
             sharedFunctions.DisplayAvailableRoles();
             int choice = sharedFunctions.getValidIntChoice(scanner, 1, 6);
 
             String role = sharedFunctions.promptForRole(choice).getRole();
             scanner.nextLine();
             int amount = promptForPositiveInt(scanner, "Please Enter the wanted amount of this role: ");
-            if (amount == 0)
-                System.out.println("You cannot set the amount to 0\n");
-            else
-                HR_Lead.Update_Required_Role_to_Shift(1, amount, role);
 
+            if (amount == 0) {
+                System.out.println("You cannot set the amount to 0 for this role. Skipping this role.");
+            } else {
+                // Add the specified role
+                HR_Lead.Update_Required_Role_to_Shift(1, amount, role);
+                System.out.println("Added required role: " + role + " with amount: " + amount);
+            }
+
+            // Ask if user wants to add more roles
             String answer;
             do {
-                System.out.println("Do you want to add or update another role? (yes/no)");
-                answer = scanner.nextLine();
+                System.out.println("Do you want to add another role? (yes/no)");
+                answer = scanner.nextLine().trim().toLowerCase();
                 if (answer.equals("yes")) {
                     continueLoop = true;
                 } else if (answer.equals("no")) {
@@ -156,8 +175,10 @@ public class HR_Lead_Panel {
                     System.out.println("Invalid answer. Please enter 'yes' or 'no'.");
                 }
             } while (!answer.equals("yes") && !answer.equals("no"));
+
         } while (continueLoop);
 
+        System.out.println("Finished setting required roles for shifts.");
         return Status.Success;
     }
 
