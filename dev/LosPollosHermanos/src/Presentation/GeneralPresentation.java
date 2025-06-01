@@ -92,7 +92,7 @@ public class GeneralPresentation {
      *
      * @return true if the data was loaded successfully, false otherwise
      */
-    private static boolean handleTempMockDataRuntimeLoad() {
+    public static boolean handleTempMockDataRuntimeLoad() {
         if (mockDataLoaded) {
             Helper.println("Temporary mock data has already been loaded.");
             return false;

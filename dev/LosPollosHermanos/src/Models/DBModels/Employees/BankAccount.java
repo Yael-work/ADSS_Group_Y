@@ -47,4 +47,7 @@ public class BankAccount extends BaseModel {
         return true;
     }
 
+    public String getBankName() {
+        return bankName;
+    }
 }

@@ -6,10 +6,7 @@ import org.hibernate.Session;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Table(name = "Shifts")
@@ -48,8 +45,13 @@ public class Shift extends BaseModel {
     @Column(name = "role")
     private Map<Employee,String> assignedEmployees = new HashMap<>();
 
-    @Transient
-    private List<Employee> allAvailableEmployees = new ArrayList<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "shift_available_employees",
+            joinColumns = @JoinColumn(name = "shift_id"),
+            inverseJoinColumns = @JoinColumn(name = "employee_id")
+    )
+    private Set<Employee> allAvailableEmployees = new HashSet<>();
 
     @ElementCollection
     @CollectionTable(name = "shift_required_roles", 
@@ -69,7 +71,7 @@ public class Shift extends BaseModel {
 
     public Shift(int id, LocalDate shiftDate, String shiftType,
                  Employee shiftManager, Map<Employee,String> assignedEmployees,
-                 List<Employee> allAvailableEmployees , Branch branch) {
+                 Set<Employee> allAvailableEmployees , Branch branch) {
         super(id, Shift.class.getName());
         this.shiftID = generateSequentialShiftId();
         this.shiftDate = shiftDate;
@@ -82,8 +84,8 @@ public class Shift extends BaseModel {
         this.shiftManager = shiftManager;
         this.branch = branch;
 
-        // Create a new list for available employees to avoid modifying the input list
-        this.allAvailableEmployees = new ArrayList<>(allAvailableEmployees);
+        // Create a new set for available employees to avoid modifying the input list
+        this.allAvailableEmployees = new HashSet<>(allAvailableEmployees);
 
         // Create a new map for assigned employees to avoid modifying the input map
         this.assignedEmployees = new HashMap<>(assignedEmployees);
@@ -109,7 +111,9 @@ public class Shift extends BaseModel {
         return shiftDate;
     }
 
-
+    public Employee getShiftManager() {
+        return shiftManager;
+    }
     public String getShiftType() {
         return shiftType;
     }
@@ -169,7 +173,7 @@ public class Shift extends BaseModel {
         return assignedEmployees;
     }
 
-    public List<Employee> getAllAvailableEmployees() {return allAvailableEmployees;}
+    public Set<Employee> getAllAvailableEmployees() {return allAvailableEmployees;}
 
 
 

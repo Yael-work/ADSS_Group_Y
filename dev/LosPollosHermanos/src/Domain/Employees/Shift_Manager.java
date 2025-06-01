@@ -13,6 +13,7 @@ import jakarta.persistence.Entity;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Entity
 @DiscriminatorValue("SHIFT_MANAGER")
@@ -28,7 +29,7 @@ public class Shift_Manager extends ARole {
 
     public static Status createShift(int id, LocalDate shiftDate, String shiftType,
                                      Employee shiftManager, Map<Employee, String> assignedEmployees,
-                                     List<Employee> allAvailableEmployees, Branch branch){
+                                     Set<Employee> allAvailableEmployees, Branch branch){
         Shift newShift = new Shift(id, shiftDate, shiftType, shiftManager, assignedEmployees, allAvailableEmployees, branch);
         UpcomingShiftsManagerCLS.addUpcomingShift(newShift);
         return Status.Success;

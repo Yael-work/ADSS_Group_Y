@@ -197,4 +197,12 @@ public class Employee extends BaseModel {
 
         return true;
     }
+
+    public BankAccount getBank_info() {
+        return bank_info;
+    }
+
+    public Contract getEmployee_condition() {
+        return employee_condition;
+    }
 }

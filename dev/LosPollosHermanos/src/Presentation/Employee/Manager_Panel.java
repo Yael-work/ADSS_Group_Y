@@ -9,11 +9,7 @@ import Models.DBModels.transport.Branch;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 import Auxiliary.sharedFunctions;
 
@@ -80,7 +76,7 @@ public class Manager_Panel {
         }
 
         Map<Employee, String> assignedEmployeesToShift = new HashMap<>();
-        List<Employee> allAvailableEmployees = new ArrayList<>();
+        Set<Employee> allAvailableEmployees = new HashSet<>();
 
         for (Employee emp : EmployeeManagerCLS.getAllEmployees()) {
             if (AvailabilityManager.isAvailable(shiftDate,emp)) {
@@ -114,19 +110,19 @@ public class Manager_Panel {
     // main method to assign employees to shift roles
     // it will iterate over all roles and take input from the user
     // to select employees for each role
-    private static void assignEmployeesToShiftRoles(Scanner scanner, List<Employee> allAvailableEmployees, Map<Employee, String> assignedEmployeesToShift) {
+    private static void assignEmployeesToShiftRoles(Scanner scanner, Set<Employee> allAvailableEmployees, Map<Employee, String> assignedEmployeesToShift) {
         for (Map.Entry<String, Integer> entry : Shift.getRequiredRoles().entrySet()) {
             String role = entry.getKey();
             int requiredCount = entry.getValue();
-            List<Employee> availableForRole = filterAvailableEmployeesByRole(allAvailableEmployees, role);
+            Set<Employee> availableForRole = filterAvailableEmployeesByRole(allAvailableEmployees, role);
             selectEmployeesForRole(scanner, role, requiredCount, availableForRole, assignedEmployeesToShift);
         }
     }
 
     // iterate over all employees and check if the employee has corresponding role
     // if yes add to the list
-    private static List<Employee> filterAvailableEmployeesByRole(List<Employee> allEmployees, String role) {
-        List<Employee> result = new ArrayList<>();
+    private static Set<Employee> filterAvailableEmployeesByRole(Set<Employee> allEmployees, String role) {
+        Set<Employee> result = new HashSet<>();
         for (Employee emp : allEmployees) {
             if (emp.getRolesList().stream().anyMatch(r -> r.getRole().equals(role))) {
                 result.add(emp);
@@ -137,31 +133,40 @@ public class Manager_Panel {
 
     // This method will be used to select employees for a specific role
     // It will display the available employees and allow the user to select them
-    private static void selectEmployeesForRole(Scanner scanner, String role, int requiredCount, List<Employee> availableEmployees, Map<Employee, String> assignedEmployees) {
+    private static void selectEmployeesForRole(
+            Scanner scanner,
+            String role,
+            int requiredCount,
+            Set<Employee> availableEmployees,
+            Map<Employee, String> assignedEmployees
+    ) {
         int selectedCount = 0;
         System.out.println("\nFor " + role + " needed: " + requiredCount + " employees");
 
-        if (availableEmployees.isEmpty())
-        {
+        if (availableEmployees.isEmpty()) {
             System.out.println("No available employees for the role: " + role);
             System.out.println("You should recruit employees for this role.");
+            return; // No point in proceeding
         }
 
-        while (selectedCount < requiredCount && !availableEmployees.isEmpty()) {
-            printAvailableEmployeesWithIndex(availableEmployees);
+        // We'll use a List to enable index-based access for selection
+        List<Employee> availableList = new ArrayList<>(availableEmployees);
+
+        while (selectedCount < requiredCount && !availableList.isEmpty()) {
+            printAvailableEmployeesWithIndex(availableList);
             System.out.println("0. Skip assigning remaining employees for this role");
             System.out.println("Please select the corresponding number to the employee you wish to add.");
             System.out.println("Example: 1. Employee ID: 12345 - John Doe -> select 1");
             System.out.print("Enter your choice: ");
 
-            int choice = sharedFunctions.getValidIntChoice(scanner, 0, availableEmployees.size());
+            int choice = sharedFunctions.getValidIntChoice(scanner, 0, availableList.size());
 
             if (choice == 0) {
                 System.out.println("Skipping remaining selections for role: " + role);
                 break;
             }
             // subtract 1 from choice to get the index (starts from 0)
-            Employee selectedEmployee = availableEmployees.get(choice - 1);
+            Employee selectedEmployee = availableList.get(choice - 1);
 
             if (assignedEmployees.containsKey(selectedEmployee)) {
                 System.out.println("Employee already assigned. Choose a different one.");
@@ -169,14 +174,24 @@ public class Manager_Panel {
             }
 
             assignedEmployees.put(selectedEmployee, role);
-            availableEmployees.remove(selectedEmployee);
+            availableEmployees.remove(selectedEmployee); // Remove from original set
+            availableList.remove(selectedEmployee);      // Remove from list too
             selectedCount++;
 
             if (selectedCount >= requiredCount) {
                 System.out.println("\nYou have selected enough employees for the role: " + role);
             } else {
-                System.out.println("\nYou need to select more " + (requiredCount - selectedCount) + " employees for the role: " + role);
+                System.out.println("\nYou need to select " + (requiredCount - selectedCount) + " more employees for the role: " + role);
             }
+        }
+    }
+
+    // Use a List parameter to print with index:
+    private static void printAvailableEmployeesWithIndex(List<Employee> employees) {
+        System.out.println("Available employees:");
+        for (int i = 0; i < employees.size(); i++) {
+            Employee emp = employees.get(i);
+            System.out.println((i + 1) + ". Employee ID: " + emp.getEmployeeID() + " - " + emp.getName());
         }
     }
     private static Branch getShiftBranchFromUser(Scanner scanner) {
@@ -213,11 +228,12 @@ public class Manager_Panel {
     // This method will print the available employees with their index
     // employees are selected to print based on the role
     // it will be used in the selectEmployeesForRole method
-    private static void printAvailableEmployeesWithIndex(List<Employee> employees) {
+    private static void printAvailableEmployeesWithIndex(Set<Employee> employees) {
         System.out.println("Available employees:");
-        for (int i = 0; i < employees.size(); i++) {
-            Employee emp = employees.get(i);
-            System.out.println((i + 1) + ". Employee ID: " + emp.getEmployeeID() + " - " + emp.getName());
+        int i = 1;
+        for (Employee emp : employees) {
+            System.out.println(i + ". Employee ID: " + emp.getEmployeeID() + " - " + emp.getName());
+            i++;
         }
     }
 

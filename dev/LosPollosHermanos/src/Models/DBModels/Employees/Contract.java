@@ -56,5 +56,8 @@ public class Contract extends BaseModel {
         return true;
     }
 
+    public int getMinHours() {
+        return minMonthlyHours;
+    }
 }
 

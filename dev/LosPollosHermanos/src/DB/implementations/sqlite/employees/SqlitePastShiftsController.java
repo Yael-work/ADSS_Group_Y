@@ -42,7 +42,7 @@ public class SqlitePastShiftsController implements IPastShiftsController {
     public boolean removePastShift(Shift shift) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-            Shift existingShift = session.get(Shift.class, shift.getShiftID());
+            Shift existingShift = session.get(Shift.class, shift.getId());
             if (existingShift != null) {
                 session.remove(existingShift);
                 session.getTransaction().commit();

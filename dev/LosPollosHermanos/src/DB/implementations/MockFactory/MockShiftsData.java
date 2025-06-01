@@ -47,7 +47,7 @@ public class MockShiftsData {
 
         // --- PAST SHIFT: 3 years ago ---
         {
-            List<Employee> available = new ArrayList<>();
+            Set<Employee> available = new HashSet<>();
             Map<Employee, String> assigned = new HashMap<>();
             LocalDate date = LocalDate.now().minusYears(3).withMonth(5).withDayOfMonth(15);
             String type = "Day";
@@ -67,7 +67,7 @@ public class MockShiftsData {
 
         // --- PAST SHIFT: 8 years ago ---
         {
-            List<Employee> available = new ArrayList<>();
+            Set<Employee> available = new HashSet<>();
             Map<Employee, String> assigned = new HashMap<>();
             LocalDate date = LocalDate.now().minusYears(8).withMonth(8).withDayOfMonth(12);
             String type = "Night";
@@ -89,7 +89,7 @@ public class MockShiftsData {
 
         // --- FUTURE SHIFT 1: Tomorrow (matches plannedStartDateTime) ---
         {
-            List<Employee> available = new ArrayList<>();
+            Set<Employee> available = new HashSet<>();
             Map<Employee, String> assigned = new HashMap<>();
             LocalDate date = LocalDate.now().plusDays(3); // matches plannedStartDateTime
             String type = "Day";
@@ -128,7 +128,7 @@ public class MockShiftsData {
 
         // --- FUTURE SHIFT 2: Day after tomorrow with new employees ---
         {
-            List<Employee> available = new ArrayList<>();
+            Set<Employee> available = new HashSet<>();
             Map<Employee, String> assigned = new HashMap<>();
             LocalDate date = LocalDate.now().plusDays(2);
             String type = "Night";
@@ -164,7 +164,7 @@ public class MockShiftsData {
 
         // --- FUTURE SHIFT 3: Next week with all new employees ---
         {
-            List<Employee> available = new ArrayList<>();
+            Set<Employee> available = new HashSet<>();
             Map<Employee, String> assigned = new HashMap<>();
             LocalDate date = LocalDate.now().plusDays(6);
             String type = "Day";
