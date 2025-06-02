@@ -38,6 +38,12 @@ The system is designed to be modular and extensible, allowing for easy integrati
 - **xerial/sqlite-jdbc**: SQLite JDBC driver for database connectivity
 
 
+## instructions
+For complete instructions, database explanations, and organized information about our project, 
+please refer to the PDF file titled "The Full Guide for Transport and Employees Systems" located 
+in the current project folder. We have separated this documentation to keep the README file clean 
+and focused on the codebase, while the full description is provided in the referenced guide.
+
 ## Setup
 ### Step 1: Clone the repository
 ```bash
@@ -46,6 +52,8 @@ cd ADSS_Group_Y
 ```
 ### Step 2: Install dependencies
 ```bash
+
+
 
 #Build the project
 
@@ -92,3 +100,4 @@ ADSS_Group_Y/
 
 
 This version improves readability by using consistent formatting, headings, and code blocks for commands.
+
