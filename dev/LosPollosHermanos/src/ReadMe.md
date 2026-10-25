@@ -1,12 +1,12 @@
 # SUPER-TRANSPORT-EMPLOYEES MANAGEMENT SYSTEM
 
-## Our ID'S and Names
-| ID        | Name          |
-|-----------|---------------|
-|  | Tom Gluzman   |
-|  | Ethen Krimer  |
-|  | Yael Durahly  |
-|  | Denis Coleman |
+## Team
+
+- Tom Gluzman
+- Ethen Krimer
+- Yael Durahly
+- Denis Coleman
+
 
 ## Description
 A Java-based transport management system for handling transports, routes, drivers, trucks, and delivery files.
